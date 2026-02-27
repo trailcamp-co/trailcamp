@@ -45,6 +45,8 @@ import {
   CATEGORY_LABELS,
   DIFFICULTY_COLORS,
   DEFAULT_FILTERS,
+  TRAIL_TYPE_COLORS,
+  parseTrailTypes,
 } from '../types';
 
 // --------------- Types ---------------
@@ -68,6 +70,7 @@ interface LeftSidebarProps {
   weatherCache: Record<string, WeatherData>;
   fetchWeather: (lat: number, lng: number, date: string) => Promise<WeatherData | null>;
   routeGeoJSON: any;
+  mapBounds: { north: number; south: number; east: number; west: number } | null;
 }
 
 type SidebarTab = 'trip' | 'riding' | 'filters';
@@ -662,16 +665,29 @@ function FiltersPanel({ filters, setFilters, routeGeoJSON }: FiltersPanelProps) 
 interface RidingPanelProps {
   locations: Location[];
   onFlyTo: (lng: number, lat: number) => void;
+  mapBounds: { north: number; south: number; east: number; west: number } | null;
 }
 
-function RidingPanel({ locations, onFlyTo }: RidingPanelProps) {
+function RidingPanel({ locations, onFlyTo, mapBounds }: RidingPanelProps) {
   const [sortField, setSortField] = useState<RidingSortField>('name');
   const [sortAsc, setSortAsc] = useState(true);
   const [filterDifficulty, setFilterDifficulty] = useState<string | null>(null);
   const [filterTrailType, setFilterTrailType] = useState<string>('');
+  const [viewportFilter, setViewportFilter] = useState(false);
 
   const ridingLocations = useMemo(() => {
     let filtered = locations.filter((l) => l.category === 'riding');
+
+    // Viewport filter
+    if (viewportFilter && mapBounds) {
+      filtered = filtered.filter(
+        (l) =>
+          l.latitude >= mapBounds.south &&
+          l.latitude <= mapBounds.north &&
+          l.longitude >= mapBounds.west &&
+          l.longitude <= mapBounds.east,
+      );
+    }
 
     if (filterDifficulty) {
       filtered = filtered.filter((l) => l.difficulty === filterDifficulty);
@@ -701,7 +717,7 @@ function RidingPanel({ locations, onFlyTo }: RidingPanelProps) {
     });
 
     return filtered;
-  }, [locations, sortField, sortAsc, filterDifficulty, filterTrailType]);
+  }, [locations, sortField, sortAsc, filterDifficulty, filterTrailType, viewportFilter, mapBounds]);
 
   const handleSortChange = (field: RidingSortField) => {
     if (sortField === field) {
@@ -765,8 +781,20 @@ function RidingPanel({ locations, onFlyTo }: RidingPanelProps) {
             className="flex-1 bg-dark-800 [.light_&]:bg-white border border-gray-700 [.light_&]:border-gray-200 rounded px-1.5 py-1 text-xs text-gray-300 [.light_&]:text-gray-700 placeholder-gray-600 [.light_&]:placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors"
           />
         </div>
-        <div className="text-[10px] text-gray-600">
-          {ridingLocations.length} riding area{ridingLocations.length !== 1 ? 's' : ''}
+        <div className="flex items-center justify-between">
+          <div className="text-[10px] text-gray-600">
+            {ridingLocations.length} riding area{ridingLocations.length !== 1 ? 's' : ''}
+          </div>
+          <button
+            onClick={() => setViewportFilter(!viewportFilter)}
+            className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
+              viewportFilter
+                ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                : 'text-gray-500 hover:text-gray-300 [.light_&]:hover:text-gray-700 border border-transparent hover:border-gray-600 [.light_&]:hover:border-gray-300'
+            }`}
+          >
+            {viewportFilter ? '📍 In view' : 'Show all'}
+          </button>
         </div>
       </div>
 
@@ -778,44 +806,72 @@ function RidingPanel({ locations, onFlyTo }: RidingPanelProps) {
             <p>No riding areas found.</p>
           </div>
         )}
-        {ridingLocations.map((loc) => (
-          <button
-            key={loc.id}
-            onClick={() => onFlyTo(loc.longitude, loc.latitude)}
-            className="w-full text-left px-3 py-2.5 border-b border-gray-700/30 [.light_&]:border-gray-100
-              hover:bg-dark-700 [.light_&]:hover:bg-gray-50 transition-colors group"
-          >
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-medium text-gray-200 [.light_&]:text-gray-800 truncate">
-                {loc.name}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              {loc.distance_miles != null && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-dark-700 text-gray-400 [.light_&]:bg-gray-100 [.light_&]:text-gray-500">
-                  {Math.round(loc.distance_miles)} mi
-                </span>
-              )}
-              {loc.difficulty && (
-                <span
-                  className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
-                  style={{
-                    backgroundColor: (DIFFICULTY_COLORS[loc.difficulty] ?? '#6b7280') + '22',
-                    color: DIFFICULTY_COLORS[loc.difficulty] ?? '#6b7280',
-                  }}
-                >
-                  {loc.difficulty}
-                </span>
-              )}
-              {loc.scenery_rating != null && loc.scenery_rating > 0 && (
-                <span className="flex items-center">{renderStars(loc.scenery_rating)}</span>
-              )}
-            </div>
-            {loc.trail_types && (
-              <div className="text-[10px] text-gray-500 mt-1 truncate">{loc.trail_types}</div>
-            )}
-          </button>
-        ))}
+        {ridingLocations.map((loc) => {
+          const diffColor = DIFFICULTY_COLORS[loc.difficulty ?? ''] ?? '#6b7280';
+          return (
+            <button
+              key={loc.id}
+              onClick={() => onFlyTo(loc.longitude, loc.latitude)}
+              className="w-full text-left px-3 py-2.5 border-b border-gray-700/30 [.light_&]:border-gray-100
+                hover:bg-dark-700 [.light_&]:hover:bg-gray-50 transition-colors group flex gap-0"
+            >
+              {/* Colored left accent bar */}
+              <div
+                className="w-1 rounded-full flex-shrink-0 mr-2.5 self-stretch"
+                style={{ backgroundColor: diffColor }}
+              />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-gray-200 [.light_&]:text-gray-800 truncate">
+                    {loc.name}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {loc.difficulty && (
+                    <span
+                      className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
+                      style={{
+                        backgroundColor: diffColor + '22',
+                        color: diffColor,
+                      }}
+                    >
+                      {loc.difficulty}
+                    </span>
+                  )}
+                  {loc.distance_miles != null && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-dark-700 text-gray-400 [.light_&]:bg-gray-100 [.light_&]:text-gray-500 flex items-center gap-0.5">
+                      📏 {Math.round(loc.distance_miles)} mi
+                    </span>
+                  )}
+                  {loc.elevation_gain_ft != null && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-dark-700 text-gray-400 [.light_&]:bg-gray-100 [.light_&]:text-gray-500 flex items-center gap-0.5">
+                      ⛰️ {loc.elevation_gain_ft.toLocaleString()} ft
+                    </span>
+                  )}
+                  {loc.scenery_rating != null && loc.scenery_rating > 0 && (
+                    <span className="flex items-center">{renderStars(loc.scenery_rating)}</span>
+                  )}
+                </div>
+                {loc.trail_types && (
+                  <div className="flex items-center gap-1 mt-1.5 flex-wrap">
+                    {parseTrailTypes(loc.trail_types).map((tt) => {
+                      const colors = TRAIL_TYPE_COLORS[tt] || { bg: 'rgba(107,114,128,0.15)', text: '#9ca3af' };
+                      return (
+                        <span
+                          key={tt}
+                          className="text-[9px] font-medium px-1.5 py-0.5 rounded-full whitespace-nowrap"
+                          style={{ backgroundColor: colors.bg, color: colors.text }}
+                        >
+                          {tt}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -842,6 +898,7 @@ export default function LeftSidebar({
   weatherCache,
   fetchWeather,
   routeGeoJSON,
+  mapBounds,
 }: LeftSidebarProps) {
   const [activeTab, setActiveTab] = useState<SidebarTab>('trip');
   const [editingName, setEditingName] = useState(false);
@@ -1057,7 +1114,7 @@ export default function LeftSidebar({
       {/* ===== Riding Tab ===== */}
       {activeTab === 'riding' && (
         <div className="flex-1 overflow-hidden">
-          <RidingPanel locations={locations} onFlyTo={onFlyTo} />
+          <RidingPanel locations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} />
         </div>
       )}
 

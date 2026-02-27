@@ -12,7 +12,7 @@ import {
   X,
 } from 'lucide-react';
 import type { Trip, Location, MapStyle, Filters } from '../types';
-import { MAP_STYLES, CATEGORY_ICONS, CATEGORY_COLORS } from '../types';
+import { MAP_STYLES, CATEGORY_ICONS, CATEGORY_COLORS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
 
 interface TopBarProps {
   darkMode: boolean;
@@ -340,47 +340,83 @@ export default function TopBar({
                 : 'bg-white border-gray-200'
             }`}
           >
-            {searchResults.map((location) => (
-              <button
-                key={location.id}
-                onClick={() => {
-                  onSelectSearchResult(location);
-                  setSearchFocused(false);
-                }}
-                className={`w-full text-left px-3 py-2.5 flex items-center gap-2.5 transition-colors duration-100 ${
-                  darkMode
-                    ? 'hover:bg-dark-600'
-                    : 'hover:bg-gray-50'
-                }`}
-              >
-                <span
-                  className="text-xs flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center"
-                  style={{
-                    backgroundColor: `${CATEGORY_COLORS[location.category]}20`,
+            {searchResults.map((location) => {
+              const diffColor = location.difficulty ? DIFFICULTY_COLORS[location.difficulty] : null;
+              const trailTypes = location.category === 'riding' ? parseTrailTypes(location.trail_types) : [];
+              return (
+                <button
+                  key={location.id}
+                  onClick={() => {
+                    onSelectSearchResult(location);
+                    setSearchFocused(false);
                   }}
+                  className={`w-full text-left px-3 py-2.5 flex items-start gap-2.5 transition-colors duration-100 ${
+                    darkMode
+                      ? 'hover:bg-dark-600'
+                      : 'hover:bg-gray-50'
+                  }`}
                 >
-                  {CATEGORY_ICONS[location.category]}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div
-                    className={`text-sm font-medium truncate ${
-                      darkMode ? 'text-gray-200' : 'text-gray-800'
-                    }`}
+                  <span
+                    className="text-xs flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center mt-0.5"
+                    style={{
+                      backgroundColor: `${CATEGORY_COLORS[location.category]}20`,
+                    }}
                   >
-                    {location.name}
+                    {CATEGORY_ICONS[location.category]}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div
+                      className={`text-sm font-medium truncate ${
+                        darkMode ? 'text-gray-200' : 'text-gray-800'
+                      }`}
+                    >
+                      {location.name}
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                      {location.sub_type && (
+                        <span className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {location.sub_type}
+                        </span>
+                      )}
+                      {diffColor && (
+                        <span
+                          className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
+                          style={{ backgroundColor: diffColor + '22', color: diffColor }}
+                        >
+                          {location.difficulty}
+                        </span>
+                      )}
+                      {trailTypes.slice(0, 2).map((tt) => {
+                        const colors = TRAIL_TYPE_COLORS[tt] || { bg: 'rgba(107,114,128,0.15)', text: '#9ca3af' };
+                        return (
+                          <span
+                            key={tt}
+                            className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
+                            style={{ backgroundColor: colors.bg, color: colors.text }}
+                          >
+                            {tt}
+                          </span>
+                        );
+                      })}
+                      {trailTypes.length > 2 && (
+                        <span className={`text-[9px] ${darkMode ? 'text-gray-600' : 'text-gray-400'}`}>
+                          +{trailTypes.length - 2}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <span
-                  className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full flex-shrink-0"
-                  style={{
-                    backgroundColor: `${CATEGORY_COLORS[location.category]}20`,
-                    color: CATEGORY_COLORS[location.category],
-                  }}
-                >
-                  {location.category}
-                </span>
-              </button>
-            ))}
+                  <span
+                    className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full flex-shrink-0"
+                    style={{
+                      backgroundColor: `${CATEGORY_COLORS[location.category]}20`,
+                      color: CATEGORY_COLORS[location.category],
+                    }}
+                  >
+                    {location.category}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>

@@ -62,9 +62,9 @@ router.get('/search', (req: Request, res: Response) => {
 
   const locations = db.prepare(`
     SELECT * FROM locations
-    WHERE name LIKE ? OR description LIKE ? OR notes LIKE ? OR sub_type LIKE ?
+    WHERE name LIKE ? OR description LIKE ? OR notes LIKE ? OR sub_type LIKE ? OR trail_types LIKE ? OR difficulty LIKE ?
     ORDER BY name LIMIT 50
-  `).all(`%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`);
+  `).all(`%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`);
 
   res.json(locations);
 });

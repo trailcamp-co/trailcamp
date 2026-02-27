@@ -22,7 +22,7 @@ import {
   Ruler,
 } from 'lucide-react';
 import type { Location } from '../types';
-import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS } from '../types';
+import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
 
 interface RightPanelProps {
   location: Location;
@@ -212,42 +212,74 @@ export default function RightPanel({
     </div>
   );
 
-  const renderRidingDetails = () => (
-    <div className="grid grid-cols-2 gap-2">
-      {location.difficulty && (
-        <DetailBadge label="Difficulty" value={location.difficulty} darkMode={darkMode} />
-      )}
-      {location.distance_miles !== null && location.distance_miles !== undefined && (
-        <DetailBadge
-          label="Distance"
-          value={`${location.distance_miles} mi`}
-          darkMode={darkMode}
-        />
-      )}
-      {location.elevation_gain_ft !== null && location.elevation_gain_ft !== undefined && (
-        <DetailBadge
-          label="Elevation Gain"
-          value={`${location.elevation_gain_ft.toLocaleString()} ft`}
-          darkMode={darkMode}
-        />
-      )}
-      {location.trail_types && (
-        <DetailBadge label="Trail Types" value={location.trail_types} darkMode={darkMode} />
-      )}
-      {location.permit_required !== null && location.permit_required !== undefined && (
-        <DetailBadge
-          label="Permit Required"
-          value={location.permit_required ? 'Yes' : 'No'}
-          darkMode={darkMode}
-        />
-      )}
-      {location.permit_info && (
-        <div className="col-span-2">
-          <DetailBadge label="Permit Info" value={location.permit_info} darkMode={darkMode} />
+  const renderRidingDetails = () => {
+    const diffColor = location.difficulty ? DIFFICULTY_COLORS[location.difficulty] || '#6b7280' : '';
+    return (
+      <div className="space-y-3">
+        {/* Difficulty + Stats row */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {location.difficulty && (
+            <span
+              className="text-xs font-bold px-3 py-1 rounded-full"
+              style={{ backgroundColor: diffColor + '22', color: diffColor }}
+            >
+              {location.difficulty}
+            </span>
+          )}
+          {location.distance_miles !== null && location.distance_miles !== undefined && (
+            <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${darkMode ? 'bg-dark-800 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
+              📏 {location.distance_miles} mi
+            </span>
+          )}
+          {location.elevation_gain_ft !== null && location.elevation_gain_ft !== undefined && (
+            <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${darkMode ? 'bg-dark-800 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
+              ⛰️ {location.elevation_gain_ft.toLocaleString()} ft
+            </span>
+          )}
         </div>
-      )}
-    </div>
-  );
+
+        {/* Trail Type Chips */}
+        {location.trail_types && (
+          <div>
+            <div className={`text-xs font-medium mb-1.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              Trail Types
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {parseTrailTypes(location.trail_types).map((tt) => {
+                const colors = TRAIL_TYPE_COLORS[tt] || { bg: 'rgba(107,114,128,0.15)', text: '#9ca3af' };
+                return (
+                  <span
+                    key={tt}
+                    className="text-xs font-medium px-2.5 py-0.5 rounded-full"
+                    style={{ backgroundColor: colors.bg, color: colors.text }}
+                  >
+                    {tt}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Permit info */}
+        <div className="grid grid-cols-2 gap-2">
+          {location.permit_required !== null && location.permit_required !== undefined && (
+            <DetailBadge
+              label="Permit Required"
+              value={location.permit_required ? 'Yes' : 'No'}
+              darkMode={darkMode}
+            />
+          )}
+          {location.best_season && (
+            <DetailBadge label="Best Season" value={location.best_season} darkMode={darkMode} />
+          )}
+        </div>
+        {location.permit_info && (
+          <DetailBadge label="Permit Info" value={location.permit_info} darkMode={darkMode} />
+        )}
+      </div>
+    );
+  };
 
   const renderServiceDetails = () => (
     <div className="grid grid-cols-2 gap-2">

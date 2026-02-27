@@ -2,7 +2,14 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { Layers, Eye, EyeOff } from 'lucide-react';
 import type { Location, TripStop, LocationCategory } from '../types';
-import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS } from '../types';
+import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
+
+export interface MapBounds {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
 
 interface MapProps {
   token: string;
@@ -16,6 +23,7 @@ interface MapProps {
   onToggleLayer: (category: LocationCategory) => void;
   flyToLocation: { lng: number; lat: number } | null;
   darkMode: boolean;
+  onBoundsChange?: (bounds: MapBounds) => void;
 }
 
 const ALL_CATEGORIES: LocationCategory[] = [
@@ -142,6 +150,7 @@ export default function Map({
   onToggleLayer,
   flyToLocation,
   darkMode,
+  onBoundsChange,
 }: MapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
@@ -256,14 +265,66 @@ export default function Map({
       });
     });
 
+    // Click popup
+    const clickPopup = new mapboxgl.Popup({
+      closeButton: true,
+      closeOnClick: true,
+      maxWidth: '300px',
+      className: 'location-click-popup',
+      offset: 12,
+    });
+
     // Click location pin
     map.on('click', 'unclustered-point', (e: any) => {
       const features = map.queryRenderedFeatures(e.point, { layers: ['unclustered-point'] });
       if (!features.length) return;
-      const locationId = features[0].properties?.locationId;
+      const p = features[0].properties!;
+      const geo = features[0].geometry;
+      const locationId = p.locationId;
       const loc = locationsRef.current.find((l) => l.id === locationId);
-      if (loc) onLocationClick(loc);
+
+      if (loc && geo.type === 'Point') {
+        // Build popup HTML
+        const diffColor = DIFFICULTY_COLORS[p.difficulty] || '#6b7280';
+        const trailTypes = parseTrailTypes(p.trail_types);
+        const trailChipsHtml = trailTypes.map(tt => {
+          const colors = TRAIL_TYPE_COLORS[tt] || { bg: 'rgba(107,114,128,0.15)', text: '#9ca3af' };
+          return `<span style="font-size:9px;font-weight:500;padding:1px 6px;border-radius:9999px;background:${colors.bg};color:${colors.text};white-space:nowrap;">${tt}</span>`;
+        }).join('');
+        const sceneryHtml = p.scenery_rating > 0
+          ? `<div style="margin-top:4px;">${Array.from({length: 5}, (_, i) => `<span style="color:${i < p.scenery_rating ? '#facc15' : '#374151'};font-size:11px;">★</span>`).join('')}</div>`
+          : '';
+        const statsHtml = [
+          p.distance_miles ? `<span style="font-size:10px;color:#9ca3af;">📏 ${Math.round(Number(p.distance_miles))} mi</span>` : '',
+          p.elevation_gain_ft ? `<span style="font-size:10px;color:#9ca3af;">⛰️ ${Number(p.elevation_gain_ft).toLocaleString()} ft</span>` : '',
+        ].filter(Boolean).join('<span style="color:#4b5563;margin:0 4px;">·</span>');
+
+        const html = `
+          <div style="font-family:system-ui,-apple-system,sans-serif;min-width:180px;">
+            <div style="font-size:14px;font-weight:700;color:#f3f4f6;margin-bottom:4px;">${p.icon || ''} ${p.name}</div>
+            ${p.difficulty ? `<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:9999px;background:${diffColor}22;color:${diffColor};">${p.difficulty}</span>` : ''}
+            ${sceneryHtml}
+            ${trailChipsHtml ? `<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;">${trailChipsHtml}</div>` : ''}
+            ${statsHtml ? `<div style="margin-top:6px;">${statsHtml}</div>` : ''}
+            <div style="margin-top:8px;display:flex;gap:6px;">
+              <button onclick="window.__tcPopupOpenDetail && window.__tcPopupOpenDetail(${locationId})" style="font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;background:rgba(249,115,22,0.9);color:#fff;border:none;cursor:pointer;">View Details</button>
+              <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${loc.latitude},${loc.longitude}','_blank')" style="font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;background:rgba(55,65,81,0.8);color:#d1d5db;border:1px solid rgba(75,85,99,0.5);cursor:pointer;">Navigate</button>
+            </div>
+          </div>
+        `;
+
+        popup.remove(); // remove hover tooltip
+        clickPopup.setLngLat(geo.coordinates as [number, number]).setHTML(html).addTo(map);
+        onLocationClick(loc);
+      }
     });
+
+    // Global handler for popup "View Details" button
+    (window as any).__tcPopupOpenDetail = (id: number) => {
+      const loc = locationsRef.current.find(l => l.id === id);
+      if (loc) onLocationClick(loc);
+      clickPopup.remove();
+    };
 
     // Double-click to add location
     map.on('dblclick', (e: any) => {
@@ -315,7 +376,20 @@ export default function Map({
       });
     };
 
+    // Report bounds to parent
+    const reportBounds = () => {
+      if (!onBoundsChange) return;
+      const b = map.getBounds();
+      onBoundsChange({
+        north: b.getNorth(),
+        south: b.getSouth(),
+        east: b.getEast(),
+        west: b.getWest(),
+      });
+    };
+
     map.on('moveend', updateEmojiMarkers);
+    map.on('moveend', reportBounds);
     map.on('zoomend', updateEmojiMarkers);
     map.on('sourcedata', (e: any) => {
       if (e.sourceId === 'locations' && e.isSourceLoaded) {
@@ -513,17 +587,28 @@ export default function Map({
 function buildLocationsGeoJSON(locations: Location[]): GeoJSON.FeatureCollection {
   return {
     type: 'FeatureCollection',
-    features: locations.map((loc) => ({
-      type: 'Feature' as const,
-      geometry: { type: 'Point' as const, coordinates: [loc.longitude, loc.latitude] },
-      properties: {
-        locationId: loc.id,
-        name: loc.name,
-        category: loc.category,
-        color: CATEGORY_COLORS[loc.category] ?? '#6b7280',
-        icon: CATEGORY_ICONS[loc.category] ?? '📍',
-      },
-    })),
+    features: locations.map((loc) => {
+      // Riding locations get colored by difficulty, others by category
+      const color = loc.category === 'riding' && loc.difficulty
+        ? DIFFICULTY_COLORS[loc.difficulty] ?? '#6b7280'
+        : CATEGORY_COLORS[loc.category] ?? '#6b7280';
+      return {
+        type: 'Feature' as const,
+        geometry: { type: 'Point' as const, coordinates: [loc.longitude, loc.latitude] },
+        properties: {
+          locationId: loc.id,
+          name: loc.name,
+          category: loc.category,
+          difficulty: loc.difficulty ?? '',
+          color,
+          icon: CATEGORY_ICONS[loc.category] ?? '📍',
+          scenery_rating: loc.scenery_rating ?? 0,
+          distance_miles: loc.distance_miles ?? '',
+          elevation_gain_ft: loc.elevation_gain_ft ?? '',
+          trail_types: loc.trail_types ?? '',
+        },
+      };
+    }),
   };
 }
 

@@ -202,3 +202,30 @@ export const DIFFICULTY_COLORS: Record<string, string> = {
   Hard: '#ef4444',
   Expert: '#7c3aed',
 };
+
+export const TRAIL_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
+  'Single Track': { bg: 'rgba(16,185,129,0.15)', text: '#34d399' },
+  'Fire Road': { bg: 'rgba(245,158,11,0.15)', text: '#fbbf24' },
+  'Motocross': { bg: 'rgba(239,68,68,0.15)', text: '#f87171' },
+  'Enduro': { bg: 'rgba(249,115,22,0.15)', text: '#fb923c' },
+  'Desert': { bg: 'rgba(234,179,8,0.15)', text: '#facc15' },
+  'Ridge Riding': { bg: 'rgba(59,130,246,0.15)', text: '#60a5fa' },
+  'Technical': { bg: 'rgba(168,85,247,0.15)', text: '#c084fc' },
+  'Dual Sport': { bg: 'rgba(6,182,212,0.15)', text: '#22d3ee' },
+  'Sand Dunes': { bg: 'rgba(234,179,8,0.15)', text: '#facc15' },
+  'Rock Crawling': { bg: 'rgba(168,162,158,0.15)', text: '#a8a29e' },
+  'Beginner': { bg: 'rgba(34,197,94,0.15)', text: '#4ade80' },
+  'Sand': { bg: 'rgba(234,179,8,0.15)', text: '#facc15' },
+  'Scenic Road': { bg: 'rgba(168,85,247,0.15)', text: '#c084fc' },
+};
+
+export function parseTrailTypes(raw: string | null): string[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed.map(s => s.trim()).filter(Boolean);
+  } catch {
+    // not JSON
+  }
+  return raw.split(',').map(s => s.trim()).filter(Boolean);
+}

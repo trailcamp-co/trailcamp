@@ -8,6 +8,7 @@ import RightPanel from './components/RightPanel';
 import StatsPanel from './components/StatsPanel';
 import AddLocationModal from './components/AddLocationModal';
 import type { Location, Trip, TripStop, LocationCategory, MapStyle, Filters, WeatherData } from './types';
+import type { MapBounds } from './components/Map';
 import { MAP_STYLES, DEFAULT_FILTERS, WEATHER_CODES } from './types';
 
 export default function App() {
@@ -30,6 +31,7 @@ export default function App() {
   const [routeGeoJSON, setRouteGeoJSON] = useState<any>(null);
   const [flyToLocation, setFlyToLocation] = useState<{ lng: number; lat: number } | null>(null);
   const [weatherCache, setWeatherCache] = useState<Record<string, WeatherData>>({});
+  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
 
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -285,6 +287,7 @@ export default function App() {
             weatherCache={weatherCache}
             fetchWeather={fetchWeather}
             routeGeoJSON={routeGeoJSON}
+            mapBounds={mapBounds}
           />
         </div>
 
@@ -302,6 +305,7 @@ export default function App() {
             onToggleLayer={handleToggleLayer}
             flyToLocation={flyToLocation}
             darkMode={darkMode}
+            onBoundsChange={setMapBounds}
           />
         </div>
 

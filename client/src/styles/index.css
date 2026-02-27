@@ -17,6 +17,30 @@
   border-top-color: rgba(15, 23, 42, 0.92);
 }
 
+/* Click popup styling */
+.location-click-popup .mapboxgl-popup-content {
+  background: rgba(15, 23, 42, 0.95);
+  color: #f1f5f9;
+  padding: 12px 14px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.location-click-popup .mapboxgl-popup-tip {
+  border-top-color: rgba(15, 23, 42, 0.95);
+}
+.location-click-popup .mapboxgl-popup-close-button {
+  color: #9ca3af;
+  font-size: 18px;
+  padding: 2px 6px;
+}
+.location-click-popup .mapboxgl-popup-close-button:hover {
+  color: #fff;
+  background: transparent;
+}
+
 /* Stop markers always on top */
 .stop-marker {
   z-index: 20 !important;
