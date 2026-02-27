@@ -158,7 +158,7 @@ export interface Filters {
 }
 
 export const DEFAULT_FILTERS: Filters = {
-  categories: new Set(['campsite', 'riding', 'water', 'dump', 'gas', 'grocery', 'scenic', 'laundromat'] as LocationCategory[]),
+  categories: new Set(['campsite', 'riding', 'water', 'dump', 'scenic'] as LocationCategory[]),
   waterNearby: false,
   dumpNearby: false,
   shade: false,

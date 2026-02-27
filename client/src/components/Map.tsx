@@ -19,7 +19,7 @@ interface MapProps {
 }
 
 const ALL_CATEGORIES: LocationCategory[] = [
-  'campsite', 'riding', 'water', 'dump', 'gas', 'grocery', 'scenic', 'laundromat',
+  'campsite', 'riding', 'water', 'dump', 'scenic',
 ];
 
 // Centralized function to add all custom sources and layers
@@ -37,8 +37,8 @@ function addCustomLayers(map: any, locations: Location[], routeGeoJSON: any) {
     type: 'geojson',
     data: buildLocationsGeoJSON(locations),
     cluster: true,
-    clusterMaxZoom: 12,
-    clusterRadius: 40,
+    clusterMaxZoom: 10,
+    clusterRadius: 15,
   });
 
   // Clusters — subtle, dark, semi-transparent. NOT orange.
@@ -103,6 +103,8 @@ function addCustomLayers(map: any, locations: Location[], routeGeoJSON: any) {
     },
   });
 
+  // (emoji rendered via HTML markers in updateEmojiMarkers)
+
   // Route line — outlined for visibility on any map style
   map.addSource('route', {
     type: 'geojson',
@@ -144,6 +146,7 @@ export default function Map({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const stopMarkersRef = useRef<any[]>([]);
+  const emojiMarkersRef = useRef<{ [id: number]: any }>({});
   const [layerPanelOpen, setLayerPanelOpen] = useState(false);
   const [publicLandVisible, setPublicLandVisible] = useState(false);
   const [mvumVisible, setMvumVisible] = useState(false);
@@ -270,9 +273,61 @@ export default function Map({
     map.on('mouseenter', 'clusters', () => { map.getCanvas().style.cursor = 'pointer'; });
     map.on('mouseleave', 'clusters', () => { map.getCanvas().style.cursor = ''; });
 
+    // Emoji HTML markers — render for visible unclustered points only
+    const updateEmojiMarkers = () => {
+      if (!map.getLayer('unclustered-point')) return;
+      const zoom = map.getZoom();
+      // Only show emoji at zoom 7+
+      if (zoom < 6) {
+        Object.values(emojiMarkersRef.current).forEach(m => m.remove());
+        emojiMarkersRef.current = {};
+        return;
+      }
+      const features = map.queryRenderedFeatures(undefined, { layers: ['unclustered-point'] });
+      const visibleIds = new Set<number>();
+      features.forEach((f: any) => {
+        const id = f.properties?.locationId;
+        if (!id) return;
+        visibleIds.add(id);
+        if (!emojiMarkersRef.current[id]) {
+          const icon = f.properties?.icon || '📍';
+          const el = document.createElement('div');
+          el.className = 'emoji-pin';
+          el.style.cssText = `font-size:14px;line-height:1;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.7);`;
+          el.textContent = icon;
+          const coords = f.geometry.type === 'Point' ? f.geometry.coordinates : null;
+          if (coords) {
+            const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
+              .setLngLat(coords as [number, number])
+              .setOffset([0, -6])
+              .addTo(map);
+            emojiMarkersRef.current[id] = marker;
+          }
+        }
+      });
+      // Remove markers no longer visible
+      Object.keys(emojiMarkersRef.current).forEach((idStr) => {
+        const id = Number(idStr);
+        if (!visibleIds.has(id)) {
+          emojiMarkersRef.current[id].remove();
+          delete emojiMarkersRef.current[id];
+        }
+      });
+    };
+
+    map.on('moveend', updateEmojiMarkers);
+    map.on('zoomend', updateEmojiMarkers);
+    map.on('sourcedata', (e: any) => {
+      if (e.sourceId === 'locations' && e.isSourceLoaded) {
+        setTimeout(updateEmojiMarkers, 100);
+      }
+    });
+
     mapRef.current = map;
 
     return () => {
+      Object.values(emojiMarkersRef.current).forEach(m => m.remove());
+      emojiMarkersRef.current = {};
       stopMarkersRef.current.forEach((m) => m.remove());
       stopMarkersRef.current = [];
       map.remove();
