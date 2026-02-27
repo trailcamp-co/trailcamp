@@ -83,16 +83,16 @@ function addCustomLayers(map: any, locations: Location[], routeGeoJSON: any) {
     paint: {
       'circle-color': ['get', 'color'],
       'circle-radius': ['interpolate', ['linear'], ['zoom'],
-        5, 3,
-        8, 4,
-        10, 5,
-        13, 7,
-        16, 10,
+        5, 5,
+        8, 7,
+        10, 9,
+        13, 12,
+        16, 16,
       ],
       'circle-stroke-width': ['interpolate', ['linear'], ['zoom'],
-        5, 0.5,
-        10, 1,
-        14, 1.5,
+        5, 1,
+        10, 1.5,
+        14, 2,
       ],
       'circle-stroke-color': 'rgba(255,255,255,0.8)',
       'circle-opacity': ['interpolate', ['linear'], ['zoom'],
@@ -278,7 +278,7 @@ export default function Map({
       if (!map.getLayer('unclustered-point')) return;
       const zoom = map.getZoom();
       // Only show emoji at zoom 7+
-      if (zoom < 6) {
+      if (zoom < 4) {
         Object.values(emojiMarkersRef.current).forEach(m => m.remove());
         emojiMarkersRef.current = {};
         return;
@@ -293,7 +293,7 @@ export default function Map({
           const icon = f.properties?.icon || '📍';
           const el = document.createElement('div');
           el.className = 'emoji-pin';
-          el.style.cssText = `font-size:14px;line-height:1;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.7);`;
+          el.style.cssText = `font-size:18px;line-height:1;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,0.8);`;
           el.textContent = icon;
           const coords = f.geometry.type === 'Point' ? f.geometry.coordinates : null;
           if (coords) {
