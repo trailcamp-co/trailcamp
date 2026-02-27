@@ -58,9 +58,6 @@
   body {
     @apply bg-dark-900 text-gray-100 font-sans;
   }
-  .dark body {
-    @apply bg-dark-900 text-gray-100;
-  }
 }
 
 /* Mapbox overrides */

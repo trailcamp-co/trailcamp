@@ -17,9 +17,7 @@ import {
   BookmarkCheck,
   Edit3,
   Clock,
-  Signal,
   Trees,
-  Ruler,
 } from 'lucide-react';
 import type { Location } from '../types';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';

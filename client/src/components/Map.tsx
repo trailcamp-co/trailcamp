@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { Layers, Eye, EyeOff } from 'lucide-react';
 import type { Location, TripStop, LocationCategory } from '../types';
@@ -40,13 +40,13 @@ function addCustomLayers(map: any, locations: Location[], routeGeoJSON: any) {
     if (map.getSource(id)) map.removeSource(id);
   });
 
-  // Location pins with clustering — MORE aggressive at low zoom
+  // Location pins with clustering
   map.addSource('locations', {
     type: 'geojson',
     data: buildLocationsGeoJSON(locations),
     cluster: true,
-    clusterMaxZoom: 10,
-    clusterRadius: 15,
+    clusterMaxZoom: 12,
+    clusterRadius: 50,
   });
 
   // Clusters — subtle, dark, semi-transparent. NOT orange.
@@ -58,13 +58,14 @@ function addCustomLayers(map: any, locations: Location[], routeGeoJSON: any) {
     paint: {
       'circle-color': 'rgba(30, 41, 59, 0.75)',
       'circle-radius': ['step', ['get', 'point_count'],
-        12,   // < 10
-        10, 14,  // 10-49
-        50, 17,  // 50-99
-        100, 20, // 100+
+        10,    // < 10
+        10, 12,  // 10-49
+        50, 15,  // 50-99
+        100, 18, // 100-499
+        500, 22, // 500+
       ],
-      'circle-stroke-width': 1.5,
-      'circle-stroke-color': 'rgba(255,255,255,0.6)',
+      'circle-stroke-width': 1,
+      'circle-stroke-color': 'rgba(255,255,255,0.4)',
     },
   });
 
@@ -77,7 +78,7 @@ function addCustomLayers(map: any, locations: Location[], routeGeoJSON: any) {
     layout: {
       'text-field': '{point_count_abbreviated}',
       'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
-      'text-size': ['step', ['get', 'point_count'], 10, 10, 11, 100, 12],
+      'text-size': ['step', ['get', 'point_count'], 9, 10, 10, 100, 11],
     },
     paint: { 'text-color': '#ffffff' },
   });
@@ -91,27 +92,26 @@ function addCustomLayers(map: any, locations: Location[], routeGeoJSON: any) {
     paint: {
       'circle-color': ['get', 'color'],
       'circle-radius': ['interpolate', ['linear'], ['zoom'],
-        5, 5,
+        5, 4,
         8, 7,
-        10, 9,
-        13, 12,
-        16, 16,
+        10, 10,
+        12, 14,
+        14, 18,
+        16, 22,
       ],
       'circle-stroke-width': ['interpolate', ['linear'], ['zoom'],
         5, 1,
         10, 1.5,
-        14, 2,
+        14, 2.5,
       ],
       'circle-stroke-color': 'rgba(255,255,255,0.8)',
       'circle-opacity': ['interpolate', ['linear'], ['zoom'],
-        5, 0.6,
-        8, 0.75,
-        12, 0.9,
+        5, 0.7,
+        8, 0.85,
+        12, 1.0,
       ],
     },
   });
-
-  // (emoji rendered via HTML markers in updateEmojiMarkers)
 
   // Route line — outlined for visibility on any map style
   map.addSource('route', {
@@ -158,7 +158,6 @@ export default function Map({
   const emojiMarkersRef = useRef<{ [id: number]: any }>({});
   const [layerPanelOpen, setLayerPanelOpen] = useState(false);
   const [publicLandVisible, setPublicLandVisible] = useState(false);
-  const [mvumVisible, setMvumVisible] = useState(false);
   const locationsRef = useRef<Location[]>(locations);
   const routeRef = useRef<any>(routeGeoJSON);
   const styleUrlRef = useRef(style.url);
@@ -192,31 +191,14 @@ export default function Map({
         map.addSource('public-land', {
           type: 'raster',
           tiles: [
-            'https://gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Landscape_poly/MapServer/export?bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=512,512&format=png32&transparent=true&f=image'
+            'https://gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Landscape_poly/MapServer/export?bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=256,256&format=png32&transparent=true&f=image'
           ],
-          tileSize: 512,
+          tileSize: 256,
         });
         map.addLayer({
           id: 'public-land-layer',
           type: 'raster',
           source: 'public-land',
-          paint: { 'raster-opacity': 0 },
-        }, 'clusters');
-      }
-
-      // USFS MVUM trail overlay
-      if (!map.getSource('mvum-trails')) {
-        map.addSource('mvum-trails', {
-          type: 'raster',
-          tiles: [
-            'https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_MVUM_01/MapServer/export?bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=512,512&format=png32&transparent=true&f=image'
-          ],
-          tileSize: 512,
-        });
-        map.addLayer({
-          id: 'mvum-trails-layer',
-          type: 'raster',
-          source: 'mvum-trails',
           paint: { 'raster-opacity': 0 },
         }, 'clusters');
       }
@@ -338,7 +320,6 @@ export default function Map({
     const updateEmojiMarkers = () => {
       if (!map.getLayer('unclustered-point')) return;
       const zoom = map.getZoom();
-      // Only show emoji at zoom 7+
       if (zoom < 4) {
         Object.values(emojiMarkersRef.current).forEach(m => m.remove());
         emojiMarkersRef.current = {};
@@ -354,13 +335,12 @@ export default function Map({
           const icon = f.properties?.icon || '📍';
           const el = document.createElement('div');
           el.className = 'emoji-pin';
-          el.style.cssText = `font-size:18px;line-height:1;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,0.8);`;
+          el.style.cssText = `font-size:14px;line-height:1;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;width:24px;height:24px;`;
           el.textContent = icon;
           const coords = f.geometry.type === 'Point' ? f.geometry.coordinates : null;
           if (coords) {
-            const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
+            const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
               .setLngLat(coords as [number, number])
-              .setOffset([0, -6])
               .addTo(map);
             emojiMarkersRef.current[id] = marker;
           }
@@ -527,27 +507,6 @@ export default function Map({
                   : <EyeOff size={14} className="text-gray-500 flex-shrink-0" />}
               </button>
 
-              {/* MVUM Trails Toggle */}
-              <button
-                onClick={() => {
-                  const map = mapRef.current;
-                  if (!map) return;
-                  const newVal = !mvumVisible;
-                  setMvumVisible(newVal);
-                  if (map.getLayer('mvum-trails-layer')) {
-                    map.setPaintProperty('mvum-trails-layer', 'raster-opacity', newVal ? 0.7 : 0);
-                  }
-                }}
-                className={`w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors ${
-                  darkMode ? 'hover:bg-dark-700 text-gray-200' : 'hover:bg-gray-50 text-gray-700'
-                } ${!mvumVisible ? 'opacity-50' : ''}`}
-              >
-                <span className="text-base">🏍️</span>
-                <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: '#16a34a' }} />
-                <span className="flex-1 text-left">MVUM Trails (USFS)</span>
-                {mvumVisible ? <Eye size={14} className="text-green-400 flex-shrink-0" />
-                  : <EyeOff size={14} className="text-gray-500 flex-shrink-0" />}
-              </button>
             </div>
             <div className={`px-3 py-2 text-xs font-semibold uppercase tracking-wider border-t border-b ${
               darkMode ? 'text-gray-400 border-dark-600/50' : 'text-gray-500 border-gray-200'
