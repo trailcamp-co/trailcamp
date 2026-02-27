@@ -31,11 +31,27 @@ router.post('/', (req: Request, res: Response) => {
 // PUT /api/trips/:id
 router.put('/:id', (req: Request, res: Response) => {
   const db = getDb();
-  const { name, description, status, start_date, end_date, notes } = req.body;
-  db.prepare(`
-    UPDATE trips SET name = ?, description = ?, status = ?, start_date = ?, end_date = ?, notes = ?, updated_at = datetime('now')
-    WHERE id = ?
-  `).run(name, description, status, start_date, end_date, notes, req.params.id);
+  const fields = req.body;
+  const sets: string[] = [];
+  const values: any[] = [];
+  const allowedFields = ['name', 'description', 'status', 'start_date', 'end_date', 'notes'];
+
+  for (const field of allowedFields) {
+    if (field in fields) {
+      sets.push(`${field} = ?`);
+      values.push(fields[field]);
+    }
+  }
+
+  if (sets.length === 0) {
+    res.status(400).json({ error: 'No fields to update' });
+    return;
+  }
+
+  sets.push("updated_at = datetime('now')");
+  values.push(req.params.id);
+
+  db.prepare(`UPDATE trips SET ${sets.join(', ')} WHERE id = ?`).run(...values);
   const trip = db.prepare('SELECT * FROM trips WHERE id = ?').get(req.params.id);
   res.json(trip);
 });

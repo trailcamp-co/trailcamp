@@ -105,3 +105,61 @@
 .badge-grocery { @apply bg-yellow-500/20 text-yellow-400 border-yellow-500/30; }
 .badge-scenic { @apply bg-purple-500/20 text-purple-400 border-purple-500/30; }
 .badge-laundromat { @apply bg-teal-500/20 text-teal-400 border-teal-500/30; }
+
+/* Light mode badge overrides */
+.light .badge-campsite { @apply bg-orange-100 text-orange-700 border-orange-200; }
+.light .badge-riding { @apply bg-red-100 text-red-700 border-red-200; }
+.light .badge-water { @apply bg-blue-100 text-blue-700 border-blue-200; }
+.light .badge-dump { @apply bg-amber-100 text-amber-800 border-amber-200; }
+.light .badge-gas { @apply bg-gray-100 text-gray-700 border-gray-200; }
+.light .badge-grocery { @apply bg-yellow-100 text-yellow-700 border-yellow-200; }
+.light .badge-scenic { @apply bg-purple-100 text-purple-700 border-purple-200; }
+.light .badge-laundromat { @apply bg-teal-100 text-teal-700 border-teal-200; }
+
+/* Drag overlay for @dnd-kit */
+[data-dnd-dragging="true"] {
+  opacity: 0.5;
+}
+
+/* Input focus rings - consistent across dark mode */
+input:focus,
+textarea:focus,
+select:focus {
+  @apply outline-none ring-1 ring-orange-500/50;
+}
+
+/* Toggle switch animation */
+.toggle-switch {
+  @apply relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer;
+}
+.toggle-switch .toggle-dot {
+  @apply inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform shadow-sm;
+}
+
+/* Custom range slider */
+input[type="range"] {
+  @apply appearance-none h-1.5 rounded-full bg-dark-600 cursor-pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  @apply appearance-none h-4 w-4 rounded-full bg-orange-500 cursor-pointer shadow-sm;
+}
+.light input[type="range"] {
+  @apply bg-gray-200;
+}
+
+/* Mapbox navigation controls dark mode */
+.mapboxgl-ctrl-group button {
+  @apply bg-dark-800 border-dark-600 text-gray-200;
+}
+.mapboxgl-ctrl-group button:hover {
+  @apply bg-dark-700;
+}
+.mapboxgl-ctrl-group button + button {
+  @apply border-t border-dark-600;
+}
+.light .mapboxgl-ctrl-group button {
+  @apply bg-white border-gray-200 text-gray-700;
+}
+.light .mapboxgl-ctrl-group button:hover {
+  @apply bg-gray-50;
+}

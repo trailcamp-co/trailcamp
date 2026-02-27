@@ -5,14 +5,13 @@ import {
   Moon,
   Map,
   BarChart3,
-  PanelLeftClose,
   PanelLeftOpen,
   Filter,
   ChevronDown,
   MapPin,
   X,
 } from 'lucide-react';
-import type { Trip, Location, MapStyle } from '../types';
+import type { Trip, Location, MapStyle, Filters } from '../types';
 import { MAP_STYLES, CATEGORY_ICONS, CATEGORY_COLORS } from '../types';
 
 interface TopBarProps {
@@ -29,6 +28,8 @@ interface TopBarProps {
   onSelectTrip: (trip: Trip | null) => void;
   onToggleStats: () => void;
   onToggleSidebar: () => void;
+  filters: Filters;
+  setFilters: React.Dispatch<React.SetStateAction<Filters>>;
   filterMode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated';
   onFilterMode: (mode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated') => void;
 }
@@ -54,6 +55,8 @@ export default function TopBar({
   onSelectTrip,
   onToggleStats,
   onToggleSidebar,
+  filters,
+  setFilters,
   filterMode,
   onFilterMode,
 }: TopBarProps) {
@@ -282,7 +285,7 @@ export default function TopBar({
       {/* ---- Spacer ---- */}
       <div className="flex-1" />
 
-      {/* ---- Search Bar ---- */}
+      {/* ---- Search Bar with Location Count ---- */}
       <div className="relative flex-shrink-0 w-64" ref={searchRef}>
         <div
           className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors duration-150 ${
@@ -315,6 +318,17 @@ export default function TopBar({
               darkMode ? 'text-gray-200' : 'text-gray-800'
             }`}
           />
+          {searchResults && searchResults.length > 0 && searchQuery.length > 0 && (
+            <span
+              className={`flex-shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+                darkMode
+                  ? 'bg-orange-500/15 text-orange-400'
+                  : 'bg-orange-50 text-orange-600'
+              }`}
+            >
+              {searchResults.length}
+            </span>
+          )}
         </div>
 
         {/* Search Results Dropdown */}
@@ -339,7 +353,12 @@ export default function TopBar({
                     : 'hover:bg-gray-50'
                 }`}
               >
-                <span className="text-base flex-shrink-0">
+                <span
+                  className="text-xs flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center"
+                  style={{
+                    backgroundColor: `${CATEGORY_COLORS[location.category]}20`,
+                  }}
+                >
                   {CATEGORY_ICONS[location.category]}
                 </span>
                 <div className="flex-1 min-w-0">

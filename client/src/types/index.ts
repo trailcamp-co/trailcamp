@@ -133,3 +133,72 @@ export interface Stats {
   topRated: Location[];
   visitedLocations: { latitude: number; longitude: number }[];
 }
+
+export interface WeatherData {
+  date: string;
+  high: number;
+  low: number;
+  precipitation: number;
+  weathercode: number;
+  icon: string;
+  label: string;
+}
+
+export interface Filters {
+  categories: Set<LocationCategory>;
+  waterNearby: boolean;
+  dumpNearby: boolean;
+  shade: boolean;
+  levelGround: boolean;
+  difficulty: string | null;
+  visitedStatus: 'all' | 'visited' | 'want_to_visit' | 'highly_rated';
+  minScenery: number;
+  nearRoute: boolean;
+  nearRouteDistance: number;
+}
+
+export const DEFAULT_FILTERS: Filters = {
+  categories: new Set(['campsite', 'riding', 'water', 'dump', 'gas', 'grocery', 'scenic', 'laundromat'] as LocationCategory[]),
+  waterNearby: false,
+  dumpNearby: false,
+  shade: false,
+  levelGround: false,
+  difficulty: null,
+  visitedStatus: 'all',
+  minScenery: 0,
+  nearRoute: false,
+  nearRouteDistance: 25,
+};
+
+export const WEATHER_CODES: Record<number, { icon: string; label: string }> = {
+  0: { icon: '☀️', label: 'Clear' },
+  1: { icon: '🌤️', label: 'Mostly Clear' },
+  2: { icon: '⛅', label: 'Partly Cloudy' },
+  3: { icon: '☁️', label: 'Overcast' },
+  45: { icon: '🌫️', label: 'Fog' },
+  48: { icon: '🌫️', label: 'Rime Fog' },
+  51: { icon: '🌦️', label: 'Light Drizzle' },
+  53: { icon: '🌦️', label: 'Drizzle' },
+  55: { icon: '🌧️', label: 'Heavy Drizzle' },
+  61: { icon: '🌧️', label: 'Light Rain' },
+  63: { icon: '🌧️', label: 'Rain' },
+  65: { icon: '🌧️', label: 'Heavy Rain' },
+  71: { icon: '🌨️', label: 'Light Snow' },
+  73: { icon: '🌨️', label: 'Snow' },
+  75: { icon: '❄️', label: 'Heavy Snow' },
+  80: { icon: '🌦️', label: 'Rain Showers' },
+  81: { icon: '🌧️', label: 'Rain Showers' },
+  82: { icon: '⛈️', label: 'Heavy Showers' },
+  85: { icon: '🌨️', label: 'Snow Showers' },
+  86: { icon: '❄️', label: 'Heavy Snow' },
+  95: { icon: '⛈️', label: 'Thunderstorm' },
+  96: { icon: '⛈️', label: 'Thunderstorm + Hail' },
+  99: { icon: '⛈️', label: 'Severe Storm' },
+};
+
+export const DIFFICULTY_COLORS: Record<string, string> = {
+  Easy: '#22c55e',
+  Moderate: '#f59e0b',
+  Hard: '#ef4444',
+  Expert: '#7c3aed',
+};

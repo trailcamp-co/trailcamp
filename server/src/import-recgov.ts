@@ -42,7 +42,7 @@ async function fetchFacilities(state: string, offset: number = 0): Promise<{ dat
       console.log(`  HTTP ${resp.status} for ${state} offset ${offset}`);
       return { data: [], total: 0 };
     }
-    const json = await resp.json();
+    const json: any = await resp.json();
     return {
       data: json.RECDATA || [],
       total: json.METADATA?.RESULTS?.TOTAL_COUNT || 0,

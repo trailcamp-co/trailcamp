@@ -114,6 +114,82 @@ const RIDING_SPOTS: RidingSpot[] = [
 
   // ========== KENTUCKY ==========
   { name: 'Daniel Boone National Forest OHV', lat: 37.800, lng: -83.700, state: 'KY', trail_types: ['Single Track', 'Fire Road'], difficulty: 'Moderate', description: 'Multiple OHV areas in DBNF. S-Tree, Redbird, Stearns systems.', distance_miles: 150, best_season: 'Year-round' },
+
+  // ========== ADDITIONAL ARIZONA ==========
+  { name: 'Four Peaks Wilderness Area Trails', lat: 33.686, lng: -111.330, state: 'AZ', trail_types: ['Single Track', 'Fire Road', 'Ridge Riding'], difficulty: 'Hard', description: 'Tonto National Forest trails with views of Four Peaks. Technical climbs, loose rock.', distance_miles: 45, best_season: 'Oct-Apr' },
+  { name: 'Apache Trail OHV', lat: 33.496, lng: -111.340, state: 'AZ', trail_types: ['Fire Road', 'Desert'], difficulty: 'Moderate', description: 'Historic Apache Trail area with desert washes and mountain views. Near Tortilla Flat.', distance_miles: 35, best_season: 'Oct-Apr' },
+  { name: 'Florence-Kelvin Highway Trails', lat: 33.106, lng: -110.960, state: 'AZ', trail_types: ['Desert', 'Fire Road'], difficulty: 'Easy', description: 'Open desert riding along the Gila River corridor. Easy terrain, scenic canyons.', distance_miles: 60, best_season: 'Oct-Apr' },
+
+  // ========== ADDITIONAL CALIFORNIA ==========
+  { name: 'Plaster City OHV', lat: 32.790, lng: -115.855, state: 'CA', trail_types: ['Desert', 'Sand Dunes'], difficulty: 'Moderate', description: 'BLM land west of El Centro. Open desert and small dune area. Good staging.', distance_miles: 30, best_season: 'Oct-Apr' },
+  { name: 'Dove Springs OHV Area', lat: 35.300, lng: -118.000, state: 'CA', trail_types: ['Desert', 'Single Track'], difficulty: 'Moderate', description: 'Near Mojave. Hill climbs, single track, and open desert. Beautiful sunsets.', distance_miles: 50, best_season: 'Oct-May' },
+  { name: 'Clear Creek Management Area', lat: 36.370, lng: -120.740, state: 'CA', trail_types: ['Single Track', 'Fire Road'], difficulty: 'Moderate', description: 'BLM area with serpentine rock trails. Unique geology, green in spring.', distance_miles: 55, best_season: 'Nov-May' },
+  { name: 'Mammoth Bar OHV Area', lat: 38.860, lng: -120.990, state: 'CA', trail_types: ['Single Track', 'Technical'], difficulty: 'Hard', description: 'Along American River near Auburn. Technical rocky single track.', distance_miles: 15, best_season: 'Year-round' },
+  { name: 'Prairie City SVRA', lat: 38.610, lng: -121.190, state: 'CA', trail_types: ['Motocross', 'Single Track'], difficulty: 'Moderate', description: 'Sacramento area OHV park. Multiple MX tracks and trails.', distance_miles: 25, best_season: 'Year-round', permit_required: true, permit_info: '$5 day use' },
+  { name: 'Indian Valley OHV', lat: 39.171, lng: -122.468, state: 'CA', trail_types: ['Single Track', 'Fire Road'], difficulty: 'Moderate', description: 'Mendocino NF. Remote single track through oak woodlands and pine forest.', distance_miles: 40, best_season: 'Apr-Nov' },
+
+  // ========== ADDITIONAL COLORADO ==========
+  { name: 'Ophir Pass', lat: 37.850, lng: -107.825, state: 'CO', trail_types: ['Fire Road', 'Ridge Riding'], difficulty: 'Hard', description: 'High alpine pass near Telluride at 11,789ft. Stunning views of San Juan Mountains.', distance_miles: 10, best_season: 'Jul-Sep' },
+  { name: 'Imogene Pass', lat: 37.930, lng: -107.725, state: 'CO', trail_types: ['Fire Road', 'Ridge Riding'], difficulty: 'Hard', description: 'Telluride to Ouray via 13,114ft pass. One of the highest passes in Colorado.', distance_miles: 18, best_season: 'Jul-Sep' },
+  { name: 'Weston Pass', lat: 39.130, lng: -106.180, state: 'CO', trail_types: ['Fire Road'], difficulty: 'Easy', description: 'Easy dirt road pass near Leadville. Great introduction to mountain riding.', distance_miles: 25, best_season: 'Jun-Oct' },
+  { name: 'Penrose Common OHV', lat: 38.500, lng: -105.050, state: 'CO', trail_types: ['Single Track', 'Desert'], difficulty: 'Moderate', description: 'Near Canon City. Desert single track with views of Pikes Peak.', distance_miles: 30, best_season: 'Year-round' },
+
+  // ========== ADDITIONAL NEVADA ==========
+  { name: 'Sand Mountain Recreation Area', lat: 39.584, lng: -118.288, state: 'NV', trail_types: ['Sand Dunes'], difficulty: 'Moderate', description: '600ft tall singing sand dune. 4,795 acres of open desert riding. Unique landscape.', distance_miles: 20, best_season: 'Year-round' },
+  { name: 'Emigrant Trails OHV', lat: 39.750, lng: -119.440, state: 'NV', trail_types: ['Single Track', 'Desert'], difficulty: 'Moderate', description: 'North of Reno. Desert hills with scattered pinyon-juniper. Good single track network.', distance_miles: 35, best_season: 'Apr-Nov' },
+
+  // ========== ADDITIONAL UTAH ==========
+  { name: 'Hurricane Rim Trail', lat: 37.140, lng: -113.330, state: 'UT', trail_types: ['Single Track', 'Ridge Riding'], difficulty: 'Moderate', description: 'Rim trail above Hurricane with panoramic views of Zion. Exposed ridgeline riding.', distance_miles: 20, best_season: 'Year-round' },
+  { name: 'White Rim Trail', lat: 38.430, lng: -109.820, state: 'UT', trail_types: ['Fire Road', 'Desert'], difficulty: 'Moderate', description: 'Iconic 100-mile loop in Canyonlands. Permit required. Stunning canyon scenery.', distance_miles: 100, best_season: 'Mar-Nov', permit_required: true, permit_info: 'NPS permit required — reserve in advance' },
+  { name: 'Mineral Basin — Snowbird', lat: 40.570, lng: -111.650, state: 'UT', trail_types: ['Single Track', 'Ridge Riding'], difficulty: 'Hard', description: 'Alpine single track near Snowbird resort. 10,000ft+ elevation, wildflowers in summer.', distance_miles: 15, best_season: 'Jul-Sep' },
+
+  // ========== ADDITIONAL IDAHO ==========
+  { name: 'Boise Ridge Road', lat: 43.700, lng: -116.040, state: 'ID', trail_types: ['Fire Road', 'Ridge Riding'], difficulty: 'Easy', description: '30-mile ridge road above Boise with panoramic valley views. Easy dirt road.', distance_miles: 30, best_season: 'Jun-Oct' },
+  { name: 'Jarbidge Wilderness Area Trails', lat: 41.890, lng: -115.400, state: 'ID', trail_types: ['Single Track', 'Fire Road'], difficulty: 'Hard', description: 'Remote wilderness trails in extreme southern Idaho. Very few riders, pristine.', distance_miles: 45, best_season: 'Jun-Sep' },
+
+  // ========== ADDITIONAL OREGON ==========
+  { name: 'Bend Trails — Phil\'s Trail Complex', lat: 44.020, lng: -121.400, state: 'OR', trail_types: ['Single Track'], difficulty: 'Moderate', description: 'Epic single track in Deschutes NF just west of Bend. Pumice soil, fast flow.', distance_miles: 30, best_season: 'May-Oct' },
+  { name: 'Tillamook State Forest — Browns Camp', lat: 45.575, lng: -123.480, state: 'OR', trail_types: ['Single Track', 'Fire Road', 'Technical'], difficulty: 'Moderate', description: '250+ miles of trails in lush coastal forest. Motorcycle-only sections at Diamond Mill.', distance_miles: 250, best_season: 'May-Oct' },
+
+  // ========== ADDITIONAL WASHINGTON ==========
+  { name: 'Capitol Forest', lat: 46.920, lng: -123.060, state: 'WA', trail_types: ['Single Track', 'Fire Road'], difficulty: 'Moderate', description: '91,000-acre state forest near Olympia. 200+ miles of multi-use trails.', distance_miles: 200, best_season: 'May-Oct' },
+  { name: 'Walker Valley ORV', lat: 48.450, lng: -122.070, state: 'WA', trail_types: ['Single Track', 'Fire Road'], difficulty: 'Easy', description: 'DNR land near Skagit Valley. Beginner-friendly trails, good for new riders.', distance_miles: 25, best_season: 'May-Oct' },
+
+  // ========== ADDITIONAL NEW MEXICO ==========
+  { name: 'Otero Mesa', lat: 32.400, lng: -105.700, state: 'NM', trail_types: ['Desert', 'Fire Road'], difficulty: 'Easy', description: 'Vast Chihuahuan desert grassland. Open BLM riding, remote and wild.', distance_miles: 80, best_season: 'Year-round' },
+  { name: 'Ohkay Owingeh Trails', lat: 36.050, lng: -106.060, state: 'NM', trail_types: ['Single Track', 'Desert'], difficulty: 'Moderate', description: 'BLM trails along Rio Grande near Espanola. Red rock and desert terrain.', distance_miles: 25, best_season: 'Year-round' },
+
+  // ========== SOUTH DAKOTA ==========
+  { name: 'Black Hills National Forest OHV', lat: 43.900, lng: -103.500, state: 'SD', trail_types: ['Single Track', 'Fire Road'], difficulty: 'Moderate', description: 'Pine forest riding in the Black Hills. Mix of terrain from easy fire roads to technical single track.', distance_miles: 100, best_season: 'May-Oct' },
+
+  // ========== MINNESOTA ==========
+  { name: 'Gilbert OHV Park', lat: 47.490, lng: -92.450, state: 'MN', trail_types: ['Single Track', 'Fire Road', 'Motocross'], difficulty: 'Moderate', description: 'Former iron mine turned OHV park on the Iron Range. Rocky terrain, hill climbs.', distance_miles: 35, best_season: 'May-Oct' },
+
+  // ========== FLORIDA ==========
+  { name: 'Croom Motorcycle Area', lat: 28.640, lng: -82.270, state: 'FL', trail_types: ['Single Track', 'Fire Road'], difficulty: 'Moderate', description: 'Withlacoochee State Forest. Sandy Florida single track through pine flatwoods.', distance_miles: 40, best_season: 'Year-round' },
+  { name: 'Ocala National Forest OHV', lat: 29.180, lng: -81.610, state: 'FL', trail_types: ['Single Track', 'Desert'], difficulty: 'Moderate', description: 'Deep sand riding through palmetto scrub. Good winter destination.', distance_miles: 50, best_season: 'Oct-Apr' },
+
+  // ========== GEORGIA ==========
+  { name: 'Durhamtown Plantation', lat: 33.315, lng: -82.420, state: 'GA', trail_types: ['Single Track', 'Motocross', 'Technical'], difficulty: 'Moderate', description: 'Private OHV park with 6,000 acres. MX tracks, woods trails, mud pits.', distance_miles: 100, best_season: 'Year-round', permit_required: true, permit_info: 'Day pass required' },
+
+  // ========== VIRGINIA ==========
+  { name: 'Taskers Gap OHV', lat: 38.760, lng: -78.580, state: 'VA', trail_types: ['Single Track', 'Fire Road', 'Ridge Riding'], difficulty: 'Hard', description: 'George Washington NF. Mountain single track, rocky climbs, ridge trails.', distance_miles: 60, best_season: 'Apr-Nov' },
+  { name: 'Peters Mill Run OHV', lat: 38.900, lng: -79.300, state: 'VA', trail_types: ['Single Track', 'Fire Road'], difficulty: 'Moderate', description: 'Appalachian mountain riding in GWNF. Mixed hardwood forest.', distance_miles: 30, best_season: 'Apr-Nov' },
+
+  // ========== WISCONSIN ==========
+  { name: 'Black River State Forest OHV', lat: 44.300, lng: -90.700, state: 'WI', trail_types: ['Single Track', 'Fire Road'], difficulty: 'Easy', description: 'Pine and hardwood forest trails. Easy to moderate riding, good for beginners.', distance_miles: 25, best_season: 'May-Oct' },
+
+  // ========== OKLAHOMA ==========
+  { name: 'Kaw Lake ATV Trails', lat: 36.780, lng: -96.900, state: 'OK', trail_types: ['Single Track', 'Fire Road'], difficulty: 'Easy', description: 'Army Corps land along Kaw Lake. Mix of wooded trails and open areas.', distance_miles: 20, best_season: 'Year-round' },
+
+  // ========== LOUISIANA ==========
+  { name: 'Kisatchie National Forest OHV', lat: 31.350, lng: -92.750, state: 'LA', trail_types: ['Single Track', 'Fire Road'], difficulty: 'Easy', description: 'Pine forest trails in central Louisiana. Sandy soil, easy terrain.', distance_miles: 30, best_season: 'Year-round' },
+
+  // ========== ADDITIONAL MONTANA ==========
+  { name: 'Lolo National Forest Trails', lat: 46.850, lng: -114.100, state: 'MT', trail_types: ['Single Track', 'Fire Road', 'Ridge Riding'], difficulty: 'Moderate', description: 'Mountain trails near Missoula. Dense forest with alpine meadows and creek crossings.', distance_miles: 120, best_season: 'Jun-Sep' },
+
+  // ========== ADDITIONAL WYOMING ==========
+  { name: 'Bridger-Teton NF Trails', lat: 43.200, lng: -110.400, state: 'WY', trail_types: ['Single Track', 'Fire Road'], difficulty: 'Moderate', description: 'Mountain trails near Jackson Hole. Spectacular Teton views, alpine meadows.', distance_miles: 80, best_season: 'Jul-Sep' },
 ];
 
 async function importRidingSpots() {
@@ -129,18 +205,30 @@ async function importRidingSpots() {
       name, description, latitude, longitude, category, sub_type, source, source_id,
       trail_types, difficulty, distance_miles, best_season, permit_required, permit_info,
       external_links, notes, visited, want_to_visit, scenery_rating
-    ) VALUES (?, ?, ?, ?, 'riding', ?, 'agent_curated', ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?)
+    ) VALUES (?, ?, ?, ?, 'riding', ?, 'curated', ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?)
   `);
 
   for (const spot of RIDING_SPOTS) {
+    // Determine sub_type from name/description context
+    const nameLower = (spot.name + ' ' + spot.description).toLowerCase();
+    let subType = 'OHV Area';
+    if (nameLower.includes('svra')) subType = 'State Park';
+    else if (nameLower.includes('state forest')) subType = 'State Forest';
+    else if (nameLower.includes('national forest') || nameLower.includes(' nf ') || nameLower.includes(' nf.')) subType = 'National Forest';
+    else if (nameLower.includes('blm')) subType = 'BLM';
+    else if (nameLower.includes('state park')) subType = 'State Park';
+    else if (nameLower.includes('pass') || nameLower.includes('loop') || nameLower.includes('trail system')) subType = 'Trail System';
+    else if (nameLower.includes('sand dune') || nameLower.includes('dunes')) subType = 'Sand Dunes';
+    else if (nameLower.includes('private') || nameLower.includes('adventure park') || nameLower.includes('plantation')) subType = 'Private Park';
+
     try {
       insertStmt.run(
         spot.name,
         spot.description,
         spot.lat,
         spot.lng,
-        spot.trail_types.join(', '),
-        `ride-${spot.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
+        subType,
+        `riding-${spot.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
         JSON.stringify(spot.trail_types),
         spot.difficulty,
         spot.distance_miles || null,

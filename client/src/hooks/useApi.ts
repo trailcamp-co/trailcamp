@@ -23,8 +23,8 @@ export function useTrips() {
     try {
       const data = await apiFetch<Trip[]>('/trips');
       setTrips(data);
-    } catch (e) {
-      console.error('Failed to fetch trips', e);
+    } catch {
+      // fetch failed silently
     }
     setLoading(false);
   }, []);
@@ -62,8 +62,8 @@ export function useTripStops(tripId: number | null) {
     try {
       const data = await apiFetch<TripStop[]>(`/trips/${tripId}/stops`);
       setStops(data);
-    } catch (e) {
-      console.error('Failed to fetch stops', e);
+    } catch {
+      // fetch failed silently
     }
     setLoading(false);
   }, [tripId]);
@@ -110,8 +110,8 @@ export function useLocations() {
       const query = params ? '?' + new URLSearchParams(params).toString() : '';
       const data = await apiFetch<Location[]>(`/locations${query}`);
       setLocations(data);
-    } catch (e) {
-      console.error('Failed to fetch locations', e);
+    } catch {
+      // fetch failed silently
     }
     setLoading(false);
   }, []);
@@ -151,7 +151,7 @@ export function useStats() {
   useEffect(() => {
     apiFetch<Stats>('/locations/stats')
       .then(setStats)
-      .catch(console.error)
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

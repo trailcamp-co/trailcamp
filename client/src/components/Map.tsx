@@ -146,6 +146,7 @@ export default function Map({
   const stopMarkersRef = useRef<any[]>([]);
   const [layerPanelOpen, setLayerPanelOpen] = useState(false);
   const [publicLandVisible, setPublicLandVisible] = useState(false);
+  const [mvumVisible, setMvumVisible] = useState(false);
   const locationsRef = useRef<Location[]>(locations);
   const routeRef = useRef<any>(routeGeoJSON);
   const styleUrlRef = useRef(style.url);
@@ -187,6 +188,23 @@ export default function Map({
           id: 'public-land-layer',
           type: 'raster',
           source: 'public-land',
+          paint: { 'raster-opacity': 0 },
+        }, 'clusters');
+      }
+
+      // USFS MVUM trail overlay
+      if (!map.getSource('mvum-trails')) {
+        map.addSource('mvum-trails', {
+          type: 'raster',
+          tiles: [
+            'https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_MVUM_01/MapServer/export?bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=512,512&format=png32&transparent=true&f=image'
+          ],
+          tileSize: 512,
+        });
+        map.addLayer({
+          id: 'mvum-trails-layer',
+          type: 'raster',
+          source: 'mvum-trails',
           paint: { 'raster-opacity': 0 },
         }, 'clusters');
       }
@@ -377,6 +395,28 @@ export default function Map({
                 <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: '#d4a017' }} />
                 <span className="flex-1 text-left">Public Land (BLM/USFS)</span>
                 {publicLandVisible ? <Eye size={14} className="text-green-400 flex-shrink-0" />
+                  : <EyeOff size={14} className="text-gray-500 flex-shrink-0" />}
+              </button>
+
+              {/* MVUM Trails Toggle */}
+              <button
+                onClick={() => {
+                  const map = mapRef.current;
+                  if (!map) return;
+                  const newVal = !mvumVisible;
+                  setMvumVisible(newVal);
+                  if (map.getLayer('mvum-trails-layer')) {
+                    map.setPaintProperty('mvum-trails-layer', 'raster-opacity', newVal ? 0.7 : 0);
+                  }
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors ${
+                  darkMode ? 'hover:bg-dark-700 text-gray-200' : 'hover:bg-gray-50 text-gray-700'
+                } ${!mvumVisible ? 'opacity-50' : ''}`}
+              >
+                <span className="text-base">🏍️</span>
+                <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: '#16a34a' }} />
+                <span className="flex-1 text-left">MVUM Trails (USFS)</span>
+                {mvumVisible ? <Eye size={14} className="text-green-400 flex-shrink-0" />
                   : <EyeOff size={14} className="text-gray-500 flex-shrink-0" />}
               </button>
             </div>
