@@ -580,7 +580,7 @@ export default function RightPanel({
               </p>
             )}
           </div>
-          {location.visited && location.visited_date && (
+          {!!location.visited && location.visited_date && (
             <div className="mt-3 flex items-center gap-2">
               <Clock className={`w-3.5 h-3.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`} />
               <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`}>Visited {location.visited_date}</span>
