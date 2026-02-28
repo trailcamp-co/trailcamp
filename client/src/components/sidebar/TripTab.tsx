@@ -608,16 +608,7 @@ export default function TripTab({
                   🖨️ Print
                 </button>
               )}
-              {sortedStops.length > 0 && (
-                <button
-                  onClick={() => window.print()}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-gray-400 hover:bg-dark-700 hover:text-gray-300 transition-all [.light_&]:bg-white [.light_&]:border-gray-200 [.light_&]:text-gray-500 [.light_&]:hover:bg-gray-50"
-                  title="Print trip summary"
-                >
-                  <Printer size={11} />
-                  Print
-                </button>
-              )}
+              
             </div>
             {savedMiles !== null && savedMiles > 0 && (
               <div className="text-xs text-emerald-400 mt-1.5 animate-fade-in">Saved {savedMiles} miles!</div>
