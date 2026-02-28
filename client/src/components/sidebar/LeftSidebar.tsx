@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { MapPin, Bike, Sliders, PackageCheck } from 'lucide-react';
+import { MapPin, Bike, Tent, Sliders, PackageCheck } from 'lucide-react';
 import type { Location, Trip, TripStop, Filters, WeatherData, CampsiteSubType } from '../../types';
 import TripTab from './TripTab';
 import RidingTab from './RidingTab';
+import CampsiteTab from './CampsiteTab';
 import FiltersTab from './FiltersTab';
 import PackingList from './PackingList';
 
-type SidebarTab = 'trip' | 'riding' | 'filters' | 'packing';
+type SidebarTab = 'trip' | 'riding' | 'camp' | 'filters' | 'packing';
 
 interface LeftSidebarProps {
   selectedTrip: Trip | null;
@@ -62,6 +63,7 @@ export default function LeftSidebar({
   const [activeTab, setActiveTab] = useState<SidebarTab>('trip');
 
   const ridingCount = locations.filter((l) => l.category === 'riding').length;
+  const campsiteCount = locations.filter((l) => l.category === 'campsite').length;
   const stopCount = stops.length;
 
   // Calculate active filter count
@@ -88,7 +90,8 @@ export default function LeftSidebar({
         {(
           [
             { id: 'trip' as SidebarTab, label: 'Trip', icon: MapPin, count: stopCount },
-            { id: 'riding' as SidebarTab, label: 'Riding', icon: Bike, count: ridingCount },
+            { id: 'riding' as SidebarTab, label: 'Rides', icon: Bike, count: ridingCount },
+            { id: 'camp' as SidebarTab, label: 'Camp', icon: Tent, count: campsiteCount },
             { id: 'filters' as SidebarTab, label: 'Filters', icon: Sliders, count: activeFilterCount > 0 ? activeFilterCount : undefined },
             { id: 'packing' as SidebarTab, label: 'Pack', icon: PackageCheck, count: undefined },
           ] as const
@@ -117,6 +120,13 @@ export default function LeftSidebar({
       {activeTab === 'riding' && (
         <div className="flex-1 overflow-hidden animate-fade-in">
           <RidingTab locations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} />
+        </div>
+      )}
+
+      {/* Campsite Tab */}
+      {activeTab === 'camp' && (
+        <div className="flex-1 overflow-hidden animate-fade-in">
+          <CampsiteTab locations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} />
         </div>
       )}
 
