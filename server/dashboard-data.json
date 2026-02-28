@@ -1,0 +1,303 @@
+{
+  "generatedAt": "2026-02-28T20:04:04.244Z",
+  "summary": {
+    "totalLocations": 6236,
+    "riding": 1600,
+    "campsites": 4624,
+    "boondocking": 748,
+    "trips": 1,
+    "tripStops": 8,
+    "dataQualityScore": 99,
+    "systemHealth": "OK",
+    "totalTrailMiles": 84665
+  },
+  "dataQuality": {
+    "scorecard": {
+      "coordinateValidity": {
+        "score": 100,
+        "details": "All coordinates valid",
+        "check": 0
+      },
+      "sceneryRatings": {
+        "score": 100,
+        "details": "6224 of 6236 have ratings"
+      },
+      "permitInfo": {
+        "score": 95,
+        "details": "Locations with permit flags have details"
+      },
+      "trailMileage": {
+        "score": 100,
+        "details": "1600 of 1600 riding locations"
+      }
+    },
+    "overallScore": 99
+  },
+  "regionalDistribution": {
+    "Southwest Desert": {
+      "total": 386,
+      "riding": 119,
+      "boondocking": 84,
+      "campgrounds": 178
+    },
+    "Rocky Mountains": {
+      "total": 1530,
+      "riding": 370,
+      "boondocking": 233,
+      "campgrounds": 924
+    },
+    "California": {
+      "total": 1012,
+      "riding": 235,
+      "boondocking": 152,
+      "campgrounds": 623
+    },
+    "Southeast": {
+      "total": 600,
+      "riding": 192,
+      "boondocking": 38,
+      "campgrounds": 370
+    },
+    "Other": {
+      "total": 956,
+      "riding": 253,
+      "boondocking": 52,
+      "campgrounds": 649
+    },
+    "Pacific Northwest": {
+      "total": 818,
+      "riding": 122,
+      "boondocking": 154,
+      "campgrounds": 542
+    },
+    "Great Plains": {
+      "total": 183,
+      "riding": 28,
+      "boondocking": 0,
+      "campgrounds": 155
+    },
+    "Great Lakes": {
+      "total": 270,
+      "riding": 108,
+      "boondocking": 19,
+      "campgrounds": 143
+    },
+    "Northeast": {
+      "total": 265,
+      "riding": 134,
+      "boondocking": 12,
+      "campgrounds": 119
+    },
+    "Alaska": {
+      "total": 201,
+      "riding": 25,
+      "boondocking": 4,
+      "campgrounds": 172
+    },
+    "Hawaii": {
+      "total": 15,
+      "riding": 14,
+      "boondocking": 0,
+      "campgrounds": 1
+    }
+  },
+  "topRegions": [
+    {
+      "region": "Rocky Mountains",
+      "total": 1530,
+      "riding": 370,
+      "boondocking": 233,
+      "campgrounds": 924
+    },
+    {
+      "region": "California",
+      "total": 1012,
+      "riding": 235,
+      "boondocking": 152,
+      "campgrounds": 623
+    },
+    {
+      "region": "Other",
+      "total": 956,
+      "riding": 253,
+      "boondocking": 52,
+      "campgrounds": 649
+    },
+    {
+      "region": "Pacific Northwest",
+      "total": 818,
+      "riding": 122,
+      "boondocking": 154,
+      "campgrounds": 542
+    },
+    {
+      "region": "Southeast",
+      "total": 600,
+      "riding": 192,
+      "boondocking": 38,
+      "campgrounds": 370
+    }
+  ],
+  "contentStats": {
+    "trailMiles": {
+      "total": 84665,
+      "average": 53
+    },
+    "costData": {
+      "locationsWithCost": 876,
+      "freeCamping": 720,
+      "averagePaid": 22.17
+    },
+    "scenery": {
+      "worldClass": 121,
+      "excellent": 562,
+      "average": 6
+    },
+    "difficulty": {
+      "easy": 393,
+      "moderate": 870,
+      "hard": 337
+    }
+  },
+  "coverage": {
+    "ridingWithMileage": 100,
+    "ridingWithDifficulty": 100,
+    "campsitesWithCost": 19,
+    "allWithScenery": 100
+  },
+  "systemHealth": {
+    "databaseSize": "4.2M",
+    "backupCount": 1,
+    "lastBackup": "Available",
+    "integrityCheck": "OK"
+  },
+  "recentTrips": [
+    {
+      "id": 1,
+      "name": "Western Trip — Spring 2026"
+    }
+  ],
+  "topLocations": [
+    {
+      "name": "Alpine Loop Scenic Byway — CO",
+      "category": "riding",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "BLM — Alabama Hills Dispersed",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "California"
+    },
+    {
+      "name": "BLM — Alabama Hills West",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "California"
+    },
+    {
+      "name": "BLM — Alpine Loop Dispersed",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "BLM — Alpine Plateau Dispersed",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "BLM — Burr Trail Dispersed",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "BLM — Castle Valley",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "BLM — Cathedral Valley Dispersed",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "BLM — Chicken Corners",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "BLM — Cumberland Pass Dispersed",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "BLM — Lake City Dispersed",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "BLM — Ophir Pass Dispersed",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "BLM — Ophir Valley Dispersed",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "BLM — Racetrack Road",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "California"
+    },
+    {
+      "name": "BLM — Sand Flats Recreation Area",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "BLM — Sedona Dispersed",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Southwest Desert"
+    },
+    {
+      "name": "BLM — Silverton Dispersed",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "BLM — Steens Mountain Dispersed",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Pacific Northwest"
+    },
+    {
+      "name": "Badlands North Unit — Sage Creek Area",
+      "category": "riding",
+      "scenery": 10,
+      "region": "Rocky Mountains"
+    },
+    {
+      "name": "Baja 1000 Route",
+      "category": "riding",
+      "scenery": 10,
+      "region": "Other"
+    }
+  ],
+  "alerts": []
+}
