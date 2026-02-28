@@ -64,6 +64,23 @@ export default function LeftSidebar({
   const ridingCount = locations.filter((l) => l.category === 'riding').length;
   const stopCount = stops.length;
 
+  // Calculate active filter count
+  const ALL_CATEGORIES = ['campsite', 'riding', 'water', 'dump', 'scenic'];
+  const ALL_CAMPSITE_SUBTYPES = ['boondocking', 'campground', 'parking', 'other'];
+  const activeFilterCount = [
+    filterMode !== 'all',
+    filters.difficulty !== null,
+    filters.minScenery > 0,
+    filters.hideOutOfSeason,
+    filters.nearRoute,
+    filters.waterNearby,
+    filters.dumpNearby,
+    filters.shade,
+    filters.levelGround,
+    filters.categories.size < ALL_CATEGORIES.length,
+    filters.campsiteSubTypes.size < ALL_CAMPSITE_SUBTYPES.length,
+  ].filter(Boolean).length;
+
   return (
     <div className="w-80 h-full flex flex-col bg-dark-950 border-r border-dark-700/50 overflow-hidden">
       {/* Tab Bar */}
@@ -72,7 +89,7 @@ export default function LeftSidebar({
           [
             { id: 'trip' as SidebarTab, label: 'Trip', icon: MapPin, count: stopCount },
             { id: 'riding' as SidebarTab, label: 'Riding', icon: Bike, count: ridingCount },
-            { id: 'filters' as SidebarTab, label: 'Filters', icon: Sliders, count: undefined },
+            { id: 'filters' as SidebarTab, label: 'Filters', icon: Sliders, count: activeFilterCount > 0 ? activeFilterCount : undefined },
             { id: 'packing' as SidebarTab, label: 'Pack', icon: PackageCheck, count: undefined },
           ] as const
         ).map(({ id, label, icon: Icon, count }) => (
