@@ -49,6 +49,7 @@ export interface StopCardProps {
   driveTimeMins: number | null;
   driveDistanceMiles: number | null;
   showDriveConnector: boolean;
+  nearbyRidingCount?: number;
 }
 
 export function SortableStopCard({
@@ -162,6 +163,11 @@ export function SortableStopCard({
                 <div className="flex items-center gap-1 text-xs text-gray-500">
                   <Calendar size={10} className="text-blue-400/70" />
                   <span>{formatShortDate(dateInfo.arrivalDate)}</span>
+                </div>
+              )}
+              {nearbyRidingCount != null && nearbyRidingCount > 0 && (
+                <div className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/20">
+                  🏍️ {nearbyRidingCount}
                 </div>
               )}
             </div>

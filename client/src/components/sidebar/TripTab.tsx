@@ -628,6 +628,17 @@ export default function TripTab({
                     }
                   }
 
+                  // Calculate nearby riding count
+                  const nearbyRidingCount = locations.filter(l => {
+                    if (l.category !== 'riding') return false;
+                    const R = 3959;
+                    const dLat = (l.latitude - stop.latitude) * Math.PI / 180;
+                    const dLng = (l.longitude - stop.longitude) * Math.PI / 180;
+                    const a = Math.sin(dLat/2)**2 + Math.cos(stop.latitude*Math.PI/180)*Math.cos(l.latitude*Math.PI/180)*Math.sin(dLng/2)**2;
+                    const dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                    return dist <= 20;
+                  }).length;
+
                   return (
                     <SortableStopCard
                       key={stop.id}
@@ -644,6 +655,7 @@ export default function TripTab({
                       driveTimeMins={stop.drive_time_mins}
                       driveDistanceMiles={stop.drive_distance_miles}
                       showDriveConnector={index > 0 && !!(stop.drive_time_mins || stop.drive_distance_miles)}
+                      nearbyRidingCount={nearbyRidingCount}
                     />
                   );
                 })}
