@@ -38,6 +38,7 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
   const [filterTrailType, setFilterTrailType] = useState<string>('');
   const [viewportFilter, setViewportFilter] = useState(false);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [featuredOnly, setFeaturedOnly] = useState(false);
   const [distanceFromQuery, setDistanceFromQuery] = useState('');
   const [distanceFromCoords, setDistanceFromCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [distanceFromLabel, setDistanceFromLabel] = useState('');
@@ -98,6 +99,7 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
       filtered = filtered.filter((l) => l.trail_types && l.trail_types.toLowerCase().includes(term));
     }
     if (favoritesOnly) filtered = filtered.filter((l) => l.favorited);
+    if (featuredOnly) filtered = filtered.filter((l) => l.featured);
 
     if (distanceFromCoords) {
       filtered = filtered.map((l) => ({
@@ -120,7 +122,7 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
     });
 
     return filtered;
-  }, [locations, sortField, sortAsc, filterDifficulty, filterTrailType, viewportFilter, mapBounds, favoritesOnly, distanceFromCoords]);
+  }, [locations, sortField, sortAsc, filterDifficulty, filterTrailType, viewportFilter, mapBounds, favoritesOnly, featuredOnly, distanceFromCoords]);
 
   const handleSortChange = (field: RidingSortField) => {
     if (sortField === field) setSortAsc(!sortAsc);
@@ -184,10 +186,16 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
 
         {/* Favorites + viewport pills */}
         <div className="flex items-center justify-between">
-          <button onClick={() => setFavoritesOnly(!favoritesOnly)} title="Favorites only"
-            className={`text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors ${favoritesOnly ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-gray-500 hover:text-gray-300 border border-dark-700/50'}`}>
-            <Heart size={10} className={favoritesOnly ? 'fill-red-400' : ''} /> Favs
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button onClick={() => setFavoritesOnly(!favoritesOnly)} title="Favorites only"
+              className={`text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors ${favoritesOnly ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-gray-500 hover:text-gray-300 border border-dark-700/50'}`}>
+              <Heart size={10} className={favoritesOnly ? 'fill-red-400' : ''} /> Favs
+            </button>
+            <button onClick={() => setFeaturedOnly(!featuredOnly)} title="Featured epic spots only"
+              className={`text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors ${featuredOnly ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' : 'text-gray-500 hover:text-gray-300 border border-dark-700/50'}`}>
+              ⭐ Epic
+            </button>
+          </div>
           <button onClick={() => setViewportFilter(!viewportFilter)}
             className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
               viewportFilter ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
