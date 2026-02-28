@@ -314,7 +314,7 @@ export default function MapContainer({
       )}
 
       {/* Quick nav buttons */}
-      <div className="absolute bottom-10 left-3 z-10 flex flex-col gap-1.5">
+      <div className="absolute bottom-16 left-3 z-10 flex flex-col gap-1.5">
         <button
           onClick={() => {
             if (mapRef.current) {
