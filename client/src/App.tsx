@@ -74,6 +74,19 @@ export default function App() {
     });
   }, [selectedTrip, addStop]);
 
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (showRightPanel) { handleCloseRightPanel(); return; }
+        if (showStats) { setShowStats(false); return; }
+        if (showAddLocation) { setShowAddLocation(false); return; }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showRightPanel, showStats, showAddLocation, handleCloseRightPanel, setShowStats]);
+
   const handleMapClick = useCallback((e: { lng: number; lat: number }) => {
     setAddLocationCoords({ lat: e.lat, lng: e.lng });
     setShowAddLocation(true);
