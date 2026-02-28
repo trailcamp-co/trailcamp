@@ -89,12 +89,19 @@ export function addCustomLayers(
     source: 'locations',
     filter: ['has', 'point_count'],
     paint: {
-      'circle-color': 'rgba(30, 41, 59, 0.75)',
-      'circle-radius': ['step', ['get', 'point_count'],
-        10, 10, 12, 50, 15, 100, 18, 500, 22,
+      'circle-color': [
+        'step', ['get', 'point_count'],
+        'rgba(249, 115, 22, 0.85)',  // orange for small clusters
+        50, 'rgba(234, 88, 12, 0.85)',  // darker orange for medium
+        200, 'rgba(220, 38, 38, 0.85)',  // red for large
+        1000, 'rgba(185, 28, 28, 0.85)', // deep red for huge
       ],
-      'circle-stroke-width': 1,
-      'circle-stroke-color': 'rgba(255,255,255,0.4)',
+      'circle-radius': ['step', ['get', 'point_count'],
+        12, 10, 14, 50, 17, 100, 20, 500, 24,
+      ],
+      'circle-stroke-width': 2,
+      'circle-stroke-color': 'rgba(255,255,255,0.3)',
+      'circle-blur': 0.15,
     },
   });
 
@@ -107,7 +114,7 @@ export function addCustomLayers(
     layout: {
       'text-field': '{point_count_abbreviated}',
       'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
-      'text-size': ['step', ['get', 'point_count'], 9, 10, 10, 100, 11],
+      'text-size': ['step', ['get', 'point_count'], 10, 10, 11, 100, 12],
     },
     paint: { 'text-color': '#ffffff' },
   });
