@@ -246,8 +246,9 @@ export default function TopBar({
         {showSearchDropdown && (
           <div className="absolute top-full left-0 right-0 mt-1.5 rounded-xl shadow-xl overflow-hidden z-50 max-h-96 overflow-y-auto glass animate-slide-down [.light_&]:bg-white [.light_&]:border [.light_&]:border-gray-200">
             {searchResults && searchResults.length === 0 && (
-              <div className="px-3 py-4 text-sm text-center text-gray-500">
-                No results found
+              <div className="px-4 py-6 text-center">
+                <p className="text-sm text-gray-400 [.light_&]:text-gray-500 mb-1">No locations found</p>
+                <p className="text-xs text-gray-600 [.light_&]:text-gray-400">Try a different search term or check your filters</p>
               </div>
             )}
             {Object.entries(grouped).map(([category, locations]) => (

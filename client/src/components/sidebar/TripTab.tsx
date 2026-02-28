@@ -536,7 +536,13 @@ export default function TripTab({
             )}
           </>
         ) : (
-          <p className="text-gray-500 text-sm">No trip selected</p>
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-dark-800/50 [.light_&]:bg-gray-100 flex items-center justify-center">
+              <Route size={28} className="text-gray-600 [.light_&]:text-gray-400" />
+            </div>
+            <p className="text-sm font-medium text-gray-400 [.light_&]:text-gray-500 mb-1">No trip selected</p>
+            <p className="text-xs text-gray-600 [.light_&]:text-gray-400">Select a trip from the dropdown above or create a new one</p>
+          </div>
         )}
 
         {/* Create new trip */}

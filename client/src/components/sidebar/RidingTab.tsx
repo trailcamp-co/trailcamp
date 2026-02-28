@@ -196,8 +196,12 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
 
       <div className="flex-1 overflow-y-auto">
         {ridingLocations.length === 0 && (
-          <div className="p-6 text-center text-gray-500 text-sm">
-            <Bike size={32} className="mx-auto mb-2 opacity-40" /><p>No riding areas found.</p>
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-dark-800/50 [.light_&]:bg-gray-100 flex items-center justify-center">
+              <Bike size={28} className="text-gray-600 [.light_&]:text-gray-400" />
+            </div>
+            <p className="text-sm font-medium text-gray-400 [.light_&]:text-gray-500 mb-1">No riding areas match</p>
+            <p className="text-xs text-gray-600 [.light_&]:text-gray-400">Try adjusting your filters or zooming out on the map</p>
           </div>
         )}
         {ridingLocations.map((loc) => (
