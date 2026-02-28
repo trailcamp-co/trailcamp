@@ -147,6 +147,15 @@ export const CATEGORY_ICONS: Record<LocationCategory, string> = {
   laundromat: '🧺',
 };
 
+export interface JournalEntry {
+  id: number;
+  trip_id: number;
+  stop_id: number | null;
+  content: string;
+  created_at: string;
+  stop_name?: string | null;
+}
+
 export interface Stats {
   totalLocations: number;
   visitedCount: number;

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Trip, TripStop, Location, Stats } from '../types';
+import type { Trip, TripStop, Location, Stats, JournalEntry } from '../types';
 
 const API_BASE = '/api';
 
@@ -191,6 +191,19 @@ export async function fetchNearbyRiding(lat: number, lng: number, radius: number
 // Optimize trip route
 export async function optimizeTrip(tripId: number) {
   return apiFetch<{ stops: TripStop[]; saved: number }>(`/trips/${tripId}/optimize`, { method: 'POST' });
+}
+
+// Journal entries
+export async function fetchJournal(tripId: number) {
+  return apiFetch<JournalEntry[]>(`/trips/${tripId}/journal`);
+}
+
+export async function createJournalEntry(tripId: number, data: { stop_id?: number | null; content: string }) {
+  return apiFetch<JournalEntry>(`/trips/${tripId}/journal`, { method: 'POST', body: JSON.stringify(data) });
+}
+
+export async function deleteJournalEntry(tripId: number, entryId: number) {
+  return apiFetch(`/trips/${tripId}/journal/${entryId}`, { method: 'DELETE' });
 }
 
 // Mapbox token

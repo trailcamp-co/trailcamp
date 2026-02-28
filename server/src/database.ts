@@ -96,6 +96,16 @@ function initializeDb(db: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_locations_coords ON locations(latitude, longitude);
     CREATE UNIQUE INDEX IF NOT EXISTS idx_locations_source ON locations(source, source_id);
     CREATE INDEX IF NOT EXISTS idx_trip_stops_trip ON trip_stops(trip_id);
+
+    CREATE TABLE IF NOT EXISTS trip_journal (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      trip_id INTEGER NOT NULL,
+      stop_id INTEGER,
+      content TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (trip_id) REFERENCES trips(id),
+      FOREIGN KEY (stop_id) REFERENCES trip_stops(id)
+    );
   `);
 
   // Add favorited column if it doesn't exist

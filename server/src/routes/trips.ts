@@ -235,6 +235,127 @@ function calculateTotalDistance(stops: any[]): number {
   return total;
 }
 
+// GET /api/trips/:id/export-gpx
+router.get('/:id/export-gpx', (req: Request, res: Response) => {
+  const db = getDb();
+  const trip = db.prepare('SELECT * FROM trips WHERE id = ?').get(req.params.id) as any;
+  if (!trip) { res.status(404).json({ error: 'Trip not found' }); return; }
+
+  const stops = db.prepare('SELECT * FROM trip_stops WHERE trip_id = ? ORDER BY sort_order').all(req.params.id) as any[];
+
+  // Find nearby riding spots within 20mi of each stop
+  const ridingSpots = db.prepare("SELECT * FROM locations WHERE category = 'riding'").all() as any[];
+  const nearbyRiding: any[] = [];
+  const seenIds = new Set<number>();
+
+  for (const stop of stops) {
+    for (const spot of ridingSpots) {
+      if (seenIds.has(spot.id)) continue;
+      const dist = haversineDistance(stop.latitude, stop.longitude, spot.latitude, spot.longitude);
+      if (dist <= 20) {
+        nearbyRiding.push(spot);
+        seenIds.add(spot.id);
+      }
+    }
+  }
+
+  // Build GPX XML
+  const escXml = (s: string | null | undefined) => {
+    if (!s) return '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  };
+
+  let gpx = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="TrailCamp" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>${escXml(trip.name)}</name>
+    <desc>${escXml(trip.description)}</desc>
+    <time>${new Date().toISOString()}</time>
+  </metadata>
+`;
+
+  // Trip stops as waypoints
+  for (const stop of stops) {
+    gpx += `  <wpt lat="${stop.latitude}" lon="${stop.longitude}">
+    <name>${escXml(stop.name)}</name>
+    <desc>${escXml(stop.notes)}</desc>
+    <type>stop</type>
+  </wpt>
+`;
+  }
+
+  // Nearby riding spots as waypoints
+  for (const spot of nearbyRiding) {
+    gpx += `  <wpt lat="${spot.latitude}" lon="${spot.longitude}">
+    <name>${escXml(spot.name)}</name>
+    <desc>${escXml(spot.description || spot.notes)}</desc>
+    <type>riding</type>
+  </wpt>
+`;
+  }
+
+  // Route as a track
+  if (stops.length >= 2) {
+    gpx += `  <trk>
+    <name>${escXml(trip.name)} Route</name>
+    <trkseg>
+`;
+    for (const stop of stops) {
+      gpx += `      <trkpt lat="${stop.latitude}" lon="${stop.longitude}">
+        <name>${escXml(stop.name)}</name>
+      </trkpt>
+`;
+    }
+    gpx += `    </trkseg>
+  </trk>
+`;
+  }
+
+  gpx += `</gpx>`;
+
+  const filename = `${trip.name.replace(/[^a-zA-Z0-9]/g, '_')}.gpx`;
+  res.setHeader('Content-Type', 'application/gpx+xml');
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.send(gpx);
+});
+
+// GET /api/trips/:id/journal
+router.get('/:id/journal', (req: Request, res: Response) => {
+  const db = getDb();
+  const entries = db.prepare(`
+    SELECT tj.*, ts.name as stop_name
+    FROM trip_journal tj
+    LEFT JOIN trip_stops ts ON tj.stop_id = ts.id
+    WHERE tj.trip_id = ?
+    ORDER BY tj.created_at DESC
+  `).all(req.params.id);
+  res.json(entries);
+});
+
+// POST /api/trips/:id/journal
+router.post('/:id/journal', (req: Request, res: Response) => {
+  const db = getDb();
+  const { stop_id, content } = req.body;
+  if (!content || !content.trim()) { res.status(400).json({ error: 'Content is required' }); return; }
+  const result = db.prepare(`
+    INSERT INTO trip_journal (trip_id, stop_id, content) VALUES (?, ?, ?)
+  `).run(req.params.id, stop_id || null, content.trim());
+  const entry = db.prepare(`
+    SELECT tj.*, ts.name as stop_name
+    FROM trip_journal tj
+    LEFT JOIN trip_stops ts ON tj.stop_id = ts.id
+    WHERE tj.id = ?
+  `).get(result.lastInsertRowid);
+  res.status(201).json(entry);
+});
+
+// DELETE /api/trips/:id/journal/:entryId
+router.delete('/:id/journal/:entryId', (req: Request, res: Response) => {
+  const db = getDb();
+  db.prepare('DELETE FROM trip_journal WHERE id = ? AND trip_id = ?').run(req.params.entryId, req.params.id);
+  res.status(204).send();
+});
+
 // GET /api/trips/:id/route
 router.get('/:id/route', async (req: Request, res: Response) => {
   const db = getDb();
