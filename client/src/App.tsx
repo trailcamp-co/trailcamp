@@ -55,6 +55,11 @@ export default function App() {
     getMapboxToken().then(t => { setMapboxToken(t); (window as any).__mapboxToken = t; }).catch(() => {});
   }, []);
 
+  // Expose locations globally for nearby lookups
+  useEffect(() => {
+    (window as any).__tcAllLocations = locations;
+  }, [locations]);
+
   // Select first trip by default (only on initial load)
   const [hasAutoSelected, setHasAutoSelected] = useState(false);
   useEffect(() => {

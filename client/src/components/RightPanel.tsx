@@ -401,6 +401,42 @@ export default function RightPanel({
           </div>
         )}
 
+        {/* Nearby Campsites (for riding areas) */}
+        {location.category === 'riding' && (
+          <div className={`p-5 ${sectionDivider}`}>
+            <div className={`${labelStyle} mb-3`}>
+              🏕️ Nearby Camping ({nearbyRiding.filter(r => r.category === 'campsite').length > 0 ? 'loading' : '—'})
+            </div>
+            {(() => {
+              // Compute nearby campsites client-side from all locations
+              // This is a quick estimate using flat-earth approximation
+              const nearbyCamps = (window as any).__tcAllLocations?.filter((l: Location) => {
+                if (l.category !== 'campsite') return false;
+                const dLat = (l.latitude - location.latitude) * 69;
+                const dLng = (l.longitude - location.longitude) * 69 * Math.cos(location.latitude * Math.PI / 180);
+                return dLat * dLat + dLng * dLng < 625; // ~25mi radius
+              }).slice(0, 8) || [];
+
+              if (nearbyCamps.length === 0) return <div className="text-xs text-gray-500 text-center py-2">No campsites within 25 mi</div>;
+
+              return (
+                <div className="space-y-1.5 max-h-36 overflow-y-auto">
+                  {nearbyCamps.map((c: Location) => (
+                    <button key={c.id} onClick={() => { onFlyTo?.(c.longitude, c.latitude); onLocationClick?.(c); }}
+                      className={`w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs transition-colors ${darkMode ? 'hover:bg-dark-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700'}`}>
+                      <span className="text-xs">{c.sub_type === 'boondocking' ? '⛺' : '🏕️'}</span>
+                      <span className="flex-1 truncate">{c.name}</span>
+                      {c.cost_per_night != null && Number(c.cost_per_night) === 0 && (
+                        <span className="text-[9px] text-green-400 font-medium">Free</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        )}
+
         {/* Description */}
         {location.description && (
           <div className={`p-5 ${sectionDivider}`}>
