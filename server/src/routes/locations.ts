@@ -9,6 +9,12 @@ router.get('/', (req: Request, res: Response) => {
   let query = 'SELECT * FROM locations WHERE 1=1';
   const params: any[] = [];
 
+  // By default, only show map-visible locations (singletons + group primaries)
+  // Pass ?show_all=1 to see everything
+  if (req.query.show_all !== '1') {
+    query += ' AND (group_id IS NULL OR is_group_primary = 1)';
+  }
+
   if (req.query.category) {
     query += ' AND category = ?';
     params.push(req.query.category);
@@ -64,17 +70,38 @@ router.get('/', (req: Request, res: Response) => {
     query += ' ORDER BY name';
   }
 
-  const locations = db.prepare(query).all(...params);
+  const locations = db.prepare(query).all(...params) as any[];
+
+  // Add group_count for grouped locations
+  const groupCountStmt = db.prepare('SELECT COUNT(*) as cnt FROM locations WHERE group_id = ?');
+  for (const loc of locations) {
+    if (loc.group_id) {
+      loc.group_count = (groupCountStmt.get(loc.group_id) as any).cnt;
+    } else {
+      loc.group_count = 1;
+    }
+  }
 
   // Add seasonal_status if trip_month is passed
   if (req.query.trip_month) {
     const month = Number(req.query.trip_month);
-    (locations as any[]).forEach(loc => {
+    locations.forEach(loc => {
       loc.seasonal_status = computeSeasonalStatus(loc, month);
     });
   }
 
   res.json(locations);
+});
+
+// GET /api/locations/group/:groupId — get all members of a location group
+router.get('/group/:groupId', (req: Request, res: Response) => {
+  const db = getDb();
+  const groupId = Number(req.params.groupId);
+  if (!groupId) { res.json([]); return; }
+  const members = db.prepare(
+    'SELECT * FROM locations WHERE group_id = ? ORDER BY is_group_primary DESC, name'
+  ).all(groupId);
+  res.json(members);
 });
 
 // GET /api/locations/featured

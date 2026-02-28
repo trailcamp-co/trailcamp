@@ -188,6 +188,11 @@ export async function fetchNearbyRiding(lat: number, lng: number, radius: number
   return apiFetch<(Location & { distance_from: number })[]>(`/locations/nearby-riding?lat=${lat}&lng=${lng}&radius=${radius}`);
 }
 
+// Fetch group members
+export async function fetchGroupMembers(groupId: number) {
+  return apiFetch<Location[]>(`/locations/group/${groupId}`);
+}
+
 // Duplicate trip
 export async function duplicateTrip(tripId: number) {
   return apiFetch<Trip>(`/trips/${tripId}/duplicate`, { method: 'POST' });

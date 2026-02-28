@@ -77,6 +77,9 @@ export interface Location {
   updated_at: string;
   distance_from?: number;
   seasonal_status?: 'great' | 'shoulder' | 'bad';
+  group_id?: number | null;
+  is_group_primary?: number;
+  group_count?: number;
 }
 
 export type LocationCategory = 'campsite' | 'riding' | 'water' | 'dump' | 'gas' | 'grocery' | 'scenic' | 'laundromat';

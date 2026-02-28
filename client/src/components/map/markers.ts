@@ -26,10 +26,17 @@ export function updateEmojiMarkers(
 
     if (!emojiMarkersRef.current[id]) {
       const icon = f.properties?.icon || '📍';
+      const groupCount = f.properties?.group_count || 1;
       const el = document.createElement('div');
       el.className = 'emoji-pin';
-      el.style.cssText = 'font-size:14px;line-height:1;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;width:24px;height:24px;';
+      el.style.cssText = 'font-size:14px;line-height:1;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;width:24px;height:24px;position:relative;';
       el.textContent = icon;
+      if (groupCount > 1) {
+        const badge = document.createElement('span');
+        badge.textContent = String(groupCount);
+        badge.style.cssText = 'position:absolute;top:-4px;right:-6px;background:#64748b;color:white;font-size:8px;font-weight:700;min-width:14px;height:14px;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 3px;border:1.5px solid rgba(0,0,0,0.5);pointer-events:none;';
+        el.appendChild(badge);
+      }
       const coords = f.geometry.type === 'Point' ? f.geometry.coordinates : null;
       if (coords) {
         const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })

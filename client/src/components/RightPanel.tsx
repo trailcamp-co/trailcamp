@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import type { Location } from '../types';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
-import { toggleFavorite, fetchNearbyRiding } from '../hooks/useApi';
+import { toggleFavorite, fetchNearbyRiding, fetchGroupMembers } from '../hooks/useApi';
 
 interface RightPanelProps {
   location: Location;
@@ -72,6 +72,8 @@ export default function RightPanel({
   const [loadingNearby, setLoadingNearby] = useState(false);
   const [heartKey, setHeartKey] = useState(0);
   const [weather, setWeather] = useState<{ temp: number; icon: string; desc: string; sunrise?: string; sunset?: string } | null>(null);
+  const [groupMembers, setGroupMembers] = useState<Location[]>([]);
+  const [groupExpanded, setGroupExpanded] = useState(false);
 
   const isCampsite = location.category === 'campsite';
   const categoryColor = CATEGORY_COLORS[location.category] || '#6b7280';
@@ -91,6 +93,17 @@ export default function RightPanel({
     setEditingNotes(false);
     setConfirmDelete(false);
   }, [location.id, location.user_notes]);
+
+  // Fetch group members
+  useEffect(() => {
+    setGroupMembers([]);
+    setGroupExpanded(false);
+    if (location.group_id && (location.group_count || 0) > 1) {
+      fetchGroupMembers(location.group_id)
+        .then(members => setGroupMembers(members.filter(m => m.id !== location.id)))
+        .catch(() => {});
+    }
+  }, [location.id, location.group_id, location.group_count]);
 
   // Fetch current weather
   useEffect(() => {
@@ -345,6 +358,51 @@ export default function RightPanel({
             </div>
           );
         })()}
+
+        {/* Group Members */}
+        {groupMembers.length > 0 && (
+          <div className={`p-5 ${sectionDivider}`}>
+            <button
+              onClick={() => setGroupExpanded(!groupExpanded)}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-200' : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
+              } [.light_&]:bg-gray-50 [.light_&]:hover:bg-gray-100 [.light_&]:text-gray-700`}
+            >
+              <span className="flex items-center gap-2">
+                <span className="text-xs">📍</span>
+                {groupMembers.length + 1} spots at this location
+              </span>
+              <span className={`text-xs transition-transform ${groupExpanded ? 'rotate-180' : ''}`}>▼</span>
+            </button>
+            {groupExpanded && (
+              <div className="mt-2 space-y-1">
+                {groupMembers.map(member => (
+                  <button
+                    key={member.id}
+                    onClick={() => { onLocationClick?.(member); }}
+                    className={`w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+                      darkMode ? 'hover:bg-dark-800 text-gray-300' : 'hover:bg-gray-50 text-gray-700'
+                    } [.light_&]:hover:bg-gray-50 [.light_&]:text-gray-700`}
+                  >
+                    <span className="text-xs opacity-60">
+                      {member.category === 'campsite' ? (member.sub_type === 'boondocking' ? '⛺' : '🏕️') : '🏍️'}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="truncate font-medium text-xs">{member.name}</div>
+                      {member.source && <div className="text-[10px] text-gray-500 truncate">{member.source}</div>}
+                    </div>
+                    {member.cost_per_night != null && Number(member.cost_per_night) === 0 && (
+                      <span className="text-[9px] text-green-400 font-semibold">Free</span>
+                    )}
+                    {member.difficulty && (
+                      <span className="text-[9px] text-gray-400">{member.difficulty}</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Quick Actions */}
         <div className={`p-5 ${sectionDivider}`}>

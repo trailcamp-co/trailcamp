@@ -112,7 +112,11 @@ export function buildClickPopupHTML(properties: Record<string, string | number>,
         <span style="font-size:18px;flex-shrink:0;">${icon}</span>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;align-items:center;">
-        ${diffBadge}${trailChips}${seasonHtml}
+        ${diffBadge}${trailChips}${seasonHtml}${
+          Number(p.group_count) > 1
+            ? `<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(100,116,139,0.2);color:#94a3b8;border:1px solid rgba(100,116,139,0.2);">📍 ${p.group_count} spots</span>`
+            : ''
+        }
       </div>
       ${starsHtml}
       ${campsiteInfo}
