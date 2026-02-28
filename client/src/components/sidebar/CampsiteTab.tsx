@@ -28,7 +28,7 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
   const [sortAsc, setSortAsc] = useState(true);
   const [filterSubType, setFilterSubType] = useState<CampsiteSubType | 'all'>('all');
   const [freeOnly, setFreeOnly] = useState(false);
-  const [viewportFilter, setViewportFilter] = useState(true);
+  const [viewportFilter, setViewportFilter] = useState(false);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [distanceFromQuery, setDistanceFromQuery] = useState('');
   const [distanceFromCoords, setDistanceFromCoords] = useState<{ lat: number; lng: number } | null>(null);
