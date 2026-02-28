@@ -610,12 +610,30 @@ export default function TripTab({
             )}
           </>
         ) : (
-          <div className="p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-dark-800/50 [.light_&]:bg-gray-100 flex items-center justify-center">
-              <Route size={28} className="text-gray-600 [.light_&]:text-gray-400" />
+          <div className="p-6 text-center">
+            <div className="text-4xl mb-3">🗺️</div>
+            <h3 className="text-base font-bold text-gray-200 [.light_&]:text-gray-800 mb-1">Plan Your Adventure</h3>
+            <p className="text-xs text-gray-500 [.light_&]:text-gray-400 mb-4">Create a trip to start adding stops, tracking miles, and organizing your route.</p>
+            <button
+              onClick={handleCreateTrip}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:from-orange-600 hover:to-orange-700 transition-all press-scale"
+            >
+              <Plus size={16} /> Create First Trip
+            </button>
+            <div className="mt-5 grid grid-cols-3 gap-2">
+              <div className="rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 p-2">
+                <div className="text-lg font-bold text-orange-400">🏍️</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">1,200+ Rides</div>
+              </div>
+              <div className="rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 p-2">
+                <div className="text-lg font-bold text-green-400">🏕️</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">500+ Free Camps</div>
+              </div>
+              <div className="rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 p-2">
+                <div className="text-lg font-bold text-blue-400">📍</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">5,600+ Spots</div>
+              </div>
             </div>
-            <p className="text-sm font-medium text-gray-400 [.light_&]:text-gray-500 mb-1">No trip selected</p>
-            <p className="text-xs text-gray-600 [.light_&]:text-gray-400">Select a trip from the dropdown above or create a new one</p>
           </div>
         )}
 
