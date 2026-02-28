@@ -244,6 +244,19 @@ export default function MapContainer({
       />
       <MapLegend />
       <RegionQuickJump mapRef={mapRef} />
+      
+      {/* Home button */}
+      <button
+        onClick={() => {
+          if (mapRef.current) {
+            mapRef.current.flyTo({ center: [-81.3612, 41.6031], zoom: 10, duration: 1500 });
+          }
+        }}
+        className="absolute top-3 left-3 px-3 py-2 rounded-xl shadow-lg glass text-gray-200 hover:text-white transition-colors flex items-center gap-1.5 text-sm font-medium"
+        title="Fly to Kirtland, OH"
+      >
+        🏠 Home
+      </button>
     </div>
   );
 }
