@@ -77,6 +77,28 @@ router.get('/', (req: Request, res: Response) => {
   res.json(locations);
 });
 
+// GET /api/locations/featured
+router.get('/featured', (req: Request, res: Response) => {
+  const db = getDb();
+  
+  // Get all featured bucket-list locations
+  let query = 'SELECT * FROM locations WHERE featured = 1';
+  
+  // Optional category filter
+  if (req.query.category) {
+    query += ' AND category = ?';
+    const locations = db.prepare(query).all(req.query.category);
+    res.json(locations);
+    return;
+  }
+  
+  // Order by scenery rating DESC (highest first), then by name
+  query += ' ORDER BY scenery_rating DESC, name';
+  
+  const locations = db.prepare(query).all();
+  res.json(locations);
+});
+
 // GET /api/locations/search
 router.get('/search', (req: Request, res: Response) => {
   const db = getDb();
