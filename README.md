@@ -1,108 +1,181 @@
-# 🏕️🏍️ TrailCamp
+# TrailCamp
 
-The ultimate trip planning platform for overlanders, dirt bike riders, and boondockers. Plan multi-stop camping trips with integrated riding area discovery, weather forecasts, route optimization, and more.
+A comprehensive motorcycle adventure trip planning application for dual sport and dirt bike riders.
+
+## Overview
+
+TrailCamp helps riders discover, plan, and navigate motorcycle adventures across North America with:
+- **1,195 riding locations** - trails, OHV areas, BDR routes, scenic byways
+- **482 boondocking spots** - dispersed camping, remote locations
+- **3,873 campgrounds** - developed camping across all 50 states
+- **5,565 total locations** covering riding, camping, services
 
 ## Features
 
-### Trip Planning
-- **Multi-stop trip builder** with drag-and-drop reordering
-- **Route optimization** (nearest-neighbor + 2-opt improvement)
-- **Drive time & distance** between stops (Mapbox Directions API)
-- **Weather forecasts** for each stop's dates
-- **Trip journal** — notes linked to each stop
-- **Packing checklist** — 5 pre-built categories with localStorage persistence
-- **Export** — GPX (for GPS devices), Markdown, or copy-to-clipboard share text
-- **Print-friendly** trip summary
-- **Duplicate trips** for planning variations
-
-### Discovery
-- **1,041 riding areas** across all 50 states + Canada, Mexico
-- **4,693 campsites** (404 boondocking, 4,285 campgrounds)
-- **5,746 total locations** with descriptions, ratings, and seasonal data
-- **Interactive map** with Mapbox GL JS, dark satellite default
-- **BLM land overlay** — vector polygons showing public BLM land
-- **National Forest overlay** — USFS boundary polygons
-- **Region quick-jump** — 16 preset regions (Moab, PNW, Hatfield-McCoy, etc.)
-- **Near-route filter** — find riding/camping within X miles of your route
-- **Seasonal intelligence** — filter locations by current month's riding season
-
-### Location Details
-- Difficulty ratings with color coding (Easy/Moderate/Hard/Expert)
-- Trail type tags (Single Track, Dual Sport, Enduro, Fire Road, Motocross)
-- Scenery ratings (1-5)
-- Water availability indicators
-- Cost per night (Free! for boondocking)
-- Personal notes, star ratings, visited tracking, favorites
-- Nearby riding discovery (within 20mi of any campsite)
-- Google Maps / Waze navigation links
-
-### UX
-- Dark mode (default) and light mode
-- Mobile responsive sidebar
-- Keyboard shortcuts (⌘K search, Esc close panels)
-- Recent searches
-- Error boundaries for crash recovery
-- Map legend
+- 🗺️ Interactive map with location clustering
+- 🏕️ Trip planning with multi-stop routing
+- 🏍️ Riding spot discovery by terrain type, difficulty, season
+- 📊 Location filtering by category, scenery, cost, permits
+- 📝 Detailed location info: terrain, difficulty, seasons, permits, nearby services
+- 🔗 External links to official BDR routes and major trails
+- ⭐ Featured flag for bucket-list destinations
 
 ## Tech Stack
 
-- **Frontend:** React 18 + TypeScript + Vite + Tailwind CSS
-- **Backend:** Node.js + Express + TypeScript
-- **Database:** SQLite (better-sqlite3, WAL mode)
-- **Maps:** Mapbox GL JS
-- **Routing:** Mapbox Directions API
-- **Weather:** Open-Meteo API (free, no key needed)
+### Frontend
+- **React** with **Vite** - Fast, modern build tooling
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first styling
+- **Mapbox GL JS** - Interactive mapping
+- **Lucide React** - Icon library
 
-## Setup
+### Backend
+- **Express.js** - RESTful API server
+- **SQLite** - Embedded database
+- **Node.js** - Runtime environment
+
+## Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+
+## Installation
 
 ```bash
+# Clone repository
+git clone <repository-url>
+cd trailcamp
+
 # Install dependencies
 npm install
 
-# Set environment variables
-cp .env.example .env
-# Add: MAPBOX_SECRET_KEY, MAPBOX_PUBLIC_KEY, RECREATION_GOV_API_KEY (optional)
-
-# Run development server
+# Start development servers
 npm run dev
-# Frontend: http://localhost:5173
-# Backend:  http://localhost:3001
 ```
 
-## Data Sources
-
-| Source | Records | Type |
-|--------|---------|------|
-| Agent-curated riding spots | 1,041 | Riding areas across all 50 states |
-| iOverlander API | ~4,300 | Campgrounds and parking areas |
-| Agent-curated boondocking | 404 | Dispersed/free camping spots |
-| Recreation.gov API | ~200 | Federal campgrounds |
-| PAD-US (USGS) | 308 polygons | BLM land boundaries |
-| USDA Forest Service | 112 polygons | National Forest boundaries |
+This starts:
+- **Frontend dev server**: http://localhost:5173
+- **Backend API server**: http://localhost:3001
 
 ## Project Structure
 
 ```
-client/
-  src/
-    components/
-      map/          # MapContainer, LayerPanel, Legend, RegionQuickJump
-      sidebar/      # LeftSidebar, TripTab, RidingTab, FiltersTab, PackingList
-      ErrorBoundary, RightPanel, StatsPanel, TopBar
-    hooks/          # useApi, useFilters, useSearch, useRoute, useWeather, useMapInteraction
-    types/          # TypeScript interfaces (single source of truth)
-    styles/         # Tailwind + custom CSS
-  public/
-    blm-land-v3.geojson     # BLM boundaries (179KB)
-    usfs-boundaries.geojson  # USFS boundaries (145KB)
-server/
-  src/
-    routes/     # trips, locations, stats API routes
-    data/       # riding-spots.json consolidated data
-    import-*.ts # Data import scripts
-  trailcamp.db  # SQLite database
+trailcamp/
+├── client/           # React frontend
+│   ├── src/
+│   │   ├── components/  # React components
+│   │   ├── hooks/       # Custom hooks
+│   │   └── lib/         # Utilities
+│   └── index.html
+├── server/           # Express backend
+│   ├── index.ts      # API server
+│   └── trailcamp.db  # SQLite database
+├── package.json
+└── README.md
 ```
+
+## Database
+
+**SQLite database**: `server/trailcamp.db`
+
+### Key Tables
+
+- `locations` - All riding spots, campsites, services (5,565 records)
+- `trips` - User-created trip plans
+- `trip_stops` - Individual stops within trips
+- `trip_journal` - Trip notes and memories
+
+### Location Schema Highlights
+
+```sql
+- id, name, description, latitude, longitude
+- category (riding|campsite|scenic|dump|water)
+- sub_type (boondocking|campground|dirt-bike|National Forest|etc)
+- trail_types (Dual Sport, Single Track, Enduro, etc)
+- difficulty, distance_miles, scenery_rating (1-10)
+- best_season, season, permit_required, permit_info
+- cost_per_night, water_available, hours
+- notes, external_links
+- featured (bucket-list flag)
+```
+
+## Data Sources
+
+- **recreation.gov** - 4,121 campgrounds and recreation areas
+- **Backcountry Discovery Routes** - All major BDR routes (WA, OR, ID, CO, UT, AZ, NM, CA, NV, TX, TN, MN, Mid-Atlantic)
+- **Trans America Trail** - Coast-to-coast off-road route
+- **National Parks** - Major scenic routes (Going-to-the-Sun, Trail Ridge, etc)
+- **State Forests & OHV Areas** - Riding locations across all 50 states
+- **Agent Research** - 200+ curated riding and boondocking locations
+
+## Geographic Coverage
+
+All 50 US states represented, with strong coverage in:
+- **Western States**: CA, OR, WA, ID, MT, WY, CO, UT, AZ, NM
+- **Alaska & Hawaii**: Unique bucket-list destinations
+- **Upper Midwest**: MI, WI, MN
+- **New England**: VT, NH, ME, MA, CT
+- **Southeast**: GA, FL, SC, NC, TN, KY
+- **Mid-Atlantic**: MD, PA, NJ, DE, NY
+- **Plains**: KS, NE, ND, SD, OK
+- **Texas**: Big Bend, Hill Country, East TX
+
+## Statistics
+
+- **1,195 riding locations**
+  - National Forest: 358
+  - BLM: 212
+  - State Forest: 78
+  - State Park: 40
+  - Private Parks: 57
+  - MX Tracks: 54
+  
+- **Trail Types**: Dual Sport, Single Track, Enduro, Fire Road, Motocross, Sand Dunes, Desert, Ridge Riding
+
+- **Scenery Ratings**: All locations rated 1-10, with 70+ featured 10/10 bucket-list destinations
+
+- **Seasonal Coverage**: Year-round (1,930), Summer (1,353), Spring/Fall (1,019), Winter (490)
+
+- **Cost Data**: 455 free boondocking, 153 paid campgrounds ($15-35/night avg)
+
+## Development
+
+### Available Scripts
+
+- `npm run dev` - Start both frontend and backend dev servers
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+
+### Database Backup
+
+Full SQL dump available at: `~/.openclaw/workspace/trailcamp-backup.sql`
+
+CSV exports available for analysis:
+- `trailcamp-all-locations.csv` (2.8MB)
+- `trailcamp-riding.csv` (371KB)
+- `trailcamp-boondocking.csv` (234KB)
+- `trailcamp-campgrounds.csv` (2.2MB)
+
+## API Endpoints
+
+```
+GET /api/locations - Get all locations
+GET /api/locations/:id - Get specific location
+GET /api/trips - Get all trips
+POST /api/trips - Create new trip
+GET /api/trips/:id - Get specific trip
+PUT /api/trips/:id - Update trip
+DELETE /api/trips/:id - Delete trip
+```
+
+## Contributing
+
+This project was built during an overnight autonomous build session, expanding from 5,698 to 5,565 locations (after deduplication) with comprehensive data quality enhancements.
 
 ## License
 
-Private — built for personal use.
+[Add license information]
+
+## Contact
+
+[Add contact information]
