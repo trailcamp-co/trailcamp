@@ -1,20 +1,28 @@
 #!/usr/bin/env node
-// Geocoding Helper Script for TrailCamp
-// Reverse geocodes coordinates to get state/county names
+// Geocoding Helper for TrailCamp
+// Reverse geocodes coordinates to get state/county information
 
 import Database from 'better-sqlite3';
 import https from 'https';
 
 const db = new Database('./trailcamp.db');
 
-// Nominatim API (OpenStreetMap) - free, rate limited to 1 req/sec
-function reverseGeocode(lat, lon) {
+// Rate limiting
+const DELAY_MS = 1000; // 1 second between requests (Nominatim requirement)
+let requestCount = 0;
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Reverse geocode using Nominatim (OpenStreetMap)
+async function reverseGeocode(lat, lon) {
   return new Promise((resolve, reject) => {
-    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`;
     
     const options = {
       headers: {
-        'User-Agent': 'TrailCamp/1.0 (motorcycle trail database)'
+        'User-Agent': 'TrailCamp/1.0 (Motorcycle trail mapping app)'
       }
     };
     
@@ -28,134 +36,171 @@ function reverseGeocode(lat, lon) {
       res.on('end', () => {
         try {
           const result = JSON.parse(data);
-          resolve(result);
+          requestCount++;
+          
+          if (result.error) {
+            resolve(null);
+          } else {
+            const address = result.address || {};
+            resolve({
+              state: address.state || address.province || null,
+              county: address.county || null,
+              country: address.country || null,
+              display_name: result.display_name || null
+            });
+          }
         } catch (err) {
           reject(err);
         }
       });
-    }).on('error', (err) => {
-      reject(err);
-    });
+    }).on('error', reject);
   });
 }
 
-// Extract state and county from Nominatim response
-function extractLocationInfo(result) {
-  if (!result || !result.address) {
-    return { state: null, county: null, country: null };
+// Get US state abbreviation from full name
+function getStateAbbr(stateName) {
+  const stateMap = {
+    'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR',
+    'California': 'CA', 'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE',
+    'Florida': 'FL', 'Georgia': 'GA', 'Hawaii': 'HI', 'Idaho': 'ID',
+    'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA', 'Kansas': 'KS',
+    'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
+    'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS',
+    'Missouri': 'MO', 'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV',
+    'New Hampshire': 'NH', 'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY',
+    'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH', 'Oklahoma': 'OK',
+    'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
+    'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT',
+    'Vermont': 'VT', 'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV',
+    'Wisconsin': 'WI', 'Wyoming': 'WY'
+  };
+  
+  return stateMap[stateName] || stateName;
+}
+
+// Check if state and county columns exist, if not add them
+function ensureColumns() {
+  try {
+    db.prepare('SELECT state FROM locations LIMIT 1').get();
+  } catch (err) {
+    console.log('Adding state column...');
+    db.prepare('ALTER TABLE locations ADD COLUMN state TEXT').run();
   }
   
-  const addr = result.address;
-  
-  // State (varies by country)
-  const state = addr.state || addr.province || addr.region || null;
-  
-  // County
-  const county = addr.county || null;
-  
-  // Country
-  const country = addr.country || null;
-  
-  return { state, county, country };
+  try {
+    db.prepare('SELECT county FROM locations LIMIT 1').get();
+  } catch (err) {
+    console.log('Adding county column...');
+    db.prepare('ALTER TABLE locations ADD COLUMN county TEXT').run();
+  }
 }
 
 // Main geocoding function
-async function geocodeLocations(limit = 50, dryRun = false) {
-  console.log(`Geocoding locations (limit: ${limit}, dry run: ${dryRun})\n`);
+async function geocodeLocations(limit = null, skipExisting = true) {
+  ensureColumns();
   
-  // Get locations without state/county info
-  // Since we don't have these columns yet, we'll just sample some locations
-  const locations = db.prepare(`
-    SELECT id, name, latitude, longitude 
-    FROM locations 
-    ORDER BY id 
-    LIMIT ?
-  `).all(limit);
+  let query = 'SELECT id, name, latitude, longitude, state, county FROM locations';
   
-  console.log(`Found ${locations.length} locations to process\n`);
+  if (skipExisting) {
+    query += ' WHERE state IS NULL OR state = \'\'';
+  }
   
-  const results = [];
-  let processed = 0;
-  let succeeded = 0;
-  let failed = 0;
+  if (limit) {
+    query += ` LIMIT ${limit}`;
+  }
+  
+  const locations = db.prepare(query).all();
+  
+  console.log(`\nFound ${locations.length} locations to geocode\n`);
+  
+  if (locations.length === 0) {
+    console.log('✓ All locations already geocoded!\n');
+    return { processed: 0, success: 0, failed: 0 };
+  }
+  
+  const stats = {
+    processed: 0,
+    success: 0,
+    failed: 0,
+    byState: {}
+  };
+  
+  const updateStmt = db.prepare('UPDATE locations SET state = ?, county = ? WHERE id = ?');
   
   for (const loc of locations) {
-    processed++;
+    stats.processed++;
     
     try {
-      console.log(`[${processed}/${locations.length}] ${loc.name}...`);
+      console.log(`[${stats.processed}/${locations.length}] ${loc.name}...`);
       
       const result = await reverseGeocode(loc.latitude, loc.longitude);
-      const info = extractLocationInfo(result);
       
-      if (info.state) {
-        results.push({
-          id: loc.id,
-          name: loc.name,
-          state: info.state,
-          county: info.county,
-          country: info.country
-        });
+      if (result && result.state) {
+        const stateAbbr = getStateAbbr(result.state);
+        updateStmt.run(stateAbbr, result.county, loc.id);
         
-        console.log(`  ✓ ${info.state}${info.county ? ', ' + info.county : ''} ${info.country ? '(' + info.country + ')' : ''}`);
-        succeeded++;
+        stats.success++;
+        
+        if (!stats.byState[stateAbbr]) {
+          stats.byState[stateAbbr] = 0;
+        }
+        stats.byState[stateAbbr]++;
+        
+        console.log(`  ✓ ${stateAbbr}${result.county ? ', ' + result.county : ''}`);
       } else {
-        console.log(`  ⚠ No state info found`);
-        failed++;
+        stats.failed++;
+        console.log(`  ✗ Could not geocode`);
       }
       
-      // Rate limiting: 1 request per second (Nominatim requirement)
-      await new Promise(resolve => setTimeout(resolve, 1100));
-      
+      // Rate limiting (required by Nominatim)
+      if (stats.processed < locations.length) {
+        await sleep(DELAY_MS);
+      }
     } catch (err) {
+      stats.failed++;
       console.log(`  ✗ Error: ${err.message}`);
-      failed++;
-      
-      // Wait longer on error
-      await new Promise(resolve => setTimeout(resolve, 2000));
     }
   }
   
-  console.log(`\n${'='.repeat(60)}`);
-  console.log('GEOCODING SUMMARY');
-  console.log('='.repeat(60));
-  console.log(`Processed: ${processed}`);
-  console.log(`Succeeded: ${succeeded}`);
-  console.log(`Failed: ${failed}`);
-  console.log('='.repeat(60) + '\n');
-  
-  if (!dryRun && results.length > 0) {
-    console.log('NOTE: Database does not have state/county columns yet.');
-    console.log('To add these columns, run the following SQL:\n');
-    console.log('ALTER TABLE locations ADD COLUMN state VARCHAR(100);');
-    console.log('ALTER TABLE locations ADD COLUMN county VARCHAR(100);');
-    console.log('ALTER TABLE locations ADD COLUMN country VARCHAR(100);\n');
-  }
-  
-  // Generate report
-  if (results.length > 0) {
-    console.log('State distribution:');
-    const stateCounts = {};
-    for (const r of results) {
-      stateCounts[r.state] = (stateCounts[r.state] || 0) + 1;
-    }
-    
-    const sorted = Object.entries(stateCounts).sort((a, b) => b[1] - a[1]);
-    for (const [state, count] of sorted.slice(0, 10)) {
-      console.log(`  ${state}: ${count}`);
-    }
-    
-    if (sorted.length > 10) {
-      console.log(`  ... and ${sorted.length - 10} more states\n`);
-    } else {
-      console.log('');
-    }
-  }
-  
-  return results;
+  return stats;
 }
 
-// Main
+// Generate state coverage report
+function generateReport() {
+  ensureColumns();
+  
+  const total = db.prepare('SELECT COUNT(*) as count FROM locations').get().count;
+  const withState = db.prepare('SELECT COUNT(*) as count FROM locations WHERE state IS NOT NULL AND state != \'\'').get().count;
+  const withoutState = total - withState;
+  
+  const byState = db.prepare(`
+    SELECT state, COUNT(*) as count 
+    FROM locations 
+    WHERE state IS NOT NULL AND state != ''
+    GROUP BY state 
+    ORDER BY count DESC
+  `).all();
+  
+  console.log('\n' + '='.repeat(60));
+  console.log('GEOCODING COVERAGE REPORT');
+  console.log('='.repeat(60));
+  console.log(`\nTotal locations:      ${total}`);
+  console.log(`With state data:      ${withState} (${Math.round((withState / total) * 100)}%)`);
+  console.log(`Missing state data:   ${withoutState}`);
+  
+  if (byState.length > 0) {
+    console.log(`\n${'─'.repeat(60)}`);
+    console.log('LOCATIONS BY STATE:\n');
+    
+    for (const row of byState) {
+      console.log(`  ${row.state.padEnd(3)} ${row.count.toString().padStart(5)} locations`);
+    }
+  }
+  
+  console.log('='.repeat(60) + '\n');
+}
+
+// CLI
 const args = process.argv.slice(2);
 
 if (args.includes('--help')) {
@@ -163,59 +208,81 @@ if (args.includes('--help')) {
 TrailCamp Geocoding Helper
 
 Usage:
-  node geocode-locations.js [--limit=N] [--dry-run]
+  node geocode-locations.js [options]
 
 Options:
-  --limit=N    Process only N locations (default: 50)
-  --dry-run    Test without updating database
-  --help       Show this help
+  --limit N        Process only N locations
+  --all            Re-geocode all locations (including existing)
+  --report         Show coverage report only
+  --help           Show this help
 
-Example:
-  node geocode-locations.js --limit=10 --dry-run
-  node geocode-locations.js --limit=100
+Examples:
+  node geocode-locations.js --limit 10
+  node geocode-locations.js --report
+  node geocode-locations.js
 
 Notes:
-  - Uses OpenStreetMap Nominatim API (free, 1 req/sec limit)
-  - Processes slowly to respect rate limits (~1 location/sec)
-  - Database schema update required to store state/county data
-
-Rate Limits:
-  - 50 locations: ~1 minute
-  - 100 locations: ~2 minutes
-  - 500 locations: ~10 minutes
-  - 1000 locations: ~20 minutes
-
-For bulk geocoding, run in smaller batches.
+  - Uses OpenStreetMap Nominatim (free, requires 1sec delay between requests)
+  - Adds 'state' and 'county' columns to locations table
+  - Skips locations that already have state data (use --all to re-geocode)
+  - Rate limited to 1 request/second (Nominatim requirement)
   `);
   process.exit(0);
 }
 
-const limitArg = args.find(a => a.startsWith('--limit='));
-const limit = limitArg ? parseInt(limitArg.split('=')[1]) : 50;
-const dryRun = args.includes('--dry-run');
-
-if (limit > 1000) {
-  console.error('⚠️  Warning: Large batches may take very long (1 req/sec limit)');
-  console.error('Consider processing in chunks of 100-500 locations.\n');
+if (args.includes('--report')) {
+  generateReport();
+  db.close();
+  process.exit(0);
 }
 
-console.log('TrailCamp Geocoding Helper\n');
-console.log('⚠️  This uses OpenStreetMap Nominatim API (free, 1 req/sec limit)');
-console.log('Processing will be SLOW to respect rate limits.\n');
+const limit = args.includes('--limit') ? parseInt(args[args.indexOf('--limit') + 1]) : null;
+const skipExisting = !args.includes('--all');
 
-if (!dryRun) {
-  console.log('⚠️  This is a LIVE run - results would be saved to database');
-  console.log('(But database schema needs state/county columns first)\n');
+console.log('TrailCamp Geocoding Helper');
+console.log('Using: OpenStreetMap Nominatim (free)');
+console.log('Rate limit: 1 request/second\n');
+
+if (limit) {
+  console.log(`Processing limit: ${limit} locations`);
 }
 
-geocodeLocations(limit, dryRun)
-  .then(() => {
-    console.log('✓ Geocoding complete\n');
-    db.close();
-    process.exit(0);
-  })
-  .catch((err) => {
+if (skipExisting) {
+  console.log('Skipping locations with existing state data');
+} else {
+  console.log('Re-geocoding ALL locations');
+}
+
+(async () => {
+  try {
+    const stats = await geocodeLocations(limit, skipExisting);
+    
+    console.log('\n' + '='.repeat(60));
+    console.log('GEOCODING COMPLETE');
+    console.log('='.repeat(60));
+    console.log(`\nProcessed:  ${stats.processed}`);
+    console.log(`Success:    ${stats.success}`);
+    console.log(`Failed:     ${stats.failed}`);
+    console.log(`Requests:   ${requestCount}`);
+    
+    if (Object.keys(stats.byState).length > 0) {
+      console.log('\nLocations by state:');
+      const sorted = Object.entries(stats.byState).sort((a, b) => b[1] - a[1]);
+      for (const [state, count] of sorted) {
+        console.log(`  ${state}: ${count}`);
+      }
+    }
+    
+    console.log('='.repeat(60) + '\n');
+    
+    if (stats.success > 0) {
+      console.log('Run --report to see full coverage:\n');
+      console.log('  node geocode-locations.js --report\n');
+    }
+  } catch (err) {
     console.error(`\n✗ Geocoding failed: ${err.message}\n`);
-    db.close();
     process.exit(1);
-  });
+  } finally {
+    db.close();
+  }
+})();
