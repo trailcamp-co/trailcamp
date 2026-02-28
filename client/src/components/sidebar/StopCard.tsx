@@ -66,6 +66,7 @@ export function SortableStopCard({
   driveTimeMins,
   driveDistanceMiles,
   showDriveConnector,
+  nearbyRidingCount,
 }: StopCardProps) {
   const {
     attributes,

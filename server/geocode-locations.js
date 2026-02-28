@@ -1,26 +1,27 @@
 #!/usr/bin/env node
-// Geocoding Helper Script for TrailCamp
-// Reverse geocodes coordinates to get state/county names
+// Reverse Geocoding for TrailCamp
+// Adds state and county information to locations using Nominatim
 
 import Database from 'better-sqlite3';
 import https from 'https';
 
 const db = new Database('./trailcamp.db');
 
-// Nominatim API configuration
+// Nominatim API (free, rate-limited to 1 req/sec)
 const NOMINATIM_URL = 'nominatim.openstreetmap.org';
 const USER_AGENT = 'TrailCamp/1.0';
-const RATE_LIMIT_MS = 1000; // 1 request per second (Nominatim policy)
 
-// Sleep helper
+// Rate limiting
+const DELAY_MS = 1100; // Slightly over 1 second to be safe
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Reverse geocode a single coordinate
-async function reverseGeocode(lat, lon) {
+// Reverse geocode coordinates
+function reverseGeocode(lat, lon) {
   return new Promise((resolve, reject) => {
-    const path = `/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`;
+    const path = `/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`;
     
     const options = {
       hostname: NOMINATIM_URL,
@@ -40,16 +41,16 @@ async function reverseGeocode(lat, lon) {
       
       res.on('end', () => {
         try {
-          const json = JSON.parse(data);
-          resolve(json);
-        } catch (err) {
-          reject(new Error(`Failed to parse response: ${err.message}`));
+          const result = JSON.parse(data);
+          resolve(result);
+        } catch (e) {
+          reject(new Error(`Failed to parse response: ${e.message}`));
         }
       });
     });
     
-    req.on('error', (err) => {
-      reject(err);
+    req.on('error', (e) => {
+      reject(e);
     });
     
     req.setTimeout(10000, () => {
@@ -61,82 +62,64 @@ async function reverseGeocode(lat, lon) {
   });
 }
 
-// Extract state and county from geocoding result
-function extractLocation(result) {
-  const address = result.address || {};
+// Extract state from geocoding result
+function extractState(result) {
+  if (!result.address) return null;
   
-  // Extract state (try multiple fields)
-  let state = address.state || address['ISO3166-2-lvl4'] || null;
-  
-  // Convert full state names to abbreviations (common ones)
-  const stateAbbr = {
-    'California': 'CA', 'Oregon': 'OR', 'Washington': 'WA',
-    'Arizona': 'AZ', 'Nevada': 'NV', 'Utah': 'UT',
-    'Colorado': 'CO', 'Wyoming': 'WY', 'Montana': 'MT',
-    'Idaho': 'ID', 'New Mexico': 'NM', 'Texas': 'TX',
-    'Alaska': 'AK', 'Hawaii': 'HI',
-    'North Dakota': 'ND', 'South Dakota': 'SD', 'Nebraska': 'NE',
-    'Kansas': 'KS', 'Oklahoma': 'OK',
-    'Minnesota': 'MN', 'Wisconsin': 'WI', 'Michigan': 'MI',
-    'Illinois': 'IL', 'Indiana': 'IN', 'Ohio': 'OH',
-    'Georgia': 'GA', 'Florida': 'FL', 'South Carolina': 'SC',
-    'North Carolina': 'NC', 'Tennessee': 'TN', 'Kentucky': 'KY',
-    'Alabama': 'AL', 'Mississippi': 'MS', 'Louisiana': 'LA',
-    'Arkansas': 'AR', 'Missouri': 'MO', 'Iowa': 'IA',
-    'New York': 'NY', 'Pennsylvania': 'PA', 'Vermont': 'VT',
-    'New Hampshire': 'NH', 'Maine': 'ME', 'Massachusetts': 'MA',
-    'Connecticut': 'CT', 'Rhode Island': 'RI',
-    'New Jersey': 'NJ', 'Delaware': 'DE', 'Maryland': 'MD',
-    'Virginia': 'VA', 'West Virginia': 'WV'
-  };
-  
-  if (state && stateAbbr[state]) {
-    state = stateAbbr[state];
-  }
-  
-  // If state is ISO format like "US-CA", extract the state code
-  if (state && state.includes('-')) {
-    state = state.split('-')[1];
-  }
-  
-  // Extract county
-  const county = address.county || address.municipality || null;
-  
-  // Extract country
-  const country = address.country_code ? address.country_code.toUpperCase() : 'US';
-  
-  return { state, county, country };
+  // Try various fields for state
+  return result.address.state ||
+         result.address.province ||
+         result.address.region ||
+         null;
 }
 
-// Update location in database
-function updateLocation(id, state, county, country) {
-  const stmt = db.prepare(`
-    UPDATE locations 
-    SET state = ?, county = ?, country = ?
-    WHERE id = ?
-  `);
+// Extract county from geocoding result
+function extractCounty(result) {
+  if (!result.address) return null;
   
-  stmt.run(state, county, country, id);
+  return result.address.county ||
+         result.address.district ||
+         null;
 }
 
-// Main geocoding function
-async function geocodeLocations(limit = null, offset = 0) {
-  // Get locations without state data
-  let query = `
+// Main geocoding process
+async function geocodeLocations(limit = null, dryRun = false) {
+  console.log(`${dryRun ? 'DRY RUN - ' : ''}Starting geocoding process...\n`);
+  
+  // Check if state/county columns exist
+  const tableInfo = db.prepare("PRAGMA table_info(locations)").all();
+  const hasState = tableInfo.some(col => col.name === 'state');
+  const hasCounty = tableInfo.some(col => col.name === 'county');
+  
+  if (!hasState || !hasCounty) {
+    console.log('Adding state and county columns to database...');
+    if (!dryRun) {
+      if (!hasState) {
+        db.prepare('ALTER TABLE locations ADD COLUMN state VARCHAR(2)').run();
+      }
+      if (!hasCounty) {
+        db.prepare('ALTER TABLE locations ADD COLUMN county VARCHAR(100)').run();
+      }
+    }
+    console.log('✓ Columns added\n');
+  }
+  
+  // Get locations without state/county
+  const query = `
     SELECT id, name, latitude, longitude 
     FROM locations 
-    WHERE state IS NULL 
-    ORDER BY id
+    WHERE state IS NULL OR county IS NULL
+    ${limit ? `LIMIT ${limit}` : ''}
   `;
-  
-  if (limit) {
-    query += ` LIMIT ${limit} OFFSET ${offset}`;
-  }
   
   const locations = db.prepare(query).all();
   
-  console.log(`\nGeocoding ${locations.length} locations...`);
-  console.log(`Rate limit: 1 request per second\n`);
+  console.log(`Found ${locations.length} locations to geocode\n`);
+  
+  if (locations.length === 0) {
+    console.log('✓ All locations already have state/county data');
+    return { total: 0, success: 0, failed: 0, errors: [] };
+  }
   
   const stats = {
     total: locations.length,
@@ -145,45 +128,92 @@ async function geocodeLocations(limit = null, offset = 0) {
     errors: []
   };
   
+  const updateStmt = db.prepare(`
+    UPDATE locations 
+    SET state = ?, county = ? 
+    WHERE id = ?
+  `);
+  
   for (let i = 0; i < locations.length; i++) {
     const loc = locations[i];
     const progress = `[${i + 1}/${locations.length}]`;
     
     try {
-      process.stdout.write(`${progress} Geocoding: ${loc.name}...`);
+      console.log(`${progress} Geocoding: ${loc.name}`);
       
       const result = await reverseGeocode(loc.latitude, loc.longitude);
-      const { state, county, country } = extractLocation(result);
+      const state = extractState(result);
+      const county = extractCounty(result);
       
       if (state) {
-        updateLocation(loc.id, state, county, country);
+        // Convert full state names to 2-letter codes (US states only)
+        const stateCode = getStateCode(state);
+        
+        if (!dryRun) {
+          updateStmt.run(stateCode, county, loc.id);
+        }
+        
         stats.success++;
-        console.log(` ✓ ${state}${county ? ', ' + county : ''}`);
+        console.log(`  ✓ ${stateCode || state}${county ? ', ' + county : ''}`);
       } else {
         stats.failed++;
-        stats.errors.push({ id: loc.id, name: loc.name, error: 'No state found' });
-        console.log(` ✗ No state found`);
+        stats.errors.push({
+          id: loc.id,
+          name: loc.name,
+          error: 'No state found in geocoding result'
+        });
+        console.log(`  ✗ No state found`);
+      }
+      
+      // Rate limiting
+      if (i < locations.length - 1) {
+        await sleep(DELAY_MS);
       }
       
     } catch (err) {
       stats.failed++;
-      stats.errors.push({ id: loc.id, name: loc.name, error: err.message });
-      console.log(` ✗ ${err.message}`);
-    }
-    
-    // Rate limit: wait 1 second between requests
-    if (i < locations.length - 1) {
-      await sleep(RATE_LIMIT_MS);
+      stats.errors.push({
+        id: loc.id,
+        name: loc.name,
+        error: err.message
+      });
+      console.log(`  ✗ Error: ${err.message}`);
+      
+      // Continue after error with rate limiting
+      if (i < locations.length - 1) {
+        await sleep(DELAY_MS);
+      }
     }
   }
   
   return stats;
 }
 
-// Print summary report
-function printReport(stats) {
+// US State name to code mapping
+function getStateCode(stateName) {
+  const stateMap = {
+    'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR',
+    'California': 'CA', 'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE',
+    'Florida': 'FL', 'Georgia': 'GA', 'Hawaii': 'HI', 'Idaho': 'ID',
+    'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA', 'Kansas': 'KS',
+    'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
+    'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS',
+    'Missouri': 'MO', 'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV',
+    'New Hampshire': 'NH', 'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY',
+    'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH', 'Oklahoma': 'OK',
+    'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
+    'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT',
+    'Vermont': 'VT', 'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV',
+    'Wisconsin': 'WI', 'Wyoming': 'WY'
+  };
+  
+  return stateMap[stateName] || stateName;
+}
+
+// Print report
+function printReport(stats, dryRun) {
   console.log('\n' + '='.repeat(60));
-  console.log('GEOCODING REPORT');
+  console.log(dryRun ? 'DRY RUN REPORT' : 'GEOCODING REPORT');
   console.log('='.repeat(60));
   console.log(`\nTotal processed:  ${stats.total}`);
   console.log(`Successful:       ${stats.success}`);
@@ -194,7 +224,7 @@ function printReport(stats) {
     console.log('ERRORS:\n');
     
     for (const err of stats.errors.slice(0, 10)) {
-      console.log(`ID ${err.id}: ${err.name}`);
+      console.log(`[${err.id}] ${err.name}`);
       console.log(`  ✗ ${err.error}\n`);
     }
     
@@ -204,105 +234,72 @@ function printReport(stats) {
   }
   
   console.log('='.repeat(60) + '\n');
-}
-
-// Show current state coverage
-function showCoverage() {
-  const total = db.prepare('SELECT COUNT(*) as count FROM locations').get().count;
-  const withState = db.prepare('SELECT COUNT(*) as count FROM locations WHERE state IS NOT NULL').get().count;
-  const pct = Math.round((withState / total) * 100);
   
-  console.log('Current state coverage:');
-  console.log(`  ${withState} / ${total} locations (${pct}%)\n`);
-  
-  if (withState > 0) {
-    console.log('Locations by state:');
-    const byState = db.prepare(`
+  if (!dryRun && stats.success > 0) {
+    console.log(`✓ Successfully geocoded ${stats.success} locations!\n`);
+    
+    // Show state distribution
+    const stateCounts = db.prepare(`
       SELECT state, COUNT(*) as count 
       FROM locations 
       WHERE state IS NOT NULL 
       GROUP BY state 
       ORDER BY count DESC 
-      LIMIT 10
+      LIMIT 15
     `).all();
     
-    for (const row of byState) {
-      console.log(`  ${row.state}: ${row.count}`);
+    if (stateCounts.length > 0) {
+      console.log('Top states by location count:');
+      for (const row of stateCounts) {
+        console.log(`  ${row.state}: ${row.count}`);
+      }
+      console.log('');
     }
-    console.log('');
   }
 }
 
 // Main
 const args = process.argv.slice(2);
 
-if (args.includes('--help') || args.includes('-h')) {
+if (args.includes('--help')) {
   console.log(`
-TrailCamp Geocoding Helper
+TrailCamp Geocoding Tool
 
 Usage:
-  node geocode-locations.js [options]
+  node geocode-locations.js [--limit N] [--dry-run]
 
 Options:
-  --limit N      Geocode only N locations (default: all missing)
-  --offset N     Skip first N locations (default: 0)
-  --coverage     Show current state coverage and exit
-  --help, -h     Show this help
+  --limit N    Process only N locations (for testing)
+  --dry-run    Test without updating database
+  --help       Show this help
 
 Examples:
-  node geocode-locations.js --limit 10          # Geocode first 10
-  node geocode-locations.js --limit 50 --offset 100  # Geocode 50, starting at #100
-  node geocode-locations.js --coverage         # Check current coverage
-  node geocode-locations.js                    # Geocode all missing
+  node geocode-locations.js --limit 10 --dry-run
+  node geocode-locations.js --limit 50
+  node geocode-locations.js
 
-Notes:
-  - Uses Nominatim (OpenStreetMap) API (free, 1 req/sec limit)
-  - Large batches will take time: 1000 locations ≈ 17 minutes
-  - Can be interrupted and resumed (only geocodes locations without state)
-  - Respects Nominatim usage policy automatically
+Note:
+  Uses OpenStreetMap Nominatim API (free, 1 req/sec limit)
+  Processes ~3600 locations per hour max
+  For 6000+ locations, expect ~2 hours runtime
   `);
   process.exit(0);
 }
 
-if (args.includes('--coverage')) {
-  showCoverage();
-  process.exit(0);
-}
+const limitMatch = args.find(a => a.startsWith('--limit'));
+const limit = limitMatch ? parseInt(args[args.indexOf(limitMatch) + 1]) : null;
+const dryRun = args.includes('--dry-run');
 
-const limitIdx = args.indexOf('--limit');
-const limit = limitIdx >= 0 ? parseInt(args[limitIdx + 1]) : null;
-
-const offsetIdx = args.indexOf('--offset');
-const offset = offsetIdx >= 0 ? parseInt(args[offsetIdx + 1]) : 0;
-
-// Show current coverage first
-showCoverage();
-
-// Confirm before geocoding large batches
-const missingCount = db.prepare('SELECT COUNT(*) as count FROM locations WHERE state IS NULL').get().count;
-
-if (!limit && missingCount > 100) {
-  console.log(`⚠️  About to geocode ${missingCount} locations (${Math.ceil(missingCount / 60)} minutes estimated)`);
-  console.log('   Press Ctrl+C to cancel, or wait 5 seconds to continue...\n');
-  await sleep(5000);
-}
-
-// Run geocoding
-try {
-  const stats = await geocodeLocations(limit, offset);
-  printReport(stats);
-  
-  console.log('Updated coverage:');
-  showCoverage();
-  
-  if (stats.success > 0) {
-    console.log('✓ Geocoding complete!\n');
+(async () => {
+  try {
+    const stats = await geocodeLocations(limit, dryRun);
+    printReport(stats, dryRun);
+    
+    process.exit(stats.failed === stats.total ? 1 : 0);
+  } catch (err) {
+    console.error(`\n✗ Geocoding failed: ${err.message}\n`);
+    process.exit(1);
+  } finally {
+    db.close();
   }
-  
-  process.exit(stats.failed > 0 ? 1 : 0);
-} catch (err) {
-  console.error(`\n✗ Geocoding failed: ${err.message}\n`);
-  process.exit(1);
-} finally {
-  db.close();
-}
+})();
