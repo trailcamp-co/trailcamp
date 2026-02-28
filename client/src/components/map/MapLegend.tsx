@@ -22,7 +22,7 @@ export default function MapLegend() {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="absolute top-3 right-14 z-10 p-2 rounded-lg bg-dark-900/90 backdrop-blur-sm border border-dark-700/50 text-gray-300 hover:bg-dark-800 transition-all shadow-lg
+        className="absolute top-3 right-28 z-10 p-2 rounded-lg bg-dark-900/90 backdrop-blur-sm border border-dark-700/50 text-gray-300 hover:bg-dark-800 transition-all shadow-lg
           [.light_&]:bg-white/90 [.light_&]:border-gray-200 [.light_&]:text-gray-600 [.light_&]:hover:bg-gray-50"
         title="Map Legend"
       >
@@ -32,7 +32,7 @@ export default function MapLegend() {
   }
 
   return (
-    <div className="absolute top-3 right-14 z-10 p-3 rounded-xl bg-dark-900/95 backdrop-blur-sm border border-dark-700/50 shadow-xl animate-fade-in min-w-[170px]
+    <div className="absolute top-3 right-28 z-10 p-3 rounded-xl bg-dark-900/95 backdrop-blur-sm border border-dark-700/50 shadow-xl animate-fade-in min-w-[170px]
       [.light_&]:bg-white/95 [.light_&]:border-gray-200">
       
       <div className="flex items-center justify-between mb-2">
