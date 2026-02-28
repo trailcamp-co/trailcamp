@@ -259,15 +259,20 @@ export default function RightPanel({
       </div>
 
       <div className="flex-1 overflow-y-auto scroll-smooth">
-        {/* Hero gradient when no photos */}
-        {!hasPhotos && (
-          <div className="h-32 w-full relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${categoryColor}20, ${categoryColor}08, transparent)` }}>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-5xl opacity-30">{CATEGORY_ICONS[location.category] || '📍'}</span>
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-dark-950 [.light_&]:from-white to-transparent" />
+        {/* Satellite hero image */}
+        <div className="h-36 w-full relative overflow-hidden bg-dark-800">
+          <img
+            src={`https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${location.longitude},${location.latitude},13,0/400x200@2x?access_token=${(window as any).__mapboxToken || ''}`}
+            alt={location.name}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-dark-950 via-dark-950/20 to-transparent [.light_&]:from-white [.light_&]:via-white/20" />
+          <div className="absolute bottom-2 left-3 flex items-center gap-1.5">
+            <span className="text-2xl drop-shadow-lg">{CATEGORY_ICONS[location.category] || '📍'}</span>
           </div>
-        )}
+        </div>
 
         {/* Coordinates */}
         <div className="px-5 pt-3 flex items-center gap-2">

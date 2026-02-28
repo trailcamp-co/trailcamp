@@ -52,7 +52,7 @@ export default function App() {
 
   // Load mapbox token
   useEffect(() => {
-    getMapboxToken().then(setMapboxToken).catch(() => {});
+    getMapboxToken().then(t => { setMapboxToken(t); (window as any).__mapboxToken = t; }).catch(() => {});
   }, []);
 
   // Select first trip by default (only on initial load)
