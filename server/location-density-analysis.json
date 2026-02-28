@@ -1,0 +1,7113 @@
+{
+  "metadata": {
+    "generatedAt": "2026-02-28T17:59:31.864Z",
+    "totalLocations": 5597,
+    "gridSize": 2,
+    "gridCells": 263
+  },
+  "regional": [
+    {
+      "region": "Rocky Mountains",
+      "total": 1355,
+      "riding": 265,
+      "boondocking": 163,
+      "campgrounds": 924,
+      "avgScenery": 5.9,
+      "bounds": {
+        "latMin": 37.00125,
+        "latMax": 48.9552778,
+        "lonMin": -114.975,
+        "lonMax": -102.09715761
+      }
+    },
+    {
+      "region": "California",
+      "total": 881,
+      "riding": 168,
+      "boondocking": 88,
+      "campgrounds": 623,
+      "avgScenery": 5.8,
+      "bounds": {
+        "latMin": 32.6567,
+        "latMax": 41.979064,
+        "lonMin": -124.355879,
+        "lonMax": -114.0234
+      }
+    },
+    {
+      "region": "Other",
+      "total": 860,
+      "riding": 183,
+      "boondocking": 26,
+      "campgrounds": 649,
+      "avgScenery": 5.6,
+      "bounds": {
+        "latMin": 29.1369444,
+        "latMax": 49.325,
+        "lonMin": -120.625,
+        "lonMax": -80.0105556
+      }
+    },
+    {
+      "region": "Pacific Northwest",
+      "total": 733,
+      "riding": 94,
+      "boondocking": 97,
+      "campgrounds": 542,
+      "avgScenery": 6,
+      "bounds": {
+        "latMin": 42.016163,
+        "latMax": 48.9402778,
+        "lonMin": -124.4109278,
+        "lonMax": -116.0055556
+      }
+    },
+    {
+      "region": "Southeast",
+      "total": 548,
+      "riding": 157,
+      "boondocking": 21,
+      "campgrounds": 370,
+      "avgScenery": 5.5,
+      "bounds": {
+        "latMin": 25.685,
+        "latMax": 36.9916667,
+        "lonMin": -89.8916667,
+        "lonMax": -75.9225028
+      }
+    },
+    {
+      "region": "Southwest Desert",
+      "total": 352,
+      "riding": 94,
+      "boondocking": 75,
+      "campgrounds": 178,
+      "avgScenery": 5.8,
+      "bounds": {
+        "latMin": 31.385,
+        "latMax": 36.955011,
+        "lonMin": -113.9858,
+        "lonMax": -103.2234
+      }
+    },
+    {
+      "region": "Great Lakes",
+      "total": 249,
+      "riding": 93,
+      "boondocking": 13,
+      "campgrounds": 143,
+      "avgScenery": 5.5,
+      "bounds": {
+        "latMin": 41.0069444,
+        "latMax": 47.9952778,
+        "lonMin": -92.97286614,
+        "lonMax": -76.3234
+      }
+    },
+    {
+      "region": "Northeast",
+      "total": 237,
+      "riding": 111,
+      "boondocking": 7,
+      "campgrounds": 119,
+      "avgScenery": 5.6,
+      "bounds": {
+        "latMin": 37.5567,
+        "latMax": 46.6234,
+        "lonMin": -79.994,
+        "lonMax": -67.5458
+      }
+    },
+    {
+      "region": "Alaska",
+      "total": 193,
+      "riding": 17,
+      "boondocking": 4,
+      "campgrounds": 172,
+      "avgScenery": 6.2,
+      "bounds": {
+        "latMin": 55.0216667,
+        "latMax": 66.5642,
+        "lonMin": -164.961107,
+        "lonMax": -130.53183
+      }
+    },
+    {
+      "region": "Great Plains",
+      "total": 180,
+      "riding": 25,
+      "boondocking": 0,
+      "campgrounds": 155,
+      "avgScenery": 5.9,
+      "bounds": {
+        "latMin": 35.0409647,
+        "latMax": 48.8567,
+        "lonMin": -101.9567,
+        "lonMax": -95.01483682
+      }
+    },
+    {
+      "region": "Hawaii",
+      "total": 9,
+      "riding": 8,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 7.9,
+      "bounds": {
+        "latMin": 18.9142,
+        "latMax": 22.0742,
+        "lonMin": -159.7358,
+        "lonMax": -155.3558
+      }
+    }
+  ],
+  "category": [
+    {
+      "category": "campsite",
+      "count": 4370,
+      "avg_scenery": 6.2,
+      "lat_min": 20.7097222,
+      "lat_max": 65.55503385,
+      "lon_min": -164.961107,
+      "lon_max": -68.6531222
+    },
+    {
+      "category": "riding",
+      "count": 1215,
+      "avg_scenery": 4.5,
+      "lat_min": 18.9142,
+      "lat_max": 66.5642,
+      "lon_min": -159.7358,
+      "lon_max": -67.5458
+    },
+    {
+      "category": "scenic",
+      "count": 8,
+      "avg_scenery": 4.5,
+      "lat_min": 34.8198,
+      "lat_max": 37.2982,
+      "lon_min": -114.5135,
+      "lon_max": -86.1008
+    },
+    {
+      "category": "dump",
+      "count": 3,
+      "avg_scenery": 3,
+      "lat_min": 33.97,
+      "lat_max": 37.0961,
+      "lon_min": -118.854,
+      "lon_max": -112.73
+    },
+    {
+      "category": "water",
+      "count": 1,
+      "avg_scenery": 3,
+      "lat_min": 33.9686,
+      "lat_max": 33.9686,
+      "lon_min": -112.7312,
+      "lon_max": -112.7312
+    }
+  ],
+  "heatmap": [
+    {
+      "lat": 39,
+      "lon": -121,
+      "count": 147,
+      "riding": 18,
+      "boondocking": 1,
+      "campgrounds": 128,
+      "avgScenery": 5.7,
+      "locations": [
+        {
+          "id": 250,
+          "name": "Wakalu Hep Yo (Wild River) Campground",
+          "scenery": 7
+        },
+        {
+          "id": 247,
+          "name": "FRENCHMAN",
+          "scenery": 6
+        },
+        {
+          "id": 249,
+          "name": "BOCA REST CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -119,
+      "count": 146,
+      "riding": 10,
+      "boondocking": 15,
+      "campgrounds": 121,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 257,
+          "name": "Rock Creek (Sierra National Forest, CA)",
+          "scenery": 7
+        },
+        {
+          "id": 255,
+          "name": "POTWISHA CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 264,
+          "name": "VERMILLION",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -121,
+      "count": 127,
+      "riding": 11,
+      "boondocking": 22,
+      "campgrounds": 94,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 1874,
+          "name": "Chimney Rock Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1868,
+          "name": "Ochoco NF-Maury Mountains Area",
+          "scenery": 6
+        },
+        {
+          "id": 1872,
+          "name": "Stillwater Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -109,
+      "count": 112,
+      "riding": 45,
+      "boondocking": 22,
+      "campgrounds": 45,
+      "avgScenery": 5.6,
+      "locations": [
+        {
+          "id": 902,
+          "name": "Moose Manor Cabin",
+          "scenery": 6
+        },
+        {
+          "id": 904,
+          "name": "OAK CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 944,
+          "name": "SILESCA CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -121,
+      "count": 110,
+      "riding": 19,
+      "boondocking": 13,
+      "campgrounds": 78,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 2532,
+          "name": "KANER FLAT CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 2533,
+          "name": "Lodgepole Campground (Washington)",
+          "scenery": 6
+        },
+        {
+          "id": 2534,
+          "name": "SAWMILL FLAT CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -107,
+      "count": 109,
+      "riding": 32,
+      "boondocking": 9,
+      "campgrounds": 68,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 886,
+          "name": "SW/Central Flat Tops Area",
+          "scenery": 6
+        },
+        {
+          "id": 888,
+          "name": "CRESCENT MINING CAMP",
+          "scenery": 6
+        },
+        {
+          "id": 890,
+          "name": "Chalk Creek Canyon",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -83,
+      "count": 108,
+      "riding": 14,
+      "boondocking": 9,
+      "campgrounds": 85,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 3559,
+          "name": "Wildcat Creek Campground #2 Upper",
+          "scenery": 6
+        },
+        {
+          "id": 3564,
+          "name": "BIG OAKS",
+          "scenery": 6
+        },
+        {
+          "id": 3565,
+          "name": "BOLDING MILL",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -111,
+      "count": 97,
+      "riding": 15,
+      "boondocking": 10,
+      "campgrounds": 72,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 884,
+          "name": "Huntington Canyon Recreation Area",
+          "scenery": 6
+        },
+        {
+          "id": 909,
+          "name": "Miller Flat Reservoir Campground",
+          "scenery": 6
+        },
+        {
+          "id": 2203,
+          "name": "Temple Mountain Campground East",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -115,
+      "count": 94,
+      "riding": 18,
+      "boondocking": 5,
+      "campgrounds": 71,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 1122,
+          "name": "Payette River: South Fork",
+          "scenery": 7
+        },
+        {
+          "id": 1119,
+          "name": "TRAP CREEK CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 1120,
+          "name": "HOT SPRINGS",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -113,
+      "count": 90,
+      "riding": 7,
+      "boondocking": 15,
+      "campgrounds": 65,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 5,
+          "name": "Moon Rocks — Warner Valley",
+          "scenery": 5
+        },
+        {
+          "id": 32,
+          "name": "Zion National Park",
+          "scenery": 5
+        },
+        {
+          "id": 33,
+          "name": "Snow Canyon State Park",
+          "scenery": 5
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -117,
+      "count": 90,
+      "riding": 33,
+      "boondocking": 9,
+      "campgrounds": 48,
+      "avgScenery": 5.2,
+      "locations": [
+        {
+          "id": 260,
+          "name": "FISHERMANS GROUP",
+          "scenery": 7
+        },
+        {
+          "id": 261,
+          "name": "San Gabriel Mountains National Monument",
+          "scenery": 6
+        },
+        {
+          "id": 278,
+          "name": "Coon Creek Yellow Post Sites",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -123,
+      "count": 90,
+      "riding": 4,
+      "boondocking": 8,
+      "campgrounds": 78,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 252,
+          "name": "MARINERS POINT GROUP CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 267,
+          "name": "Philpot Picnic Area",
+          "scenery": 6
+        },
+        {
+          "id": 272,
+          "name": "Hotelling Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -123,
+      "count": 87,
+      "riding": 5,
+      "boondocking": 5,
+      "campgrounds": 77,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 547,
+          "name": "Harr Point Campground",
+          "scenery": 6
+        },
+        {
+          "id": 704,
+          "name": "River Bench Campground",
+          "scenery": 6
+        },
+        {
+          "id": 775,
+          "name": "Fish Lake Resort",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -119,
+      "count": 77,
+      "riding": 15,
+      "boondocking": 3,
+      "campgrounds": 58,
+      "avgScenery": 5.6,
+      "locations": [
+        {
+          "id": 246,
+          "name": "LIVE OAK SOUTH",
+          "scenery": 6
+        },
+        {
+          "id": 263,
+          "name": "CAMP THREE CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 266,
+          "name": "SANTA CRUZ SCORPION",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -111,
+      "count": 70,
+      "riding": 9,
+      "boondocking": 10,
+      "campgrounds": 51,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 1127,
+          "name": "Graves Creek Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1148,
+          "name": "Pine Creek Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1118,
+          "name": "Blowout Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -85,
+      "count": 70,
+      "riding": 23,
+      "boondocking": 0,
+      "campgrounds": 47,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 3560,
+          "name": "Leon E. Williams - Holiday Marina",
+          "scenery": 6
+        },
+        {
+          "id": 3561,
+          "name": "PS Marina 3 - Allatoona Landing",
+          "scenery": 6
+        },
+        {
+          "id": 3563,
+          "name": "BALD RIDGE CREEK",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -115,
+      "count": 66,
+      "riding": 4,
+      "boondocking": 5,
+      "campgrounds": 57,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 1154,
+          "name": "Lake Creek Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1110,
+          "name": "Grave Creek Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1117,
+          "name": "Camp 32",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -115,
+      "count": 65,
+      "riding": 9,
+      "boondocking": 6,
+      "campgrounds": 50,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 1113,
+          "name": "ARID PEAK LOOKOUT",
+          "scenery": 6
+        },
+        {
+          "id": 1155,
+          "name": "Hidden Creek Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1162,
+          "name": "OHARA",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -81,
+      "count": 63,
+      "riding": 22,
+      "boondocking": 3,
+      "campgrounds": 38,
+      "avgScenery": 5.6,
+      "locations": [
+        {
+          "id": 3693,
+          "name": "Comers Rock Recreation Area",
+          "scenery": 7
+        },
+        {
+          "id": 3657,
+          "name": "Eastern Divide Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 3748,
+          "name": "KEOWEE PARK SHELTER ",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -107,
+      "count": 62,
+      "riding": 19,
+      "boondocking": 4,
+      "campgrounds": 39,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 896,
+          "name": "GRAHAM CREEK CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 903,
+          "name": "THIRTY MILE",
+          "scenery": 6
+        },
+        {
+          "id": 918,
+          "name": "MOGOTE",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -111,
+      "count": 61,
+      "riding": 2,
+      "boondocking": 6,
+      "campgrounds": 53,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 1111,
+          "name": "BUFFALO (IDAHO)",
+          "scenery": 6
+        },
+        {
+          "id": 1124,
+          "name": "FLAT ROCK (IDAHO)",
+          "scenery": 6
+        },
+        {
+          "id": 1149,
+          "name": "Grandview Campground (Idaho)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -105,
+      "count": 60,
+      "riding": 22,
+      "boondocking": 3,
+      "campgrounds": 35,
+      "avgScenery": 5.6,
+      "locations": [
+        {
+          "id": 891,
+          "name": "Chatfield State Park",
+          "scenery": 7
+        },
+        {
+          "id": 897,
+          "name": "Rampart Reservoir Recreation Area",
+          "scenery": 6
+        },
+        {
+          "id": 901,
+          "name": "MEADOW RIDGE",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -113,
+      "count": 60,
+      "riding": 10,
+      "boondocking": 9,
+      "campgrounds": 41,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 1439,
+          "name": "Lindbergh Lake Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1446,
+          "name": "STONY CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 1448,
+          "name": "Home Gulch Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -123,
+      "count": 59,
+      "riding": 10,
+      "boondocking": 5,
+      "campgrounds": 44,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 1900,
+          "name": "Shotgun Creek Recreation Site",
+          "scenery": 7
+        },
+        {
+          "id": 1890,
+          "name": "Whispering Pines Horse Camp",
+          "scenery": 6
+        },
+        {
+          "id": 1907,
+          "name": "MONA ",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -119,
+      "count": 55,
+      "riding": 10,
+      "boondocking": 6,
+      "campgrounds": 39,
+      "avgScenery": 5.7,
+      "locations": [
+        {
+          "id": 248,
+          "name": "Carson Ranger District Office",
+          "scenery": 6
+        },
+        {
+          "id": 256,
+          "name": "Clark Fork Campground",
+          "scenery": 6
+        },
+        {
+          "id": 274,
+          "name": "TRUMBULL LAKE",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -121,
+      "count": 54,
+      "riding": 6,
+      "boondocking": 7,
+      "campgrounds": 41,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 1871,
+          "name": "EAST DAVIS CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 1877,
+          "name": "DRAKE PEAK LOOKOUT",
+          "scenery": 6
+        },
+        {
+          "id": 1897,
+          "name": "Chiloquin Ranger District",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -93,
+      "count": 54,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 51,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 2884,
+          "name": "DAM SITE LAKE CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 2888,
+          "name": "LOST BRIDGE SOUTH",
+          "scenery": 6
+        },
+        {
+          "id": 2891,
+          "name": "BIDWELL POINT PARK",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -115,
+      "count": 52,
+      "riding": 12,
+      "boondocking": 3,
+      "campgrounds": 37,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 1125,
+          "name": "BAD BEAR CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 1130,
+          "name": "Sawtooth National Recreation Area",
+          "scenery": 6
+        },
+        {
+          "id": 1136,
+          "name": "GRAHAM CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -113,
+      "count": 51,
+      "riding": 13,
+      "boondocking": 8,
+      "campgrounds": 30,
+      "avgScenery": 5.7,
+      "locations": [
+        {
+          "id": 108,
+          "name": "Little Pan Staging Area",
+          "scenery": 7
+        },
+        {
+          "id": 101,
+          "name": "KAIBAB LAKE SITES AND GROUP AREAS",
+          "scenery": 6
+        },
+        {
+          "id": 102,
+          "name": "WHITE HORSE LAKE Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -97,
+      "count": 51,
+      "riding": 10,
+      "boondocking": 1,
+      "campgrounds": 40,
+      "avgScenery": 5.5,
+      "locations": [
+        {
+          "id": 3239,
+          "name": "BURNS RUN EAST",
+          "scenery": 6
+        },
+        {
+          "id": 3241,
+          "name": "CANEY CREEK",
+          "scenery": 6
+        },
+        {
+          "id": 3345,
+          "name": "LOVE",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -85,
+      "count": 51,
+      "riding": 16,
+      "boondocking": 1,
+      "campgrounds": 34,
+      "avgScenery": 5.6,
+      "locations": [
+        {
+          "id": 3635,
+          "name": "Pulaski County Park",
+          "scenery": 6
+        },
+        {
+          "id": 3649,
+          "name": "London Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 3651,
+          "name": "Laurel River Lake",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -95,
+      "count": 49,
+      "riding": 2,
+      "boondocking": 1,
+      "campgrounds": 46,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 2885,
+          "name": "PINE RIDGE",
+          "scenery": 6
+        },
+        {
+          "id": 2886,
+          "name": "LITTLE COON CREEK PARK",
+          "scenery": 6
+        },
+        {
+          "id": 2894,
+          "name": "Poteau/Cold Springs Ranger District",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -111,
+      "count": 48,
+      "riding": 14,
+      "boondocking": 4,
+      "campgrounds": 28,
+      "avgScenery": 5.7,
+      "locations": [
+        {
+          "id": 117,
+          "name": "Lockett Meadow Campground",
+          "scenery": 7
+        },
+        {
+          "id": 114,
+          "name": "PINE FLAT CAMPGROUND WEST",
+          "scenery": 6
+        },
+        {
+          "id": 115,
+          "name": "Crescent Moon Ramada",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -113,
+      "count": 48,
+      "riding": 4,
+      "boondocking": 8,
+      "campgrounds": 36,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 1137,
+          "name": "Birch Creek Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1200,
+          "name": "Shoup Bridge Recreation Site",
+          "scenery": 7
+        },
+        {
+          "id": 1134,
+          "name": "McFarland Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -121,
+      "count": 47,
+      "riding": 3,
+      "boondocking": 1,
+      "campgrounds": 43,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 338,
+          "name": "Ramhorn Springs Campground",
+          "scenery": 7
+        },
+        {
+          "id": 251,
+          "name": "SUMMIT LAKE STOCK CORRAL",
+          "scenery": 6
+        },
+        {
+          "id": 294,
+          "name": "JUNIPER LAKE GROUP",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -93,
+      "count": 47,
+      "riding": 6,
+      "boondocking": 1,
+      "campgrounds": 40,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 2889,
+          "name": "Dam Area",
+          "scenery": 6
+        },
+        {
+          "id": 2893,
+          "name": "Riverview",
+          "scenery": 6
+        },
+        {
+          "id": 2895,
+          "name": "COVE LAKE RECREATION AREA",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -111,
+      "count": 46,
+      "riding": 20,
+      "boondocking": 8,
+      "campgrounds": 18,
+      "avgScenery": 5.4,
+      "locations": [
+        {
+          "id": 111,
+          "name": "ROSE CANYON",
+          "scenery": 6
+        },
+        {
+          "id": 121,
+          "name": "MOLINO",
+          "scenery": 6
+        },
+        {
+          "id": 125,
+          "name": "PEPPERSAUCE",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -117,
+      "count": 46,
+      "riding": 4,
+      "boondocking": 11,
+      "campgrounds": 31,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 1147,
+          "name": "White Bird Gravel Pit Recreation Site",
+          "scenery": 7
+        },
+        {
+          "id": 1109,
+          "name": "RAINBOW POINT",
+          "scenery": 6
+        },
+        {
+          "id": 1114,
+          "name": "FRENCH CREEK",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -117,
+      "count": 46,
+      "riding": 6,
+      "boondocking": 4,
+      "campgrounds": 36,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 1112,
+          "name": "ELK CREEK PAVILION (CLEARWATER NF)",
+          "scenery": 6
+        },
+        {
+          "id": 1115,
+          "name": "LITTLE GUARD LOOKOUT",
+          "scenery": 6
+        },
+        {
+          "id": 1138,
+          "name": "Killarney Lake Picnic Site",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -109,
+      "count": 44,
+      "riding": 6,
+      "boondocking": 10,
+      "campgrounds": 28,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 1467,
+          "name": "Palisades Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1465,
+          "name": "GREENOUGH LAKE",
+          "scenery": 6
+        },
+        {
+          "id": 1469,
+          "name": "Pine Grove Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -109,
+      "count": 44,
+      "riding": 3,
+      "boondocking": 4,
+      "campgrounds": 37,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 2216,
+          "name": "SPLIT MOUNTAIN GROUP CAMPGROUND",
+          "scenery": 7
+        },
+        {
+          "id": 2226,
+          "name": "DUTCH JOHN DRAW CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 2229,
+          "name": "Oaks Park Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -79,
+      "count": 44,
+      "riding": 15,
+      "boondocking": 5,
+      "campgrounds": 24,
+      "avgScenery": 5.7,
+      "locations": [
+        {
+          "id": 3642,
+          "name": "Hawk Recreation Area",
+          "scenery": 6
+        },
+        {
+          "id": 3645,
+          "name": "Lee Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 3653,
+          "name": "Wolf Gap Recreation Area",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -109,
+      "count": 43,
+      "riding": 9,
+      "boondocking": 7,
+      "campgrounds": 27,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 106,
+          "name": "Riverview Campground",
+          "scenery": 7
+        },
+        {
+          "id": 113,
+          "name": "GRAYLING",
+          "scenery": 6
+        },
+        {
+          "id": 122,
+          "name": "UPPER HOSPITAL FLAT GROUP SITE",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -117,
+      "count": 42,
+      "riding": 6,
+      "boondocking": 5,
+      "campgrounds": 31,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 381,
+          "name": "Cottonwood Campground",
+          "scenery": 7
+        },
+        {
+          "id": 394,
+          "name": "Santa Rosa & San Jacinto Mtns. National Monument",
+          "scenery": 7
+        },
+        {
+          "id": 254,
+          "name": "BLACK MOUNTAIN (SAN BERNARDINO)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -111,
+      "count": 42,
+      "riding": 4,
+      "boondocking": 5,
+      "campgrounds": 33,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 1441,
+          "name": "Spring Creek Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1442,
+          "name": "Riverside Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1460,
+          "name": "HUNTERS SPRING CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -121,
+      "count": 42,
+      "riding": 2,
+      "boondocking": 6,
+      "campgrounds": 34,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 2536,
+          "name": "SUIATTLE GUARD STATION",
+          "scenery": 6
+        },
+        {
+          "id": 2541,
+          "name": "Lucerne Campground",
+          "scenery": 6
+        },
+        {
+          "id": 2544,
+          "name": "Mt. Baker Highway (SR 542)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -87,
+      "count": 40,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 38,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 3637,
+          "name": "LINTON",
+          "scenery": 6
+        },
+        {
+          "id": 3638,
+          "name": "MAPLE SPRINGS",
+          "scenery": 6
+        },
+        {
+          "id": 3639,
+          "name": "NORTH FORK (KY)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -83,
+      "count": 40,
+      "riding": 15,
+      "boondocking": 2,
+      "campgrounds": 23,
+      "avgScenery": 5.3,
+      "locations": [
+        {
+          "id": 3644,
+          "name": "Pleasant Ridge",
+          "scenery": 6
+        },
+        {
+          "id": 3652,
+          "name": "Lawrence County Recreation Area",
+          "scenery": 6
+        },
+        {
+          "id": 3676,
+          "name": "GRAYSON LAKE DAMSITE SHELTERS",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 61,
+      "lon": -149,
+      "count": 40,
+      "riding": 8,
+      "boondocking": 1,
+      "campgrounds": 31,
+      "avgScenery": 6.3,
+      "locations": [
+        {
+          "id": 4435,
+          "name": "SPENCER BENCH CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4437,
+          "name": "COOPER CREEK SOUTH",
+          "scenery": 6
+        },
+        {
+          "id": 4444,
+          "name": "QUARTZ CREEK CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -107,
+      "count": 39,
+      "riding": 14,
+      "boondocking": 5,
+      "campgrounds": 20,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 1759,
+          "name": "TETILLA PEAK",
+          "scenery": 6
+        },
+        {
+          "id": 1762,
+          "name": "Mount Taylor RD",
+          "scenery": 6
+        },
+        {
+          "id": 1763,
+          "name": "JEMEZ FALLS (NM) PICNIC AREA",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -91,
+      "count": 39,
+      "riding": 5,
+      "boondocking": 2,
+      "campgrounds": 32,
+      "avgScenery": 5.7,
+      "locations": [
+        {
+          "id": 3069,
+          "name": "COUNCIL BLUFF RECREATION AREA",
+          "scenery": 6
+        },
+        {
+          "id": 3070,
+          "name": "RED BLUFF CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 3071,
+          "name": "SILVER MINES",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -87,
+      "count": 39,
+      "riding": 5,
+      "boondocking": 8,
+      "campgrounds": 26,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4152,
+          "name": "Little Duck Campsite on Grand Island",
+          "scenery": 6
+        },
+        {
+          "id": 4154,
+          "name": "COLWELL LAKE CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 4155,
+          "name": "Little Bass Lake Campsites",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 57,
+      "lon": -133,
+      "count": 39,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 39,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4441,
+          "name": "SALMON BAY LAKE CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4442,
+          "name": "MALLARD SLOUGH CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4443,
+          "name": "MOUNT RYNDA CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -119,
+      "count": 38,
+      "riding": 5,
+      "boondocking": 2,
+      "campgrounds": 31,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 1194,
+          "name": "Yellow Pine Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1255,
+          "name": "Blue Mtns North/Grande Ronde River Basin Area",
+          "scenery": 6
+        },
+        {
+          "id": 1367,
+          "name": "Southern Elkhorn Mtn/Powder River Basin Area",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -107,
+      "count": 38,
+      "riding": 3,
+      "boondocking": 4,
+      "campgrounds": 31,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 1509,
+          "name": "Red Shale Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1550,
+          "name": "Blacks Pond Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1614,
+          "name": "Cow Creek Campground And Picnic Area",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -115,
+      "count": 37,
+      "riding": 16,
+      "boondocking": 9,
+      "campgrounds": 11,
+      "avgScenery": 5.5,
+      "locations": [
+        {
+          "id": 614,
+          "name": "Spring Mountains National Recreation Area Office",
+          "scenery": 6
+        },
+        {
+          "id": 1829,
+          "name": "MCWILLIAMS",
+          "scenery": 6
+        },
+        {
+          "id": 1839,
+          "name": "KYLE CANYON PICNIC AREA DAY USE",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -107,
+      "count": 37,
+      "riding": 4,
+      "boondocking": 2,
+      "campgrounds": 31,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 943,
+          "name": "Seedhouse Group Site - Medicine-Bow Routt NF (CO)",
+          "scenery": 7
+        },
+        {
+          "id": 885,
+          "name": "Lynx Pass Campground",
+          "scenery": 6
+        },
+        {
+          "id": 889,
+          "name": "Meeker Trails",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -83,
+      "count": 35,
+      "riding": 17,
+      "boondocking": 1,
+      "campgrounds": 17,
+      "avgScenery": 5.5,
+      "locations": [
+        {
+          "id": 3663,
+          "name": "Jenny Wiley State Park",
+          "scenery": 7
+        },
+        {
+          "id": 3640,
+          "name": "FISHTRAP LAKE SHELTERS",
+          "scenery": 6
+        },
+        {
+          "id": 3655,
+          "name": "BUCKHORN CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -71,
+      "count": 35,
+      "riding": 20,
+      "boondocking": 0,
+      "campgrounds": 15,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 4147,
+          "name": "HASTINGS CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 4148,
+          "name": "Androscoggin Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 4150,
+          "name": "Wild River Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -97,
+      "count": 33,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 30,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 2998,
+          "name": "CANNING CREEK",
+          "scenery": 6
+        },
+        {
+          "id": 3001,
+          "name": "COTTONWOOD POINT",
+          "scenery": 6
+        },
+        {
+          "id": 3002,
+          "name": "CURTIS CREEK",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -79,
+      "count": 33,
+      "riding": 8,
+      "boondocking": 0,
+      "campgrounds": 25,
+      "avgScenery": 5.5,
+      "locations": [
+        {
+          "id": 4342,
+          "name": "BUCKALOONS",
+          "scenery": 6
+        },
+        {
+          "id": 4343,
+          "name": "DEWDROP",
+          "scenery": 6
+        },
+        {
+          "id": 4344,
+          "name": "RED BRIDGE (PA)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -117,
+      "count": 32,
+      "riding": 3,
+      "boondocking": 2,
+      "campgrounds": 27,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 1116,
+          "name": "SPRINGY POINT",
+          "scenery": 6
+        },
+        {
+          "id": 1123,
+          "name": "Lower Kootenai River Area",
+          "scenery": 6
+        },
+        {
+          "id": 1128,
+          "name": "KALISPELL ISLAND BOAT-IN CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -81,
+      "count": 31,
+      "riding": 8,
+      "boondocking": 2,
+      "campgrounds": 21,
+      "avgScenery": 5.5,
+      "locations": [
+        {
+          "id": 4000,
+          "name": "LAKE SHERWOOD",
+          "scenery": 6
+        },
+        {
+          "id": 4006,
+          "name": "BATTLE RUN",
+          "scenery": 6
+        },
+        {
+          "id": 4007,
+          "name": "BULLTOWN CAMP",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -113,
+      "count": 30,
+      "riding": 6,
+      "boondocking": 20,
+      "campgrounds": 2,
+      "avgScenery": 5.4,
+      "locations": [
+        {
+          "id": 1,
+          "name": "Ghost Town Road Dispersed",
+          "scenery": 4
+        },
+        {
+          "id": 2,
+          "name": "Vulture Peak State Trust Land",
+          "scenery": 4
+        },
+        {
+          "id": 3,
+          "name": "Boulders OHV Area Camping",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -105,
+      "count": 30,
+      "riding": 9,
+      "boondocking": 2,
+      "campgrounds": 19,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 892,
+          "name": "Carpios Ridge",
+          "scenery": 6
+        },
+        {
+          "id": 908,
+          "name": "SOUTHSIDE CAMPGROUND - LAKE ISABEL",
+          "scenery": 6
+        },
+        {
+          "id": 952,
+          "name": "LA VISTA CAMPGROUND - LAKE ISABEL",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -109,
+      "count": 30,
+      "riding": 4,
+      "boondocking": 7,
+      "campgrounds": 19,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 2739,
+          "name": "Green River Lakes - Bridger-Teton NF (WY)",
+          "scenery": 7
+        },
+        {
+          "id": 2738,
+          "name": "HALF MOON LAKE CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 2741,
+          "name": "FREMONT LAKE",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -115,
+      "count": 29,
+      "riding": 7,
+      "boondocking": 8,
+      "campgrounds": 14,
+      "avgScenery": 5.7,
+      "locations": [
+        {
+          "id": 197,
+          "name": "Ehrenberg Sandbowl",
+          "scenery": 7
+        },
+        {
+          "id": 241,
+          "name": "T.K. Jones Campground and Boat Launch",
+          "scenery": 7
+        },
+        {
+          "id": 163,
+          "name": "Kofa Wilderness",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -111,
+      "count": 29,
+      "riding": 3,
+      "boondocking": 1,
+      "campgrounds": 25,
+      "avgScenery": 5.7,
+      "locations": [
+        {
+          "id": 2204,
+          "name": "UPPER STILLWATER",
+          "scenery": 6
+        },
+        {
+          "id": 2212,
+          "name": "Preston Valley Campground",
+          "scenery": 6
+        },
+        {
+          "id": 2225,
+          "name": "Wolverine ATV Trailhead/Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -97,
+      "count": 29,
+      "riding": 5,
+      "boondocking": 0,
+      "campgrounds": 24,
+      "avgScenery": 5.6,
+      "locations": [
+        {
+          "id": 3354,
+          "name": "Birch Creek State Park",
+          "scenery": 7
+        },
+        {
+          "id": 3346,
+          "name": "Lake Somerville Marina & Campground",
+          "scenery": 6
+        },
+        {
+          "id": 3352,
+          "name": "PECAN POINT PARK (Navarro Mills Lake)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -83,
+      "count": 29,
+      "riding": 5,
+      "boondocking": 0,
+      "campgrounds": 24,
+      "avgScenery": 5.7,
+      "locations": [
+        {
+          "id": 3562,
+          "name": "AMITY RECREATION AREA",
+          "scenery": 6
+        },
+        {
+          "id": 3573,
+          "name": "LAKE SPRINGS",
+          "scenery": 6
+        },
+        {
+          "id": 3585,
+          "name": "WEST DAM",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -73,
+      "count": 29,
+      "riding": 16,
+      "boondocking": 0,
+      "campgrounds": 13,
+      "avgScenery": 5.5,
+      "locations": [
+        {
+          "id": 4133,
+          "name": "INDIAN HOLLOW",
+          "scenery": 6
+        },
+        {
+          "id": 4135,
+          "name": "WESTVILLE RECREATION AREA",
+          "scenery": 6
+        },
+        {
+          "id": 4136,
+          "name": "TULLY LAKE RECREATION AREA (MA)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -95,
+      "count": 28,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 28,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 622,
+          "name": "San Bernanrdino County Recreation Area",
+          "scenery": 6
+        },
+        {
+          "id": 2997,
+          "name": "ARROW ROCK",
+          "scenery": 6
+        },
+        {
+          "id": 2999,
+          "name": "CARBOLYN PARK",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -79,
+      "count": 28,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 27,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 3636,
+          "name": "Glenwood-Pedlar Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 3650,
+          "name": "James River Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 3778,
+          "name": "Holly Point",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -123,
+      "count": 26,
+      "riding": 5,
+      "boondocking": 3,
+      "campgrounds": 18,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 259,
+          "name": "POMO DAY USE AREA",
+          "scenery": 6
+        },
+        {
+          "id": 283,
+          "name": "Letts Lake Campground",
+          "scenery": 6
+        },
+        {
+          "id": 317,
+          "name": "BOAT-IN SITES (LAKE SONOMA)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -95,
+      "count": 26,
+      "riding": 8,
+      "boondocking": 0,
+      "campgrounds": 18,
+      "avgScenery": 5.2,
+      "locations": [
+        {
+          "id": 3348,
+          "name": "DAVY CROCKETT (Lufkin/Crockett Area): 936-655-2299",
+          "scenery": 6
+        },
+        {
+          "id": 3356,
+          "name": "Walnut Ridge",
+          "scenery": 6
+        },
+        {
+          "id": 3357,
+          "name": "Cassells Boykin",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -91,
+      "count": 25,
+      "riding": 3,
+      "boondocking": 1,
+      "campgrounds": 21,
+      "avgScenery": 6.4,
+      "locations": [
+        {
+          "id": 4252,
+          "name": "Sawbill Lake Campground - Superior National Forest",
+          "scenery": 7
+        },
+        {
+          "id": 4216,
+          "name": "BLACK RIVER HARBOR CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 4242,
+          "name": "CADOTTE LAKE",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -95,
+      "count": 25,
+      "riding": 2,
+      "boondocking": 0,
+      "campgrounds": 23,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 4232,
+          "name": "DEER LAKE",
+          "scenery": 6
+        },
+        {
+          "id": 4233,
+          "name": "ONEGUME",
+          "scenery": 6
+        },
+        {
+          "id": 4234,
+          "name": "STONY POINT",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 57,
+      "lon": -135,
+      "count": 25,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 25,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4439,
+          "name": "APPLETON COVE CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4445,
+          "name": "JIMS LAKE CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4453,
+          "name": "PIPER ISLAND CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -95,
+      "count": 24,
+      "riding": 4,
+      "boondocking": 0,
+      "campgrounds": 20,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 2907,
+          "name": "Paraloma Park",
+          "scenery": 6
+        },
+        {
+          "id": 2975,
+          "name": "White Cliffs",
+          "scenery": 6
+        },
+        {
+          "id": 2992,
+          "name": "WHITE CLIFFS PARK",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -89,
+      "count": 24,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 24,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 4059,
+          "name": "Boulder Campground",
+          "scenery": 6
+        },
+        {
+          "id": 4060,
+          "name": "Coles Creek Campground",
+          "scenery": 6
+        },
+        {
+          "id": 4061,
+          "name": "COON CREEK (IL)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -105,
+      "count": 23,
+      "riding": 3,
+      "boondocking": 3,
+      "campgrounds": 17,
+      "avgScenery": 6.5,
+      "locations": [
+        {
+          "id": 911,
+          "name": "Rainbow Lakes Campground",
+          "scenery": 6
+        },
+        {
+          "id": 917,
+          "name": "Laramie Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 923,
+          "name": "North Fork Poudre Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -95,
+      "count": 23,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 22,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 2904,
+          "name": "Hickory Creek Park (AR)",
+          "scenery": 6
+        },
+        {
+          "id": 2908,
+          "name": "WAR EAGLE CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 2909,
+          "name": "PRAIRIE CREEK (AR)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -97,
+      "count": 23,
+      "riding": 4,
+      "boondocking": 0,
+      "campgrounds": 19,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 3028,
+          "name": "WHITEHALL BAY",
+          "scenery": 6
+        },
+        {
+          "id": 3029,
+          "name": "DAMSITE - FALL RIVER LAKE",
+          "scenery": 6
+        },
+        {
+          "id": 3042,
+          "name": "Bluestem",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -89,
+      "count": 23,
+      "riding": 3,
+      "boondocking": 1,
+      "campgrounds": 19,
+      "avgScenery": 5.7,
+      "locations": [
+        {
+          "id": 3712,
+          "name": "PINEY GROVE",
+          "scenery": 6
+        },
+        {
+          "id": 3715,
+          "name": "WHITTEN PARK",
+          "scenery": 6
+        },
+        {
+          "id": 3716,
+          "name": "CHEWALLA LAKE RECREATION AREA",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -91,
+      "count": 23,
+      "riding": 8,
+      "boondocking": 1,
+      "campgrounds": 14,
+      "avgScenery": 5.4,
+      "locations": [
+        {
+          "id": 4400,
+          "name": "BLACK LAKE",
+          "scenery": 6
+        },
+        {
+          "id": 4404,
+          "name": "EASTWOOD",
+          "scenery": 6
+        },
+        {
+          "id": 4405,
+          "name": "TWIN LAKES (WI)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -93,
+      "count": 22,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 22,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4099,
+          "name": "ACORN VALLEY",
+          "scenery": 6
+        },
+        {
+          "id": 4100,
+          "name": "BOB SHETLER RECREATION AREA",
+          "scenery": 6
+        },
+        {
+          "id": 4101,
+          "name": "BRIDGEVIEW (RATHBUN LAKE)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -77,
+      "count": 22,
+      "riding": 13,
+      "boondocking": 0,
+      "campgrounds": 9,
+      "avgScenery": 5,
+      "locations": [
+        {
+          "id": 4345,
+          "name": "IVES RUN",
+          "scenery": 6
+        },
+        {
+          "id": 4350,
+          "name": "TOMPKINS",
+          "scenery": 6
+        },
+        {
+          "id": 4352,
+          "name": "LAWRENCE RECREATION AREA",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -113,
+      "count": 21,
+      "riding": 4,
+      "boondocking": 2,
+      "campgrounds": 15,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 1204,
+          "name": "Hawkins Reservoir Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1126,
+          "name": "COPPER BASIN GUARD STATION",
+          "scenery": 6
+        },
+        {
+          "id": 1131,
+          "name": "BIG SPRINGS - CARIBOU",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -113,
+      "count": 21,
+      "riding": 2,
+      "boondocking": 4,
+      "campgrounds": 15,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 2205,
+          "name": "Fillmore Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 2214,
+          "name": "MAPLE GROVE ",
+          "scenery": 6
+        },
+        {
+          "id": 2233,
+          "name": "LITTLE RESERVOIR CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -123,
+      "count": 21,
+      "riding": 10,
+      "boondocking": 3,
+      "campgrounds": 8,
+      "avgScenery": 5.2,
+      "locations": [
+        {
+          "id": 2549,
+          "name": "Brown Creek Campground",
+          "scenery": 6
+        },
+        {
+          "id": 2572,
+          "name": "FALLS CREEK CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 2578,
+          "name": "Collins Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -81,
+      "count": 21,
+      "riding": 13,
+      "boondocking": 1,
+      "campgrounds": 7,
+      "avgScenery": 4.6,
+      "locations": [
+        {
+          "id": 3757,
+          "name": "ARROWHEAD CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 3760,
+          "name": "Grandfather Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 3780,
+          "name": "BADIN LAKE CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -109,
+      "count": 20,
+      "riding": 5,
+      "boondocking": 5,
+      "campgrounds": 10,
+      "avgScenery": 5.5,
+      "locations": [
+        {
+          "id": 972,
+          "name": "Box Elder",
+          "scenery": 7
+        },
+        {
+          "id": 887,
+          "name": "Jersey Jim Lookout",
+          "scenery": 6
+        },
+        {
+          "id": 931,
+          "name": "MAVREESO CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -113,
+      "count": 20,
+      "riding": 3,
+      "boondocking": 1,
+      "campgrounds": 16,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 1456,
+          "name": "ZIPS PLACE CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 1474,
+          "name": "CHALLENGE CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 1532,
+          "name": "APGAR GROUP SITES",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -93,
+      "count": 20,
+      "riding": 14,
+      "boondocking": 0,
+      "campgrounds": 6,
+      "avgScenery": 4.6,
+      "locations": [
+        {
+          "id": 4237,
+          "name": "PFEIFFER LAKE",
+          "scenery": 6
+        },
+        {
+          "id": 4238,
+          "name": "CLUBHOUSE LAKE",
+          "scenery": 6
+        },
+        {
+          "id": 4241,
+          "name": "WHITEFACE RESERVOIR",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 29,
+      "lon": -81,
+      "count": 19,
+      "riding": 9,
+      "boondocking": 1,
+      "campgrounds": 9,
+      "avgScenery": 4.8,
+      "locations": [
+        {
+          "id": 3535,
+          "name": "JUNIPER SPRINGS REC AREA",
+          "scenery": 6
+        },
+        {
+          "id": 3536,
+          "name": "Alexander Springs Recreation Area",
+          "scenery": 6
+        },
+        {
+          "id": 3537,
+          "name": "CLEARWATER LAKE REC AREA",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -85,
+      "count": 19,
+      "riding": 12,
+      "boondocking": 1,
+      "campgrounds": 6,
+      "avgScenery": 4.9,
+      "locations": [
+        {
+          "id": 4171,
+          "name": "M-37: White Cloud to Baldwin",
+          "scenery": 6
+        },
+        {
+          "id": 4179,
+          "name": "CHIMNEY LOOP CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 4181,
+          "name": "SAND LAKE CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -111,
+      "count": 18,
+      "riding": 10,
+      "boondocking": 2,
+      "campgrounds": 6,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 239,
+          "name": "White Pocket Trailhead",
+          "scenery": 7
+        },
+        {
+          "id": 2310,
+          "name": "POSEY LAKE CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 2354,
+          "name": "PINE LAKE CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -121,
+      "count": 18,
+      "riding": 8,
+      "boondocking": 2,
+      "campgrounds": 8,
+      "avgScenery": 5.2,
+      "locations": [
+        {
+          "id": 322,
+          "name": "North Fork Primitive Camp",
+          "scenery": 7
+        },
+        {
+          "id": 397,
+          "name": "Pines Campground",
+          "scenery": 6
+        },
+        {
+          "id": 424,
+          "name": "LOST CLAIM",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -85,
+      "count": 18,
+      "riding": 7,
+      "boondocking": 2,
+      "campgrounds": 9,
+      "avgScenery": 5,
+      "locations": [
+        {
+          "id": 3530,
+          "name": "Turnipseed Campground",
+          "scenery": 7
+        },
+        {
+          "id": 3508,
+          "name": "BLUFF CREEK",
+          "scenery": 6
+        },
+        {
+          "id": 3525,
+          "name": "Coleman Lake Recreation Area",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -85,
+      "count": 18,
+      "riding": 5,
+      "boondocking": 1,
+      "campgrounds": 12,
+      "avgScenery": 5.6,
+      "locations": [
+        {
+          "id": 3550,
+          "name": "Seminole State Park",
+          "scenery": 7
+        },
+        {
+          "id": 3515,
+          "name": "HARDRIDGE CREEK",
+          "scenery": 6
+        },
+        {
+          "id": 3520,
+          "name": "WHITE OAK (CREEK) CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -81,
+      "count": 18,
+      "riding": 5,
+      "boondocking": 1,
+      "campgrounds": 12,
+      "avgScenery": 5.4,
+      "locations": [
+        {
+          "id": 4313,
+          "name": "CUYAHOGA VALLEY NATIONAL PARK PICNIC SHELTERS",
+          "scenery": 8
+        },
+        {
+          "id": 4326,
+          "name": "West Branch State Park",
+          "scenery": 7
+        },
+        {
+          "id": 4328,
+          "name": "Mosquito State Park",
+          "scenery": 7
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -77,
+      "count": 17,
+      "riding": 2,
+      "boondocking": 2,
+      "campgrounds": 13,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 3934,
+          "name": "Cabin Camp 3",
+          "scenery": 6
+        },
+        {
+          "id": 3940,
+          "name": "Fort Hunt Picnic Areas",
+          "scenery": 6
+        },
+        {
+          "id": 3948,
+          "name": "OAK RIDGE CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -71,
+      "count": 17,
+      "riding": 6,
+      "boondocking": 0,
+      "campgrounds": 11,
+      "avgScenery": 6.3,
+      "locations": [
+        {
+          "id": 4132,
+          "name": "WEST HILL PARK",
+          "scenery": 6
+        },
+        {
+          "id": 4134,
+          "name": "Buffumville Lake (Group Shelter)",
+          "scenery": 6
+        },
+        {
+          "id": 4149,
+          "name": "Saco Ranger District",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -89,
+      "count": 16,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 13,
+      "avgScenery": 5.5,
+      "locations": [
+        {
+          "id": 3516,
+          "name": "PICKENSVILLE CG (PICKENSVILLE AL)",
+          "scenery": 6
+        },
+        {
+          "id": 3709,
+          "name": "CHOCTAW LAKE",
+          "scenery": 6
+        },
+        {
+          "id": 3710,
+          "name": "BLUE BLUFF CAMPGROUND (ABERDEEN MS)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -89,
+      "count": 16,
+      "riding": 9,
+      "boondocking": 1,
+      "campgrounds": 6,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 4177,
+          "name": "Kenton  Ranger District",
+          "scenery": 7
+        },
+        {
+          "id": 4153,
+          "name": "LAKE OTTAWA PAVILION",
+          "scenery": 6
+        },
+        {
+          "id": 4162,
+          "name": "Bessemer Ranger District",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -119,
+      "count": 15,
+      "riding": 2,
+      "boondocking": 9,
+      "campgrounds": 4,
+      "avgScenery": 6.7,
+      "locations": [
+        {
+          "id": 1902,
+          "name": "IDLEWILD",
+          "scenery": 7
+        },
+        {
+          "id": 2004,
+          "name": "Chickahominy Recreation Site",
+          "scenery": 7
+        },
+        {
+          "id": 1869,
+          "name": "Jackman Park Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -119,
+      "count": 15,
+      "riding": 3,
+      "boondocking": 3,
+      "campgrounds": 9,
+      "avgScenery": 5.5,
+      "locations": [
+        {
+          "id": 2010,
+          "name": "Walla Walla Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 2535,
+          "name": "Rooks Park (WA) Bennington Lake",
+          "scenery": 6
+        },
+        {
+          "id": 2553,
+          "name": "Pacific Lake Recreation Site - Lakeview Ranch ",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -103,
+      "count": 15,
+      "riding": 9,
+      "boondocking": 1,
+      "campgrounds": 5,
+      "avgScenery": 6.3,
+      "locations": [
+        {
+          "id": 3167,
+          "name": "Nebraska National Forest at Chadron",
+          "scenery": 7
+        },
+        {
+          "id": 2863,
+          "name": "Bismarck Lake",
+          "scenery": 6
+        },
+        {
+          "id": 2871,
+          "name": "Southern Hills - Custer",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -87,
+      "count": 15,
+      "riding": 4,
+      "boondocking": 0,
+      "campgrounds": 11,
+      "avgScenery": 5.1,
+      "locations": [
+        {
+          "id": 3509,
+          "name": "CHILATCHEE CREEK",
+          "scenery": 6
+        },
+        {
+          "id": 3511,
+          "name": "DEERLICK CREEK",
+          "scenery": 6
+        },
+        {
+          "id": 3512,
+          "name": "MILLERS FERRY CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -115,
+      "count": 14,
+      "riding": 9,
+      "boondocking": 4,
+      "campgrounds": 1,
+      "avgScenery": 5,
+      "locations": [
+        {
+          "id": 107,
+          "name": "Windy Point Campground",
+          "scenery": 7
+        },
+        {
+          "id": 110,
+          "name": "Lake Havasu Shoreline Sites",
+          "scenery": 7
+        },
+        {
+          "id": 214,
+          "name": "Packsaddle Recreation Site ",
+          "scenery": 7
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -117,
+      "count": 14,
+      "riding": 10,
+      "boondocking": 2,
+      "campgrounds": 2,
+      "avgScenery": 5.1,
+      "locations": [
+        {
+          "id": 661,
+          "name": "Austin Ranger District Office",
+          "scenery": 6
+        },
+        {
+          "id": 851,
+          "name": "Tonopah Ranger District Office",
+          "scenery": 6
+        },
+        {
+          "id": 5085,
+          "name": "Tonopah Area Dual Sport",
+          "scenery": 4
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -89,
+      "count": 14,
+      "riding": 6,
+      "boondocking": 0,
+      "campgrounds": 8,
+      "avgScenery": 5.1,
+      "locations": [
+        {
+          "id": 4415,
+          "name": "LOST LAKE CABINS",
+          "scenery": 6
+        },
+        {
+          "id": 4416,
+          "name": "MORGAN LAKE CAMPGROUND AND GROUP SITE",
+          "scenery": 6
+        },
+        {
+          "id": 4421,
+          "name": "Lakewood - Laona District",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -105,
+      "count": 13,
+      "riding": 3,
+      "boondocking": 3,
+      "campgrounds": 7,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 1757,
+          "name": "Sacramento RD",
+          "scenery": 7
+        },
+        {
+          "id": 1774,
+          "name": "Chosa Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1775,
+          "name": "BLACK BEAR GROUP AREA",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -107,
+      "count": 13,
+      "riding": 1,
+      "boondocking": 2,
+      "campgrounds": 10,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 2727,
+          "name": "Chalk Bluffs Campground",
+          "scenery": 6
+        },
+        {
+          "id": 2743,
+          "name": "Prior Flat Campground",
+          "scenery": 6
+        },
+        {
+          "id": 2758,
+          "name": "Buffalo Creek Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -93,
+      "count": 13,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 12,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 3092,
+          "name": "BERRY BEND",
+          "scenery": 6
+        },
+        {
+          "id": 3093,
+          "name": "BLEDSOE FERRY",
+          "scenery": 6
+        },
+        {
+          "id": 3094,
+          "name": "BUCKSAW",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -89,
+      "count": 13,
+      "riding": 7,
+      "boondocking": 2,
+      "campgrounds": 4,
+      "avgScenery": 4.8,
+      "locations": [
+        {
+          "id": 3665,
+          "name": "OLD KUTTAWA",
+          "scenery": 6
+        },
+        {
+          "id": 4078,
+          "name": "Mississippi Bluffs Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 4079,
+          "name": "Camp Cadiz Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -91,
+      "count": 13,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 12,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 4071,
+          "name": "THOMSON CAUSEWAY",
+          "scenery": 6
+        },
+        {
+          "id": 4107,
+          "name": "SANDY BEACH CAMP",
+          "scenery": 6
+        },
+        {
+          "id": 4108,
+          "name": "SUGAR BOTTOM CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 55,
+      "lon": -131,
+      "count": 13,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 13,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4449,
+          "name": "WILSON NARROWS CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4482,
+          "name": "PHOCENA BAY CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4484,
+          "name": "SOUTHEAST HECKMAN CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -103,
+      "count": 12,
+      "riding": 3,
+      "boondocking": 2,
+      "campgrounds": 7,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 1470,
+          "name": "Ft. Meade Horse Camp",
+          "scenery": 7
+        },
+        {
+          "id": 1479,
+          "name": "Picnic Spring Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1506,
+          "name": "Slim Buttes Land Unit",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -105,
+      "count": 12,
+      "riding": 0,
+      "boondocking": 4,
+      "campgrounds": 8,
+      "avgScenery": 6.4,
+      "locations": [
+        {
+          "id": 1772,
+          "name": "Red Cloud Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1787,
+          "name": "Johnson Mesa Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1755,
+          "name": "Juniper Park",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -103,
+      "count": 12,
+      "riding": 5,
+      "boondocking": 0,
+      "campgrounds": 7,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 2709,
+          "name": "Little Missouri National Grassland",
+          "scenery": 6
+        },
+        {
+          "id": 3190,
+          "name": "Mckenzie Bay",
+          "scenery": 6
+        },
+        {
+          "id": 3192,
+          "name": "Parshall Bay",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -87,
+      "count": 12,
+      "riding": 7,
+      "boondocking": 1,
+      "campgrounds": 4,
+      "avgScenery": 4.5,
+      "locations": [
+        {
+          "id": 4092,
+          "name": "Raccoon State Recreation Area",
+          "scenery": 6
+        },
+        {
+          "id": 4095,
+          "name": "Paynetown",
+          "scenery": 6
+        },
+        {
+          "id": 4096,
+          "name": "Hardin Ridge",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -109,
+      "count": 11,
+      "riding": 0,
+      "boondocking": 3,
+      "campgrounds": 7,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 148,
+          "name": "Brown Creek Campground",
+          "scenery": 7
+        },
+        {
+          "id": 116,
+          "name": "Lakeside Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 124,
+          "name": "HOYER",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -117,
+      "count": 11,
+      "riding": 5,
+      "boondocking": 3,
+      "campgrounds": 3,
+      "avgScenery": 4.9,
+      "locations": [
+        {
+          "id": 245,
+          "name": "Inyo Mountains",
+          "scenery": 6
+        },
+        {
+          "id": 740,
+          "name": "Furnace Creek Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1856,
+          "name": "Clayton Valley Sand Dunes",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -125,
+      "count": 11,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 8,
+      "avgScenery": 5.5,
+      "locations": [
+        {
+          "id": 638,
+          "name": "Foster Bar Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1873,
+          "name": "QUAIL PRAIRIE LOOKOUT",
+          "scenery": 6
+        },
+        {
+          "id": 1886,
+          "name": "SNOW CAMP LOOKOUT",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -117,
+      "count": 11,
+      "riding": 3,
+      "boondocking": 2,
+      "campgrounds": 6,
+      "avgScenery": 5.6,
+      "locations": [
+        {
+          "id": 1187,
+          "name": "SHAFER BUTTE",
+          "scenery": 6
+        },
+        {
+          "id": 1192,
+          "name": "Swan Falls Picnic Area",
+          "scenery": 6
+        },
+        {
+          "id": 1276,
+          "name": "North Fork Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -105,
+      "count": 11,
+      "riding": 2,
+      "boondocking": 1,
+      "campgrounds": 8,
+      "avgScenery": 5.6,
+      "locations": [
+        {
+          "id": 1540,
+          "name": "Moorhead Recreation Site",
+          "scenery": 7
+        },
+        {
+          "id": 1450,
+          "name": "Sioux RD",
+          "scenery": 6
+        },
+        {
+          "id": 1476,
+          "name": "WHITETAIL CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 29,
+      "lon": -103,
+      "count": 11,
+      "riding": 5,
+      "boondocking": 1,
+      "campgrounds": 5,
+      "avgScenery": 6.5,
+      "locations": [
+        {
+          "id": 3344,
+          "name": "Rio Grande Village Group Campground (Big Bend, TX)",
+          "scenery": 6
+        },
+        {
+          "id": 3410,
+          "name": "Chisos Basin Group Campground (Big Bend, TX)",
+          "scenery": 6
+        },
+        {
+          "id": 3412,
+          "name": "Rio Grande Village (Big Bend, TX)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -85,
+      "count": 11,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 8,
+      "avgScenery": 5.1,
+      "locations": [
+        {
+          "id": 4087,
+          "name": "Quakertown Campground",
+          "scenery": 6
+        },
+        {
+          "id": 4088,
+          "name": "TAILWATER SHELTER 2 (BROOKVILLE LAKE)",
+          "scenery": 6
+        },
+        {
+          "id": 4089,
+          "name": "OVERLOOK SHELTER (BROOKVILLE LAKE)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 55,
+      "lon": -133,
+      "count": 11,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 11,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4432,
+          "name": "SARKAR LAKE CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4459,
+          "name": "KARTA LAKE CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4464,
+          "name": "KEGAN CREEK CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 29,
+      "lon": -83,
+      "count": 11,
+      "riding": 11,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 2.5,
+      "locations": [
+        {
+          "id": 4779,
+          "name": "Croom / Withlacoochee State Forest",
+          "scenery": 3
+        },
+        {
+          "id": 5119,
+          "name": "Goethe State Forest OHV",
+          "scenery": 3
+        },
+        {
+          "id": 4920,
+          "name": "WW Ranch MX Park",
+          "scenery": 2
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -87,
+      "count": 10,
+      "riding": 6,
+      "boondocking": 1,
+      "campgrounds": 3,
+      "avgScenery": 4.3,
+      "locations": [
+        {
+          "id": 3507,
+          "name": "HOUSTON SHELTER",
+          "scenery": 6
+        },
+        {
+          "id": 3522,
+          "name": "McDougle Camp",
+          "scenery": 6
+        },
+        {
+          "id": 3531,
+          "name": "Brushy Lake Recreation Area",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -99,
+      "count": 10,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 7,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 1760,
+          "name": "Black Kettle NG RD",
+          "scenery": 6
+        },
+        {
+          "id": 1784,
+          "name": "Black Kettle Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1818,
+          "name": "Spring Creek Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -107,
+      "count": 10,
+      "riding": 2,
+      "boondocking": 6,
+      "campgrounds": 2,
+      "avgScenery": 6.3,
+      "locations": [
+        {
+          "id": 5714,
+          "name": "BLM Dispersed — Organ Mountains",
+          "scenery": 7
+        },
+        {
+          "id": 1786,
+          "name": "Kingston Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1801,
+          "name": "Iron Creek Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -93,
+      "count": 10,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 9,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 2890,
+          "name": "Millwood State Park",
+          "scenery": 7
+        },
+        {
+          "id": 2978,
+          "name": "Saratoga",
+          "scenery": 6
+        },
+        {
+          "id": 2979,
+          "name": "Cottonshed",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -91,
+      "count": 10,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 7,
+      "avgScenery": 5,
+      "locations": [
+        {
+          "id": 3095,
+          "name": "BLUFFVIEW (MARK TWAIN LAKE)",
+          "scenery": 6
+        },
+        {
+          "id": 3099,
+          "name": "FRANK RUSSELL",
+          "scenery": 6
+        },
+        {
+          "id": 3101,
+          "name": "INDIAN CREEK (MO)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -97,
+      "count": 10,
+      "riding": 2,
+      "boondocking": 1,
+      "campgrounds": 7,
+      "avgScenery": 5.5,
+      "locations": [
+        {
+          "id": 3257,
+          "name": "Rock Creek Group Camp (Chickasaw)",
+          "scenery": 7
+        },
+        {
+          "id": 3225,
+          "name": "Cold Springs Campground (Chickasaw)",
+          "scenery": 6
+        },
+        {
+          "id": 3256,
+          "name": "Central Group Camp (Chickasaw)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 27,
+      "lon": -81,
+      "count": 10,
+      "riding": 2,
+      "boondocking": 0,
+      "campgrounds": 8,
+      "avgScenery": 5.2,
+      "locations": [
+        {
+          "id": 3532,
+          "name": "ORTONA SOUTH",
+          "scenery": 6
+        },
+        {
+          "id": 3533,
+          "name": "ST LUCIE SOUTH",
+          "scenery": 6
+        },
+        {
+          "id": 3534,
+          "name": "W.P. FRANKLIN N",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -71,
+      "count": 10,
+      "riding": 8,
+      "boondocking": 0,
+      "campgrounds": 2,
+      "avgScenery": 4.5,
+      "locations": [
+        {
+          "id": 4058,
+          "name": "West Thompson Lake Campground",
+          "scenery": 6
+        },
+        {
+          "id": 4137,
+          "name": "Scusset Beach State Reservation",
+          "scenery": 6
+        },
+        {
+          "id": 5027,
+          "name": "Arcadia Management Area OHV",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -101,
+      "count": 9,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 9,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 3187,
+          "name": "Lake Sakakawea State Park",
+          "scenery": 7
+        },
+        {
+          "id": 3191,
+          "name": "Beulah Bay",
+          "scenery": 6
+        },
+        {
+          "id": 3195,
+          "name": "Hazen Bay",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -93,
+      "count": 9,
+      "riding": 5,
+      "boondocking": 1,
+      "campgrounds": 3,
+      "avgScenery": 4.8,
+      "locations": [
+        {
+          "id": 3429,
+          "name": "SABINE (Toledo Bend Reservoir Area): 409-625-1940",
+          "scenery": 6
+        },
+        {
+          "id": 3703,
+          "name": "Evangeline Unit",
+          "scenery": 6
+        },
+        {
+          "id": 3704,
+          "name": "Enduro Camp",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 61,
+      "lon": -147,
+      "count": 9,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 9,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4436,
+          "name": "HOOK POINT CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4438,
+          "name": "BEACH RIVER CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4450,
+          "name": "DOUBLE BAY CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -121,
+      "count": 8,
+      "riding": 3,
+      "boondocking": 1,
+      "campgrounds": 4,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 597,
+          "name": "PLASKETT CREEK CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 636,
+          "name": "SAN MIGUEL ISLAND",
+          "scenery": 6
+        },
+        {
+          "id": 752,
+          "name": "Horseshoe Springs Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -91,
+      "count": 8,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 8,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 2887,
+          "name": "Bear Creek Lake Recreation Area",
+          "scenery": 6
+        },
+        {
+          "id": 2898,
+          "name": "RISING STAR",
+          "scenery": 6
+        },
+        {
+          "id": 2901,
+          "name": "MERRISACH LAKE",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -99,
+      "count": 8,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 5,
+      "avgScenery": 5.4,
+      "locations": [
+        {
+          "id": 3067,
+          "name": "Wilson State Park",
+          "scenery": 7
+        },
+        {
+          "id": 3006,
+          "name": "LUCAS PARK",
+          "scenery": 6
+        },
+        {
+          "id": 3008,
+          "name": "MINOOKA PARK",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -69,
+      "count": 8,
+      "riding": 7,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 5.1,
+      "locations": [
+        {
+          "id": 4151,
+          "name": "DUCK HARBOR CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 5129,
+          "name": "KI Jo-Mary Multiple Use Forest",
+          "scenery": 5
+        },
+        {
+          "id": 5320,
+          "name": "Katahdin Iron Works — Brownville",
+          "scenery": 5
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -85,
+      "count": 8,
+      "riding": 5,
+      "boondocking": 0,
+      "campgrounds": 3,
+      "avgScenery": 4.4,
+      "locations": [
+        {
+          "id": 4166,
+          "name": "Bowman Lake Area",
+          "scenery": 6
+        },
+        {
+          "id": 4167,
+          "name": "NICHOLS LAKE SOUTH CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 4184,
+          "name": "BOWMAN BRIDGE",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -83,
+      "count": 8,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 7,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 4320,
+          "name": "Alum Creek State Park",
+          "scenery": 7
+        },
+        {
+          "id": 4324,
+          "name": "Delaware State Park",
+          "scenery": 7
+        },
+        {
+          "id": 4325,
+          "name": "Dillon State Park",
+          "scenery": 7
+        }
+      ]
+    },
+    {
+      "lat": 61,
+      "lon": -145,
+      "count": 8,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 7,
+      "avgScenery": 5.9,
+      "locations": [
+        {
+          "id": 4448,
+          "name": "SOFTUK BAR CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4455,
+          "name": "MARTIN LAKE CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4458,
+          "name": "MCKINLEY TRAIL CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 57,
+      "lon": -131,
+      "count": 8,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 8,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4478,
+          "name": "MOUNT FLEMER CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4480,
+          "name": "ANAN LAKE CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4483,
+          "name": "REFLECTION LAKE CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -109,
+      "count": 7,
+      "riding": 2,
+      "boondocking": 0,
+      "campgrounds": 5,
+      "avgScenery": 5.7,
+      "locations": [
+        {
+          "id": 104,
+          "name": "PORTAL BUNKHOUSE",
+          "scenery": 6
+        },
+        {
+          "id": 153,
+          "name": "CAMP RUCKER GROUP SITE",
+          "scenery": 6
+        },
+        {
+          "id": 154,
+          "name": "HALF MOON RANCH",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -109,
+      "count": 7,
+      "riding": 1,
+      "boondocking": 2,
+      "campgrounds": 4,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 1747,
+          "name": "Timber Creek Dispersed Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1510,
+          "name": "CRYSTAL LAKE GROUP CAMPSITE",
+          "scenery": 6
+        },
+        {
+          "id": 1534,
+          "name": "Montana Gulch",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -119,
+      "count": 7,
+      "riding": 1,
+      "boondocking": 1,
+      "campgrounds": 5,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 2594,
+          "name": "Bridgeport State Park",
+          "scenery": 7
+        },
+        {
+          "id": 2688,
+          "name": "Palmer Mountain",
+          "scenery": 7
+        },
+        {
+          "id": 2530,
+          "name": "SWAN LAKE KITCHEN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -73,
+      "count": 7,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 4,
+      "avgScenery": 5.3,
+      "locations": [
+        {
+          "id": 4056,
+          "name": "HOP BROOK LAKE RECREATION AREA",
+          "scenery": 6
+        },
+        {
+          "id": 4057,
+          "name": "NORTHFIELD BROOK LAKE GROUP SHELTERS",
+          "scenery": 6
+        },
+        {
+          "id": 4298,
+          "name": "CAMP GATEWAY - SANDY HOOK",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -75,
+      "count": 7,
+      "riding": 6,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 4.1,
+      "locations": [
+        {
+          "id": 4139,
+          "name": "ASSATEAGUE ISLAND NATIONAL SEASHORE CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 5024,
+          "name": "Wharton State Forest OHV",
+          "scenery": 3
+        },
+        {
+          "id": 5453,
+          "name": "Wharton State Forest — Atsion",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 59,
+      "lon": -139,
+      "count": 7,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 7,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4611,
+          "name": "SITUK LAKE CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4612,
+          "name": "EAGLE CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4613,
+          "name": "RAVEN CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -73,
+      "count": 7,
+      "riding": 7,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 6.1,
+      "locations": [
+        {
+          "id": 5990,
+          "name": "Mount Mansfield State Forest Trails",
+          "scenery": 9
+        },
+        {
+          "id": 4818,
+          "name": "VAST Trail System",
+          "scenery": 5
+        },
+        {
+          "id": 5455,
+          "name": "VAST Trails — Statewide VT",
+          "scenery": 5
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -101,
+      "count": 6,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 2,
+      "avgScenery": 4.5,
+      "locations": [
+        {
+          "id": 1804,
+          "name": "McDowell Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1811,
+          "name": "East Bluff #1 Campground - Lake McClellan",
+          "scenery": 6
+        },
+        {
+          "id": 27,
+          "name": "Palo Duro Canyon State Park",
+          "scenery": 5
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -111,
+      "count": 6,
+      "riding": 0,
+      "boondocking": 1,
+      "campgrounds": 5,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 105,
+          "name": "Hereford Trailhead",
+          "scenery": 7
+        },
+        {
+          "id": 109,
+          "name": "ROCK BLUFF GROUP SITE",
+          "scenery": 6
+        },
+        {
+          "id": 144,
+          "name": "REEF TOWNSITE GROUP AREA",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -115,
+      "count": 6,
+      "riding": 1,
+      "boondocking": 1,
+      "campgrounds": 4,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 475,
+          "name": "Mountain City Ranger District Office",
+          "scenery": 6
+        },
+        {
+          "id": 583,
+          "name": "Ruby Mountains Ranger District Office",
+          "scenery": 6
+        },
+        {
+          "id": 618,
+          "name": "Slide Creek Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -125,
+      "count": 6,
+      "riding": 0,
+      "boondocking": 3,
+      "campgrounds": 3,
+      "avgScenery": 7,
+      "locations": [
+        {
+          "id": 751,
+          "name": "Paradise Royale Mt Bike Trail",
+          "scenery": 7
+        },
+        {
+          "id": 880,
+          "name": "Horse Mountain Primitive Camp",
+          "scenery": 7
+        },
+        {
+          "id": 492,
+          "name": "Honeydew Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -125,
+      "count": 6,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 6,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 2081,
+          "name": "Rock Creek Oregon Coast (Siuslaw National Forest, OR)",
+          "scenery": 7
+        },
+        {
+          "id": 1977,
+          "name": "Baker Beach Campground",
+          "scenery": 6
+        },
+        {
+          "id": 2008,
+          "name": "TILLICUM",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -99,
+      "count": 6,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 6,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 3160,
+          "name": "HUNTER COVE",
+          "scenery": 6
+        },
+        {
+          "id": 3161,
+          "name": "METHODIST COVE",
+          "scenery": 6
+        },
+        {
+          "id": 3171,
+          "name": "Patterson Harbor Marina",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -97,
+      "count": 6,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 6,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 3162,
+          "name": "Pawnee Dam-Site 14 Campground",
+          "scenery": 6
+        },
+        {
+          "id": 3163,
+          "name": "Cunningham Lake Dam Site 11 Campground",
+          "scenery": 6
+        },
+        {
+          "id": 3169,
+          "name": "Branched Oak Dam-Site 18 Liebers Point",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -99,
+      "count": 6,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 6,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 3177,
+          "name": "WEST ASHTABULA CROSSING",
+          "scenery": 6
+        },
+        {
+          "id": 3178,
+          "name": "EAST ASHTABULA CROSSING",
+          "scenery": 6
+        },
+        {
+          "id": 3179,
+          "name": "MEL RIEMAN REC",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -103,
+      "count": 6,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 6,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 3188,
+          "name": "Lewis and Clark State Park",
+          "scenery": 7
+        },
+        {
+          "id": 3189,
+          "name": "Tobacco Garden",
+          "scenery": 6
+        },
+        {
+          "id": 3196,
+          "name": "American Legion Park",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -99,
+      "count": 6,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 3,
+      "avgScenery": 5.7,
+      "locations": [
+        {
+          "id": 3347,
+          "name": "SOWELL CREEK",
+          "scenery": 6
+        },
+        {
+          "id": 3364,
+          "name": "COPPERAS CREEK",
+          "scenery": 6
+        },
+        {
+          "id": 3368,
+          "name": "LAKESIDE (TX)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -89,
+      "count": 6,
+      "riding": 2,
+      "boondocking": 0,
+      "campgrounds": 4,
+      "avgScenery": 4.8,
+      "locations": [
+        {
+          "id": 3518,
+          "name": "SERVICE",
+          "scenery": 6
+        },
+        {
+          "id": 3728,
+          "name": "Moody's Landing",
+          "scenery": 6
+        },
+        {
+          "id": 3729,
+          "name": "Fairley Bridge Landing",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -79,
+      "count": 6,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 3,
+      "avgScenery": 5.3,
+      "locations": [
+        {
+          "id": 3829,
+          "name": "Francis Marion National Forest",
+          "scenery": 7
+        },
+        {
+          "id": 3825,
+          "name": "BUCK HALL RECREATION AREA",
+          "scenery": 6
+        },
+        {
+          "id": 3836,
+          "name": "Francis Marion Ranger District",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -87,
+      "count": 6,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 5,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 4160,
+          "name": "South Manitou Group Campground",
+          "scenery": 6
+        },
+        {
+          "id": 4172,
+          "name": "Rapid River/ Manistique Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 4188,
+          "name": "FLOWING WELL CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -87,
+      "count": 6,
+      "riding": 6,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 2.8,
+      "locations": [
+        {
+          "id": 4973,
+          "name": "Badlands Off Road Park — Attica IN",
+          "scenery": 3
+        },
+        {
+          "id": 5002,
+          "name": "Wildcat Creek MX — Rossville",
+          "scenery": 3
+        },
+        {
+          "id": 5265,
+          "name": "RedBud MX",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -115,
+      "count": 5,
+      "riding": 0,
+      "boondocking": 1,
+      "campgrounds": 4,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 5947,
+          "name": "BLM Dispersed — Spring Valley SP",
+          "scenery": 7
+        },
+        {
+          "id": 362,
+          "name": "Ely Ranger District Office",
+          "scenery": 6
+        },
+        {
+          "id": 1831,
+          "name": "Bird Creek Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -119,
+      "count": 5,
+      "riding": 3,
+      "boondocking": 1,
+      "campgrounds": 1,
+      "avgScenery": 4.8,
+      "locations": [
+        {
+          "id": 5763,
+          "name": "BLM Dispersed — Pyramid Lake",
+          "scenery": 7
+        },
+        {
+          "id": 629,
+          "name": "Divine Springs Campground",
+          "scenery": 6
+        },
+        {
+          "id": 5147,
+          "name": "Soldier Meadows — Black Rock Desert Edge",
+          "scenery": 4
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -105,
+      "count": 5,
+      "riding": 0,
+      "boondocking": 1,
+      "campgrounds": 4,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 5824,
+          "name": "NF Dispersed — Thunder Basin",
+          "scenery": 7
+        },
+        {
+          "id": 895,
+          "name": "Douglas Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 928,
+          "name": "Laramie Peak Area",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -123,
+      "count": 5,
+      "riding": 2,
+      "boondocking": 2,
+      "campgrounds": 1,
+      "avgScenery": 5.6,
+      "locations": [
+        {
+          "id": 2575,
+          "name": "Patos Island",
+          "scenery": 7
+        },
+        {
+          "id": 2650,
+          "name": "Blind Island",
+          "scenery": 7
+        },
+        {
+          "id": 2708,
+          "name": "Fort Casey Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -91,
+      "count": 5,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 4,
+      "avgScenery": 5.6,
+      "locations": [
+        {
+          "id": 3745,
+          "name": "DELTA NATIONAL FOREST - CAMPING",
+          "scenery": 7
+        },
+        {
+          "id": 2892,
+          "name": "NOTREBES BEND PARK",
+          "scenery": 6
+        },
+        {
+          "id": 2915,
+          "name": "WILBUR D. MILLS",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -87,
+      "count": 5,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 2,
+      "avgScenery": 5.8,
+      "locations": [
+        {
+          "id": 6021,
+          "name": "Silver Lake State Park ORV Area",
+          "scenery": 9
+        },
+        {
+          "id": 3060,
+          "name": "North Shore Marina",
+          "scenery": 6
+        },
+        {
+          "id": 4191,
+          "name": "Pines Point Campground (MI)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -101,
+      "count": 5,
+      "riding": 4,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 6092,
+          "name": "Sandhills Journey Scenic Byway Dual Sport",
+          "scenery": 8
+        },
+        {
+          "id": 3164,
+          "name": "Samuel R. McKelvie National Forest",
+          "scenery": 7
+        },
+        {
+          "id": 6094,
+          "name": "McKelvie National Forest OHV System",
+          "scenery": 7
+        }
+      ]
+    },
+    {
+      "lat": 29,
+      "lon": -99,
+      "count": 5,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 2,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 6162,
+          "name": "Ranch Road 337 — Leakey to Vanderpool",
+          "scenery": 9
+        },
+        {
+          "id": 6161,
+          "name": "Hill Country State Natural Area — Bandera",
+          "scenery": 8
+        },
+        {
+          "id": 3432,
+          "name": "Jacobs Creek",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -75,
+      "count": 5,
+      "riding": 4,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 5.2,
+      "locations": [
+        {
+          "id": 6190,
+          "name": "Adirondack Park — Moose River Plains",
+          "scenery": 9
+        },
+        {
+          "id": 4305,
+          "name": "East Sidney Dam Recreation Area",
+          "scenery": 6
+        },
+        {
+          "id": 4815,
+          "name": "Adirondack Park OHV Corridor",
+          "scenery": 5
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -91,
+      "count": 5,
+      "riding": 4,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 4,
+      "locations": [
+        {
+          "id": 4397,
+          "name": "BLACKHAWK PARK",
+          "scenery": 6
+        },
+        {
+          "id": 5215,
+          "name": "Yellow River State Forest OHV",
+          "scenery": 4
+        },
+        {
+          "id": 5680,
+          "name": "Yellow River State Forest",
+          "scenery": 4
+        }
+      ]
+    },
+    {
+      "lat": 59,
+      "lon": -135,
+      "count": 5,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 5,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4433,
+          "name": "EAGLE GLACIER CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4434,
+          "name": "Eight Fathom Cabin",
+          "scenery": 6
+        },
+        {
+          "id": 4466,
+          "name": "MENDENHALL CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 65,
+      "lon": -147,
+      "count": 5,
+      "riding": 0,
+      "boondocking": 1,
+      "campgrounds": 4,
+      "avgScenery": 6.2,
+      "locations": [
+        {
+          "id": 4640,
+          "name": "White Mountains National Recreation Area - Alaska Cabins",
+          "scenery": 7
+        },
+        {
+          "id": 4475,
+          "name": "Wolf Run Cabin",
+          "scenery": 6
+        },
+        {
+          "id": 4631,
+          "name": "Chena River Park",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 19,
+      "lon": -155,
+      "count": 5,
+      "riding": 5,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 7.6,
+      "locations": [
+        {
+          "id": 6053,
+          "name": "Mauna Kea Access Road Dual Sport — Big Island",
+          "scenery": 10
+        },
+        {
+          "id": 6054,
+          "name": "South Point Road — Ka Lae, Big Island",
+          "scenery": 9
+        },
+        {
+          "id": 6055,
+          "name": "Mana Road — Big Island",
+          "scenery": 9
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -117,
+      "count": 4,
+      "riding": 2,
+      "boondocking": 1,
+      "campgrounds": 1,
+      "avgScenery": 4.8,
+      "locations": [
+        {
+          "id": 5762,
+          "name": "BLM Dispersed — Unionville",
+          "scenery": 7
+        },
+        {
+          "id": 497,
+          "name": "Santa Rosa Ranger District Office",
+          "scenery": 6
+        },
+        {
+          "id": 5084,
+          "name": "Emigrant Pass — Carlin",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -81,
+      "count": 4,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 3.3,
+      "locations": [
+        {
+          "id": 3834,
+          "name": "Long Cane Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 5221,
+          "name": "Bettis OHV Trail — Edgefield",
+          "scenery": 3
+        },
+        {
+          "id": 5423,
+          "name": "Brickyard Plantation MX — Walterboro SC",
+          "scenery": 2
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -85,
+      "count": 4,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 3,
+      "avgScenery": 5.3,
+      "locations": [
+        {
+          "id": 4093,
+          "name": "Kilsoquah Camp",
+          "scenery": 6
+        },
+        {
+          "id": 4094,
+          "name": "Miami",
+          "scenery": 6
+        },
+        {
+          "id": 4098,
+          "name": "Lost Bridge West",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -77,
+      "count": 4,
+      "riding": 1,
+      "boondocking": 1,
+      "campgrounds": 2,
+      "avgScenery": 6.5,
+      "locations": [
+        {
+          "id": 4300,
+          "name": "POTOMAC GROUP CAMPGROUND",
+          "scenery": 7
+        },
+        {
+          "id": 6189,
+          "name": "Finger Lakes National Forest Trails — NY",
+          "scenery": 7
+        },
+        {
+          "id": 4304,
+          "name": "Kanakadea Recreation Area",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -93,
+      "count": 4,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 5.3,
+      "locations": [
+        {
+          "id": 6028,
+          "name": "Governor Knowles State Forest Trail",
+          "scenery": 8
+        },
+        {
+          "id": 4396,
+          "name": "MAIN DAY USE",
+          "scenery": 6
+        },
+        {
+          "id": 4995,
+          "name": "Spring Creek MX Park — Millville",
+          "scenery": 4
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -99,
+      "count": 4,
+      "riding": 4,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 2.8,
+      "locations": [
+        {
+          "id": 5122,
+          "name": "Lake Mineral Wells State Trailway",
+          "scenery": 3
+        },
+        {
+          "id": 5156,
+          "name": "Possum Kingdom OHV",
+          "scenery": 3
+        },
+        {
+          "id": 5243,
+          "name": "Mineral Wells Fossil Park OHV",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -113,
+      "count": 3,
+      "riding": 2,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 4,
+      "locations": [
+        {
+          "id": 1189,
+          "name": "Clear Creek Campground",
+          "scenery": 6
+        },
+        {
+          "id": 4840,
+          "name": "Five Mile Pass OHV",
+          "scenery": 3
+        },
+        {
+          "id": 4933,
+          "name": "Knolls OHV Area",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -107,
+      "count": 3,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 3,
+      "avgScenery": 6.3,
+      "locations": [
+        {
+          "id": 1724,
+          "name": "Hell Creek State Park",
+          "scenery": 7
+        },
+        {
+          "id": 1581,
+          "name": "West End Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1708,
+          "name": "Rock Creek Marina",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -99,
+      "count": 3,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 2,
+      "avgScenery": 5,
+      "locations": [
+        {
+          "id": 3243,
+          "name": "Sandy Beach",
+          "scenery": 6
+        },
+        {
+          "id": 3282,
+          "name": "Salt River Road",
+          "scenery": 6
+        },
+        {
+          "id": 4808,
+          "name": "Little Sahara State Park",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -101,
+      "count": 3,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 2,
+      "avgScenery": 7,
+      "locations": [
+        {
+          "id": 6178,
+          "name": "Texas BDR (TXBDR)",
+          "scenery": 9
+        },
+        {
+          "id": 3365,
+          "name": "Bald Eagle Creek",
+          "scenery": 6
+        },
+        {
+          "id": 3462,
+          "name": "Red Arroyo",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -87,
+      "count": 3,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 2,
+      "avgScenery": 5,
+      "locations": [
+        {
+          "id": 3510,
+          "name": "ISAAC CREEK",
+          "scenery": 6
+        },
+        {
+          "id": 3523,
+          "name": "Open Pond Recreation Area",
+          "scenery": 6
+        },
+        {
+          "id": 5653,
+          "name": "Clear Creek OHV Trails",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -83,
+      "count": 3,
+      "riding": 2,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 4,
+      "locations": [
+        {
+          "id": 3555,
+          "name": "GROUP LANDING",
+          "scenery": 6
+        },
+        {
+          "id": 4977,
+          "name": "Hollydale Off-Road Park — GA",
+          "scenery": 3
+        },
+        {
+          "id": 5862,
+          "name": "Jake's GNCC",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 29,
+      "lon": -85,
+      "count": 3,
+      "riding": 2,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 3.7,
+      "locations": [
+        {
+          "id": 3557,
+          "name": "WRIGHT LAKE CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 5871,
+          "name": "Tate's Hell State Forest",
+          "scenery": 3
+        },
+        {
+          "id": 5654,
+          "name": "Tates Hell OHV Trail System",
+          "scenery": 2
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -77,
+      "count": 3,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 3,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 3751,
+          "name": "GREAT ISLAND CABIN CAMP",
+          "scenery": 6
+        },
+        {
+          "id": 3752,
+          "name": "CEDAR POINT CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 3793,
+          "name": "Cedar Point Recreation Area",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -79,
+      "count": 3,
+      "riding": 2,
+      "boondocking": 1,
+      "campgrounds": 0,
+      "avgScenery": 4.7,
+      "locations": [
+        {
+          "id": 3759,
+          "name": "Uwharrie National Forest",
+          "scenery": 7
+        },
+        {
+          "id": 5425,
+          "name": "Uwharrie NF OHV — Troy NC",
+          "scenery": 4
+        },
+        {
+          "id": 5218,
+          "name": "Husqvarna Proving Grounds — Sanford",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -83,
+      "count": 3,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 3,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4159,
+          "name": "SOUTH BRANCH TRAIL CAMP GROUP SITE",
+          "scenery": 6
+        },
+        {
+          "id": 4174,
+          "name": "Hoist/Reid Lake Areas",
+          "scenery": 6
+        },
+        {
+          "id": 4176,
+          "name": "ROLLWAYS CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -75,
+      "count": 3,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 2,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4301,
+          "name": "CAMP GATEWAY - STATEN ISLAND",
+          "scenery": 6
+        },
+        {
+          "id": 4365,
+          "name": "Alosa Campsites",
+          "scenery": 6
+        },
+        {
+          "id": 6185,
+          "name": "Allaire State Park OHV — NJ",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 59,
+      "lon": -147,
+      "count": 3,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 3,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4457,
+          "name": "SAN JUAN BAY CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4471,
+          "name": "NELLIE MARTIN RIVER CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4496,
+          "name": "LOG JAM BAY CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 57,
+      "lon": -137,
+      "count": 3,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 3,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4461,
+          "name": "GREENTOP CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4555,
+          "name": "GOULDING LAKE CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 4576,
+          "name": "WHITE SULPHUR SPRINGS CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -69,
+      "count": 3,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 4.3,
+      "locations": [
+        {
+          "id": 4821,
+          "name": "North Maine Woods ATV",
+          "scenery": 5
+        },
+        {
+          "id": 5177,
+          "name": "Aroostook County ATV — ME",
+          "scenery": 4
+        },
+        {
+          "id": 5913,
+          "name": "Shin Pond — Baxter",
+          "scenery": 4
+        }
+      ]
+    },
+    {
+      "lat": 63,
+      "lon": -147,
+      "count": 3,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 6.7,
+      "locations": [
+        {
+          "id": 6058,
+          "name": "Denali Highway Full Run — Paxson to Cantwell",
+          "scenery": 10
+        },
+        {
+          "id": 4971,
+          "name": "Nelchina — Glenn Highway",
+          "scenery": 5
+        },
+        {
+          "id": 5682,
+          "name": "Denali Highway",
+          "scenery": 5
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -83,
+      "count": 3,
+      "riding": 3,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 5.3,
+      "locations": [
+        {
+          "id": 6014,
+          "name": "Drummond Island ORV Trails",
+          "scenery": 8
+        },
+        {
+          "id": 5106,
+          "name": "Drummond Island ORV",
+          "scenery": 4
+        },
+        {
+          "id": 5926,
+          "name": "Drummond Island",
+          "scenery": 4
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -121,
+      "count": 2,
+      "riding": 0,
+      "boondocking": 1,
+      "campgrounds": 1,
+      "avgScenery": 6.5,
+      "locations": [
+        {
+          "id": 830,
+          "name": "SANTA ROSA ISLAND BACKCOUNTRY BEACH CAMPING",
+          "scenery": 7
+        },
+        {
+          "id": 859,
+          "name": "SANTA ROSA ISLAND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -101,
+      "count": 2,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 2,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 987,
+          "name": "Cimarron National Grassland",
+          "scenery": 6
+        },
+        {
+          "id": 1031,
+          "name": "Cimarron Recreation Area",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -97,
+      "count": 2,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 2569,
+          "name": "Sheyenne National Grassland",
+          "scenery": 6
+        },
+        {
+          "id": 6099,
+          "name": "Sheyenne National Grassland OHV",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -101,
+      "count": 2,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 5,
+      "locations": [
+        {
+          "id": 3166,
+          "name": "Nebraska National Forest at Halsey",
+          "scenery": 7
+        },
+        {
+          "id": 4898,
+          "name": "Nebraska NF — Bessey OHV",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -99,
+      "count": 2,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6.5,
+      "locations": [
+        {
+          "id": 6095,
+          "name": "Niobrara State Park Trail System",
+          "scenery": 7
+        },
+        {
+          "id": 3329,
+          "name": "Randall Creek Recreation Area",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -101,
+      "count": 2,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 2,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 3333,
+          "name": "Downstream Area",
+          "scenery": 6
+        },
+        {
+          "id": 3334,
+          "name": "Indian Memorial",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -97,
+      "count": 2,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 2,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 3336,
+          "name": "Weigand",
+          "scenery": 6
+        },
+        {
+          "id": 3337,
+          "name": "Pierson Ranch Camp",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -81,
+      "count": 2,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 4,
+      "locations": [
+        {
+          "id": 3627,
+          "name": "Cumberland Island National Seashore Camping Permits",
+          "scenery": 6
+        },
+        {
+          "id": 5738,
+          "name": "Dames Point Motocross",
+          "scenery": 2
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -93,
+      "count": 2,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 2,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4235,
+          "name": "ECHO LAKE (MINN)",
+          "scenery": 6
+        },
+        {
+          "id": 4236,
+          "name": "JEANETTE LAKE",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -91,
+      "count": 2,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 2,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4244,
+          "name": "FLOUR LAKE CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 4253,
+          "name": "EAST BEARSKIN LAKE CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 63,
+      "lon": -143,
+      "count": 2,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 8,
+      "locations": [
+        {
+          "id": 6063,
+          "name": "Nabesna Road — Wrangell-St. Elias East",
+          "scenery": 10
+        },
+        {
+          "id": 4647,
+          "name": "West Fork Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 21,
+      "lon": -157,
+      "count": 2,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 9,
+      "locations": [
+        {
+          "id": 6057,
+          "name": "Piilani Highway — Maui South Coast",
+          "scenery": 10
+        },
+        {
+          "id": 4651,
+          "name": "Haleakalā National Park (Cabin Permits)",
+          "scenery": 8
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -89,
+      "count": 2,
+      "riding": 2,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 2,
+      "locations": [
+        {
+          "id": 4987,
+          "name": "Sunset Ridge MX",
+          "scenery": 2
+        },
+        {
+          "id": 4989,
+          "name": "Fox Valley OHV Park",
+          "scenery": 2
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -89,
+      "count": 2,
+      "riding": 2,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 2,
+      "locations": [
+        {
+          "id": 4988,
+          "name": "McMotopark",
+          "scenery": 2
+        },
+        {
+          "id": 5170,
+          "name": "Atkinson Motorsports Park — WI",
+          "scenery": 2
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -105,
+      "count": 2,
+      "riding": 2,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 5,
+      "locations": [
+        {
+          "id": 5113,
+          "name": "Davis Mountains Dual Sport",
+          "scenery": 5
+        },
+        {
+          "id": 5123,
+          "name": "Guadalupe Mountains Backcountry",
+          "scenery": 5
+        }
+      ]
+    },
+    {
+      "lat": 25,
+      "lon": -81,
+      "count": 2,
+      "riding": 2,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 2.5,
+      "locations": [
+        {
+          "id": 5118,
+          "name": "Big Cypress Swamp Trails",
+          "scenery": 4
+        },
+        {
+          "id": 5660,
+          "name": "Miami Motocross Park",
+          "scenery": 1
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -107,
+      "count": 2,
+      "riding": 2,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 6.5,
+      "locations": [
+        {
+          "id": 6158,
+          "name": "Hueco Tanks Backcountry — El Paso",
+          "scenery": 9
+        },
+        {
+          "id": 5160,
+          "name": "Franklin Mountains State Park DS",
+          "scenery": 4
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -93,
+      "count": 2,
+      "riding": 2,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 2.5,
+      "locations": [
+        {
+          "id": 5679,
+          "name": "Brushy Creek SRA",
+          "scenery": 3
+        },
+        {
+          "id": 5846,
+          "name": "Trans-Iowa Adventure Trail",
+          "scenery": 2
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -119,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 297,
+          "name": "SANTA BARBARA ISLAND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 37,
+      "lon": -123,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 334,
+          "name": "Aquatic Park Cove, Black Point Overnight Anchoring, Sailing Vessels only (auxiliary engine OK)",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 39,
+      "lon": -103,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 1104,
+          "name": "Lake Hasty",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -111,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 1498,
+          "name": "Coal Banks Landing",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -107,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 1500,
+          "name": "Paulo Reservoir",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -125,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 2606,
+          "name": "Klahowya Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -125,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 2659,
+          "name": "KALALOCH",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -97,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 3186,
+          "name": "Homme Dam Recreation Area",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -99,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 3335,
+          "name": "Tailrace Left",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -75,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 3802,
+          "name": "Cape Point Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -85,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 7,
+      "locations": [
+        {
+          "id": 4157,
+          "name": "Whitefish Bay National Forest Scenic Byway",
+          "scenery": 7
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -79,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4355,
+          "name": "Onoville Marina Park",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 65,
+      "lon": -165,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4440,
+          "name": "Salmon Lake Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 59,
+      "lon": -133,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4451,
+          "name": "TURNER LAKE WEST CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 57,
+      "lon": -153,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4628,
+          "name": "Kodiak National Wildlife Refuge Cabins",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 59,
+      "lon": -149,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 8,
+      "locations": [
+        {
+          "id": 4639,
+          "name": "Kenai Fjords National Park Cabins",
+          "scenery": 8
+        }
+      ]
+    },
+    {
+      "lat": 65,
+      "lon": -149,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4642,
+          "name": "Ski Loop Trail",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 61,
+      "lon": -155,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 0,
+      "campgrounds": 1,
+      "avgScenery": 6,
+      "locations": [
+        {
+          "id": 4644,
+          "name": "Priest Rock Cabin",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "lat": 65,
+      "lon": -141,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 1,
+      "campgrounds": 0,
+      "avgScenery": 7,
+      "locations": [
+        {
+          "id": 4646,
+          "name": "Walker Fork Campground",
+          "scenery": 7
+        }
+      ]
+    },
+    {
+      "lat": 65,
+      "lon": -145,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 1,
+      "campgrounds": 0,
+      "avgScenery": 7,
+      "locations": [
+        {
+          "id": 4649,
+          "name": "North Fork Trail Shelter",
+          "scenery": 7
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -83,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 2,
+      "locations": [
+        {
+          "id": 4975,
+          "name": "Mounds ORV Area — Flint MI",
+          "scenery": 2
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -91,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 2,
+      "locations": [
+        {
+          "id": 5047,
+          "name": "Mud Creek Off-Road Park",
+          "scenery": 2
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -99,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 3,
+      "locations": [
+        {
+          "id": 5213,
+          "name": "Turtle Mountain State Forest",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 29,
+      "lon": -95,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 2,
+      "locations": [
+        {
+          "id": 5242,
+          "name": "Axton MX Park — Alvin TX",
+          "scenery": 2
+        }
+      ]
+    },
+    {
+      "lat": 33,
+      "lon": -103,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 2,
+      "locations": [
+        {
+          "id": 5297,
+          "name": "Andrews MX — Andrews TX",
+          "scenery": 2
+        }
+      ]
+    },
+    {
+      "lat": 35,
+      "lon": -103,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 2,
+      "locations": [
+        {
+          "id": 5374,
+          "name": "Clovis MX — Clovis NM",
+          "scenery": 2
+        }
+      ]
+    },
+    {
+      "lat": 43,
+      "lon": -95,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 3,
+      "locations": [
+        {
+          "id": 5448,
+          "name": "Brushy Creek SRA — Lehigh IA",
+          "scenery": 3
+        }
+      ]
+    },
+    {
+      "lat": 21,
+      "lon": -159,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 5,
+      "locations": [
+        {
+          "id": 5686,
+          "name": "Kaena Point Trail",
+          "scenery": 5
+        }
+      ]
+    },
+    {
+      "lat": 31,
+      "lon": -115,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 5,
+      "locations": [
+        {
+          "id": 5847,
+          "name": "Baja California — Mike's Sky Ranch",
+          "scenery": 5
+        }
+      ]
+    },
+    {
+      "lat": 29,
+      "lon": -105,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 5,
+      "locations": [
+        {
+          "id": 5851,
+          "name": "Big Bend Ranch State Park",
+          "scenery": 5
+        }
+      ]
+    },
+    {
+      "lat": 49,
+      "lon": -109,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 1,
+      "campgrounds": 0,
+      "avgScenery": 7,
+      "locations": [
+        {
+          "id": 5890,
+          "name": "BLM Dispersed — Havre",
+          "scenery": 7
+        }
+      ]
+    },
+    {
+      "lat": 47,
+      "lon": -105,
+      "count": 1,
+      "riding": 0,
+      "boondocking": 1,
+      "campgrounds": 0,
+      "avgScenery": 7,
+      "locations": [
+        {
+          "id": 5893,
+          "name": "BLM Dispersed — Miles City",
+          "scenery": 7
+        }
+      ]
+    },
+    {
+      "lat": 45,
+      "lon": -67,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 7,
+      "locations": [
+        {
+          "id": 6002,
+          "name": "Downeast Sunrise Trail — Washington County",
+          "scenery": 7
+        }
+      ]
+    },
+    {
+      "lat": 23,
+      "lon": -159,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 10,
+      "locations": [
+        {
+          "id": 6056,
+          "name": "Polihale Ridge Trail — Kauai",
+          "scenery": 10
+        }
+      ]
+    },
+    {
+      "lat": 61,
+      "lon": -143,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 10,
+      "locations": [
+        {
+          "id": 6059,
+          "name": "McCarthy Road — Wrangell-St. Elias",
+          "scenery": 10
+        }
+      ]
+    },
+    {
+      "lat": 63,
+      "lon": -151,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 10,
+      "locations": [
+        {
+          "id": 6062,
+          "name": "Petersville Road — Denali Access",
+          "scenery": 10
+        }
+      ]
+    },
+    {
+      "lat": 67,
+      "lon": -151,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 10,
+      "locations": [
+        {
+          "id": 6064,
+          "name": "Dalton Highway Segments — Arctic Alaska",
+          "scenery": 10
+        }
+      ]
+    },
+    {
+      "lat": 63,
+      "lon": -149,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 9,
+      "locations": [
+        {
+          "id": 6067,
+          "name": "Stampede Trail — Healy",
+          "scenery": 9
+        }
+      ]
+    },
+    {
+      "lat": 41,
+      "lon": -103,
+      "count": 1,
+      "riding": 1,
+      "boondocking": 0,
+      "campgrounds": 0,
+      "avgScenery": 8,
+      "locations": [
+        {
+          "id": 6096,
+          "name": "Scotts Bluff National Monument Area Trails",
+          "scenery": 8
+        }
+      ]
+    }
+  ],
+  "hotspots": [
+    {
+      "rank": 1,
+      "lat": 39,
+      "lon": -121,
+      "count": 147,
+      "riding": 18,
+      "boondocking": 1,
+      "campgrounds": 128,
+      "avgScenery": 5.7,
+      "topLocations": [
+        {
+          "id": 250,
+          "name": "Wakalu Hep Yo (Wild River) Campground",
+          "scenery": 7
+        },
+        {
+          "id": 247,
+          "name": "FRENCHMAN",
+          "scenery": 6
+        },
+        {
+          "id": 249,
+          "name": "BOCA REST CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "lat": 37,
+      "lon": -119,
+      "count": 146,
+      "riding": 10,
+      "boondocking": 15,
+      "campgrounds": 121,
+      "avgScenery": 6.2,
+      "topLocations": [
+        {
+          "id": 257,
+          "name": "Rock Creek (Sierra National Forest, CA)",
+          "scenery": 7
+        },
+        {
+          "id": 255,
+          "name": "POTWISHA CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 264,
+          "name": "VERMILLION",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "lat": 45,
+      "lon": -121,
+      "count": 127,
+      "riding": 11,
+      "boondocking": 22,
+      "campgrounds": 94,
+      "avgScenery": 6.2,
+      "topLocations": [
+        {
+          "id": 1874,
+          "name": "Chimney Rock Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1868,
+          "name": "Ochoco NF-Maury Mountains Area",
+          "scenery": 6
+        },
+        {
+          "id": 1872,
+          "name": "Stillwater Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "lat": 39,
+      "lon": -109,
+      "count": 112,
+      "riding": 45,
+      "boondocking": 22,
+      "campgrounds": 45,
+      "avgScenery": 5.6,
+      "topLocations": [
+        {
+          "id": 902,
+          "name": "Moose Manor Cabin",
+          "scenery": 6
+        },
+        {
+          "id": 904,
+          "name": "OAK CABIN",
+          "scenery": 6
+        },
+        {
+          "id": 944,
+          "name": "SILESCA CABIN",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "lat": 47,
+      "lon": -121,
+      "count": 110,
+      "riding": 19,
+      "boondocking": 13,
+      "campgrounds": 78,
+      "avgScenery": 5.9,
+      "topLocations": [
+        {
+          "id": 2532,
+          "name": "KANER FLAT CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 2533,
+          "name": "Lodgepole Campground (Washington)",
+          "scenery": 6
+        },
+        {
+          "id": 2534,
+          "name": "SAWMILL FLAT CAMPGROUND",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "lat": 39,
+      "lon": -107,
+      "count": 109,
+      "riding": 32,
+      "boondocking": 9,
+      "campgrounds": 68,
+      "avgScenery": 5.8,
+      "topLocations": [
+        {
+          "id": 886,
+          "name": "SW/Central Flat Tops Area",
+          "scenery": 6
+        },
+        {
+          "id": 888,
+          "name": "CRESCENT MINING CAMP",
+          "scenery": 6
+        },
+        {
+          "id": 890,
+          "name": "Chalk Creek Canyon",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "lat": 35,
+      "lon": -83,
+      "count": 108,
+      "riding": 14,
+      "boondocking": 9,
+      "campgrounds": 85,
+      "avgScenery": 6.1,
+      "topLocations": [
+        {
+          "id": 3559,
+          "name": "Wildcat Creek Campground #2 Upper",
+          "scenery": 6
+        },
+        {
+          "id": 3564,
+          "name": "BIG OAKS",
+          "scenery": 6
+        },
+        {
+          "id": 3565,
+          "name": "BOLDING MILL",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "lat": 39,
+      "lon": -111,
+      "count": 97,
+      "riding": 15,
+      "boondocking": 10,
+      "campgrounds": 72,
+      "avgScenery": 6,
+      "topLocations": [
+        {
+          "id": 884,
+          "name": "Huntington Canyon Recreation Area",
+          "scenery": 6
+        },
+        {
+          "id": 909,
+          "name": "Miller Flat Reservoir Campground",
+          "scenery": 6
+        },
+        {
+          "id": 2203,
+          "name": "Temple Mountain Campground East",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "lat": 45,
+      "lon": -115,
+      "count": 94,
+      "riding": 18,
+      "boondocking": 5,
+      "campgrounds": 71,
+      "avgScenery": 5.9,
+      "topLocations": [
+        {
+          "id": 1122,
+          "name": "Payette River: South Fork",
+          "scenery": 7
+        },
+        {
+          "id": 1119,
+          "name": "TRAP CREEK CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 1120,
+          "name": "HOT SPRINGS",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "lat": 37,
+      "lon": -113,
+      "count": 90,
+      "riding": 7,
+      "boondocking": 15,
+      "campgrounds": 65,
+      "avgScenery": 6,
+      "topLocations": [
+        {
+          "id": 5,
+          "name": "Moon Rocks — Warner Valley",
+          "scenery": 5
+        },
+        {
+          "id": 32,
+          "name": "Zion National Park",
+          "scenery": 5
+        },
+        {
+          "id": 33,
+          "name": "Snow Canyon State Park",
+          "scenery": 5
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "lat": 35,
+      "lon": -117,
+      "count": 90,
+      "riding": 33,
+      "boondocking": 9,
+      "campgrounds": 48,
+      "avgScenery": 5.2,
+      "topLocations": [
+        {
+          "id": 260,
+          "name": "FISHERMANS GROUP",
+          "scenery": 7
+        },
+        {
+          "id": 261,
+          "name": "San Gabriel Mountains National Monument",
+          "scenery": 6
+        },
+        {
+          "id": 278,
+          "name": "Coon Creek Yellow Post Sites",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "lat": 41,
+      "lon": -123,
+      "count": 90,
+      "riding": 4,
+      "boondocking": 8,
+      "campgrounds": 78,
+      "avgScenery": 6,
+      "topLocations": [
+        {
+          "id": 252,
+          "name": "MARINERS POINT GROUP CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 267,
+          "name": "Philpot Picnic Area",
+          "scenery": 6
+        },
+        {
+          "id": 272,
+          "name": "Hotelling Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "lat": 43,
+      "lon": -123,
+      "count": 87,
+      "riding": 5,
+      "boondocking": 5,
+      "campgrounds": 77,
+      "avgScenery": 6,
+      "topLocations": [
+        {
+          "id": 547,
+          "name": "Harr Point Campground",
+          "scenery": 6
+        },
+        {
+          "id": 704,
+          "name": "River Bench Campground",
+          "scenery": 6
+        },
+        {
+          "id": 775,
+          "name": "Fish Lake Resort",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "lat": 35,
+      "lon": -119,
+      "count": 77,
+      "riding": 15,
+      "boondocking": 3,
+      "campgrounds": 58,
+      "avgScenery": 5.6,
+      "topLocations": [
+        {
+          "id": 246,
+          "name": "LIVE OAK SOUTH",
+          "scenery": 6
+        },
+        {
+          "id": 263,
+          "name": "CAMP THREE CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 266,
+          "name": "SANTA CRUZ SCORPION",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "lat": 43,
+      "lon": -111,
+      "count": 70,
+      "riding": 9,
+      "boondocking": 10,
+      "campgrounds": 51,
+      "avgScenery": 6,
+      "topLocations": [
+        {
+          "id": 1127,
+          "name": "Graves Creek Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1148,
+          "name": "Pine Creek Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1118,
+          "name": "Blowout Campground",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "lat": 35,
+      "lon": -85,
+      "count": 70,
+      "riding": 23,
+      "boondocking": 0,
+      "campgrounds": 47,
+      "avgScenery": 5.8,
+      "topLocations": [
+        {
+          "id": 3560,
+          "name": "Leon E. Williams - Holiday Marina",
+          "scenery": 6
+        },
+        {
+          "id": 3561,
+          "name": "PS Marina 3 - Allatoona Landing",
+          "scenery": 6
+        },
+        {
+          "id": 3563,
+          "name": "BALD RIDGE CREEK",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "lat": 49,
+      "lon": -115,
+      "count": 66,
+      "riding": 4,
+      "boondocking": 5,
+      "campgrounds": 57,
+      "avgScenery": 6.1,
+      "topLocations": [
+        {
+          "id": 1154,
+          "name": "Lake Creek Campground",
+          "scenery": 7
+        },
+        {
+          "id": 1110,
+          "name": "Grave Creek Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1117,
+          "name": "Camp 32",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "lat": 47,
+      "lon": -115,
+      "count": 65,
+      "riding": 9,
+      "boondocking": 6,
+      "campgrounds": 50,
+      "avgScenery": 5.9,
+      "topLocations": [
+        {
+          "id": 1113,
+          "name": "ARID PEAK LOOKOUT",
+          "scenery": 6
+        },
+        {
+          "id": 1155,
+          "name": "Hidden Creek Campground",
+          "scenery": 6
+        },
+        {
+          "id": 1162,
+          "name": "OHARA",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "lat": 37,
+      "lon": -81,
+      "count": 63,
+      "riding": 22,
+      "boondocking": 3,
+      "campgrounds": 38,
+      "avgScenery": 5.6,
+      "topLocations": [
+        {
+          "id": 3693,
+          "name": "Comers Rock Recreation Area",
+          "scenery": 7
+        },
+        {
+          "id": 3657,
+          "name": "Eastern Divide Ranger District",
+          "scenery": 6
+        },
+        {
+          "id": 3748,
+          "name": "KEOWEE PARK SHELTER ",
+          "scenery": 6
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "lat": 37,
+      "lon": -107,
+      "count": 62,
+      "riding": 19,
+      "boondocking": 4,
+      "campgrounds": 39,
+      "avgScenery": 6.2,
+      "topLocations": [
+        {
+          "id": 896,
+          "name": "GRAHAM CREEK CAMPGROUND",
+          "scenery": 6
+        },
+        {
+          "id": 903,
+          "name": "THIRTY MILE",
+          "scenery": 6
+        },
+        {
+          "id": 918,
+          "name": "MOGOTE",
+          "scenery": 6
+        }
+      ]
+    }
+  ]
+}
