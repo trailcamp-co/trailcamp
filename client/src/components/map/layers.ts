@@ -150,7 +150,42 @@ export function addCustomLayers(
     },
   });
 
-  // Emoji labels rendered natively on the WebGL canvas (perfectly bound to coordinates)
+  // Emoji icons rendered as Mapbox image sprites (perfectly bound to coordinates)
+  const emojiMap: Record<string, string> = {
+    '🏍️': 'emoji-riding',
+    '🏕️': 'emoji-campground', 
+    '⛺': 'emoji-boondocking',
+    '🅿️': 'emoji-parking',
+    '💧': 'emoji-water',
+    '🚽': 'emoji-dump',
+    '📍': 'emoji-default',
+    '🏔️': 'emoji-scenic',
+  };
+
+  // Generate emoji images from canvas
+  for (const [emoji, imgId] of Object.entries(emojiMap)) {
+    if (!map.hasImage(imgId)) {
+      const size = 48;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d')!;
+      ctx.font = `${size - 8}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(emoji, size / 2, size / 2 + 2);
+      const imageData = ctx.getImageData(0, 0, size, size);
+      map.addImage(imgId, imageData, { pixelRatio: 2 });
+    }
+  }
+
+  // Build icon-image expression to map emoji text → sprite id
+  const iconImageExpr: any[] = ['match', ['get', 'icon']];
+  for (const [emoji, imgId] of Object.entries(emojiMap)) {
+    iconImageExpr.push(emoji, imgId);
+  }
+  iconImageExpr.push('emoji-default'); // fallback
+
   map.addLayer({
     id: 'unclustered-emoji',
     type: 'symbol',
@@ -158,18 +193,17 @@ export function addCustomLayers(
     filter: ['!', ['has', 'point_count']],
     minzoom: 8,
     layout: {
-      'text-field': ['get', 'icon'],
-      'text-size': ['interpolate', ['linear'], ['zoom'],
-        8, 12, 10, 16, 12, 20, 14, 24,
+      'icon-image': iconImageExpr as any,
+      'icon-size': ['interpolate', ['linear'], ['zoom'],
+        8, 0.35, 10, 0.5, 12, 0.7, 14, 0.9,
       ],
-      'text-allow-overlap': true,
-      'text-ignore-placement': true,
-      'text-anchor': 'center',
-      'text-offset': [0, 0],
+      'icon-allow-overlap': true,
+      'icon-ignore-placement': true,
+      'icon-anchor': 'center',
     },
     paint: {
-      'text-opacity': ['interpolate', ['linear'], ['zoom'],
-        8, 0.6, 10, 0.85, 12, 1.0,
+      'icon-opacity': ['interpolate', ['linear'], ['zoom'],
+        8, 0.7, 10, 0.9, 12, 1.0,
       ],
     },
   });
