@@ -1,6 +1,6 @@
 #!/bin/bash
-# TrailCamp Database Vacuum Script
-# Reclaims unused space and optimizes performance
+# TrailCamp Database Vacuum & Optimization Script
+# Reclaims space and optimizes SQLite database performance
 
 set -e
 
@@ -14,132 +14,114 @@ DB_PATH="./trailcamp.db"
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
-echo -e "${BLUE}    TrailCamp Database Vacuum${NC}"
+echo -e "${BLUE}    TrailCamp Database Vacuum & Optimization${NC}"
 echo -e "${BLUE}    ${TIMESTAMP}${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}\n"
 
 # Check if database exists
 if [ ! -f "${DB_PATH}" ]; then
-    echo -e "${RED}✗ Database not found: ${DB_PATH}${NC}"
+    echo -e "${RED}✗ Database not found at ${DB_PATH}${NC}\n"
     exit 1
 fi
 
-# Get initial size
-INITIAL_SIZE=$(du -h "${DB_PATH}" | cut -f1)
-INITIAL_BYTES=$(stat -f%z "${DB_PATH}" 2>/dev/null || stat -c%s "${DB_PATH}" 2>/dev/null)
+# Get initial stats
+echo -e "${YELLOW}📊 Measuring database before optimization...${NC}\n"
 
-echo -e "${BLUE}1. Pre-Vacuum Status${NC}"
-echo -e "   Database size: ${INITIAL_SIZE}"
+BEFORE_SIZE=$(ls -lh "${DB_PATH}" | awk '{print $5}')
+BEFORE_BYTES=$(stat -f%z "${DB_PATH}" 2>/dev/null || stat -c%s "${DB_PATH}" 2>/dev/null)
 
-# Run integrity check first
-echo -e "\n${BLUE}2. Integrity Check${NC}"
-INTEGRITY=$(sqlite3 "${DB_PATH}" "PRAGMA integrity_check;" 2>&1)
+echo "Database size: ${BEFORE_SIZE}"
 
-if [ "$INTEGRITY" = "ok" ]; then
-    echo -e "   ${GREEN}✓ Database integrity: OK${NC}"
+# Count records
+LOCATION_COUNT=$(sqlite3 "${DB_PATH}" "SELECT COUNT(*) FROM locations;")
+TRIP_COUNT=$(sqlite3 "${DB_PATH}" "SELECT COUNT(*) FROM trips;")
+
+echo "Locations: ${LOCATION_COUNT}"
+echo "Trips: ${TRIP_COUNT}"
+
+# Integrity check
+echo -e "\n${YELLOW}🔍 Running integrity check...${NC}"
+INTEGRITY=$(sqlite3 "${DB_PATH}" "PRAGMA integrity_check;")
+
+if [ "${INTEGRITY}" = "ok" ]; then
+    echo -e "${GREEN}✓ Integrity check: OK${NC}"
 else
-    echo -e "   ${RED}✗ Integrity check failed:${NC}"
-    echo "$INTEGRITY"
-    echo -e "\n${YELLOW}WARNING: Not safe to vacuum. Fix integrity issues first.${NC}"
+    echo -e "${RED}✗ Integrity check FAILED:${NC}"
+    echo "${INTEGRITY}"
+    echo -e "\n${RED}Aborting vacuum - database may be corrupted${NC}\n"
     exit 1
 fi
 
-# Get database stats before vacuum
-echo -e "\n${BLUE}3. Pre-Vacuum Statistics${NC}"
-PAGE_COUNT=$(sqlite3 "${DB_PATH}" "PRAGMA page_count;")
-PAGE_SIZE=$(sqlite3 "${DB_PATH}" "PRAGMA page_size;")
-FREELIST_COUNT=$(sqlite3 "${DB_PATH}" "PRAGMA freelist_count;")
+# Page count before
+PAGE_COUNT_BEFORE=$(sqlite3 "${DB_PATH}" "PRAGMA page_count;")
+FREELIST_COUNT_BEFORE=$(sqlite3 "${DB_PATH}" "PRAGMA freelist_count;")
 
-echo -e "   Total pages: ${PAGE_COUNT}"
-echo -e "   Page size: ${PAGE_SIZE} bytes"
-echo -e "   Free pages: ${FREELIST_COUNT}"
-
-if [ "$FREELIST_COUNT" -gt 0 ]; then
-    WASTED_BYTES=$((FREELIST_COUNT * PAGE_SIZE))
-    WASTED_MB=$((WASTED_BYTES / 1024 / 1024))
-    echo -e "   ${YELLOW}Wasted space: ~${WASTED_MB}MB (${FREELIST_COUNT} free pages)${NC}"
-else
-    echo -e "   ${GREEN}No wasted space detected${NC}"
-fi
+echo -e "\nPages: ${PAGE_COUNT_BEFORE}"
+echo "Free pages: ${FREELIST_COUNT_BEFORE}"
 
 # Run VACUUM
-echo -e "\n${BLUE}4. Running VACUUM${NC}"
-echo -e "   This may take a few seconds..."
+echo -e "\n${YELLOW}🗜️  Running VACUUM (this may take a moment)...${NC}"
 
 START_TIME=$(date +%s)
-sqlite3 "${DB_PATH}" "VACUUM;" 2>&1
-VACUUM_STATUS=$?
+sqlite3 "${DB_PATH}" "VACUUM;"
 END_TIME=$(date +%s)
-DURATION=$((END_TIME - START_TIME))
 
-if [ $VACUUM_STATUS -eq 0 ]; then
-    echo -e "   ${GREEN}✓ VACUUM completed (${DURATION}s)${NC}"
-else
-    echo -e "   ${RED}✗ VACUUM failed${NC}"
-    exit 1
-fi
+VACUUM_DURATION=$((END_TIME - START_TIME))
 
-# Run ANALYZE to update statistics
-echo -e "\n${BLUE}5. Running ANALYZE${NC}"
-echo -e "   Updating query planner statistics..."
+echo -e "${GREEN}✓ VACUUM completed in ${VACUUM_DURATION}s${NC}"
 
-sqlite3 "${DB_PATH}" "ANALYZE;" 2>&1
-ANALYZE_STATUS=$?
+# Run ANALYZE
+echo -e "\n${YELLOW}📈 Running ANALYZE to update query optimizer statistics...${NC}"
 
-if [ $ANALYZE_STATUS -eq 0 ]; then
-    echo -e "   ${GREEN}✓ ANALYZE completed${NC}"
-else
-    echo -e "   ${YELLOW}⚠ ANALYZE had issues (non-critical)${NC}"
-fi
+sqlite3 "${DB_PATH}" "ANALYZE;"
 
-# Get final size
-FINAL_SIZE=$(du -h "${DB_PATH}" | cut -f1)
-FINAL_BYTES=$(stat -f%z "${DB_PATH}" 2>/dev/null || stat -c%s "${DB_PATH}" 2>/dev/null)
+echo -e "${GREEN}✓ ANALYZE completed${NC}"
 
-# Calculate savings
-SAVED_BYTES=$((INITIAL_BYTES - FINAL_BYTES))
-SAVED_MB=$((SAVED_BYTES / 1024 / 1024))
+# Get final stats
+echo -e "\n${YELLOW}📊 Measuring database after optimization...${NC}\n"
 
-if [ $SAVED_BYTES -gt 0 ]; then
-    PERCENT_SAVED=$((SAVED_BYTES * 100 / INITIAL_BYTES))
-else
-    PERCENT_SAVED=0
-fi
+AFTER_SIZE=$(ls -lh "${DB_PATH}" | awk '{print $5}')
+AFTER_BYTES=$(stat -f%z "${DB_PATH}" 2>/dev/null || stat -c%s "${DB_PATH}" 2>/dev/null)
 
-# Get post-vacuum stats
-echo -e "\n${BLUE}6. Post-Vacuum Statistics${NC}"
 PAGE_COUNT_AFTER=$(sqlite3 "${DB_PATH}" "PRAGMA page_count;")
 FREELIST_COUNT_AFTER=$(sqlite3 "${DB_PATH}" "PRAGMA freelist_count;")
 
-echo -e "   Total pages: ${PAGE_COUNT_AFTER}"
-echo -e "   Free pages: ${FREELIST_COUNT_AFTER}"
+# Calculate space reclaimed
+SPACE_RECLAIMED=$((BEFORE_BYTES - AFTER_BYTES))
+SPACE_RECLAIMED_MB=$(echo "scale=2; ${SPACE_RECLAIMED} / 1024 / 1024" | bc)
 
-# Summary
-echo -e "\n${BLUE}═══════════════════════════════════════════════════════${NC}"
-echo -e "${BLUE}Summary${NC}\n"
-
-echo -e "   Before:  ${INITIAL_SIZE}"
-echo -e "   After:   ${FINAL_SIZE}"
-
-if [ $SAVED_BYTES -gt 0 ]; then
-    if [ $SAVED_MB -gt 0 ]; then
-        echo -e "   ${GREEN}Saved:   ${SAVED_MB}MB (${PERCENT_SAVED}%)${NC}"
-    else
-        SAVED_KB=$((SAVED_BYTES / 1024))
-        echo -e "   ${GREEN}Saved:   ${SAVED_KB}KB${NC}"
-    fi
-else
-    echo -e "   ${YELLOW}No space reclaimed (database was already compact)${NC}"
+if [ ${SPACE_RECLAIMED} -lt 0 ]; then
+    SPACE_RECLAIMED=0
+    SPACE_RECLAIMED_MB="0.00"
 fi
 
-echo -e "\n   ${GREEN}✅ Database optimization complete!${NC}"
+PERCENT_REDUCTION=0
+if [ ${BEFORE_BYTES} -gt 0 ]; then
+    PERCENT_REDUCTION=$(echo "scale=1; (${SPACE_RECLAIMED} * 100) / ${BEFORE_BYTES}" | bc)
+fi
+
+# Summary
+echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
+echo -e "${BLUE}Summary${NC}\n"
+
+echo "Before:  ${BEFORE_SIZE} (${PAGE_COUNT_BEFORE} pages, ${FREELIST_COUNT_BEFORE} free)"
+echo "After:   ${AFTER_SIZE} (${PAGE_COUNT_AFTER} pages, ${FREELIST_COUNT_AFTER} free)"
+
+if [ ${SPACE_RECLAIMED} -gt 0 ]; then
+    echo -e "\n${GREEN}Space reclaimed: ${SPACE_RECLAIMED_MB} MB (${PERCENT_REDUCTION}% reduction)${NC}"
+else
+    echo -e "\n${YELLOW}No space reclaimed (database was already optimized)${NC}"
+fi
+
+echo -e "\n${GREEN}✓ Query optimizer statistics updated${NC}"
+echo -e "${GREEN}✓ Database optimized successfully${NC}"
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}\n"
 
 # Recommendations
-if [ $SAVED_MB -gt 5 ] || [ $FREELIST_COUNT -gt 100 ]; then
-    echo -e "${YELLOW}💡 Recommendation:${NC} Schedule regular vacuums (weekly or monthly)"
-    echo -e "   Add to cron: 0 3 * * 0 cd $(pwd) && ./vacuum-database.sh\n"
+if [ ${FREELIST_COUNT_AFTER} -gt 100 ]; then
+    echo -e "${YELLOW}💡 Note: ${FREELIST_COUNT_AFTER} free pages remaining${NC}"
+    echo -e "${YELLOW}   Run vacuum again after large deletes${NC}\n"
 fi
 
 exit 0
