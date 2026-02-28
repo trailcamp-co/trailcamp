@@ -146,13 +146,13 @@ export function addCustomLayers(
     data: buildRouteGeoJSON(routeGeoJSON),
   });
 
-  // Route outline
+  // Route glow (outer)
   map.addLayer({
     id: 'route-line-outline',
     type: 'line',
     source: 'route',
     layout: { 'line-join': 'round', 'line-cap': 'round' },
-    paint: { 'line-color': '#1e3a5f', 'line-width': 6, 'line-opacity': 0.6 },
+    paint: { 'line-color': '#f97316', 'line-width': 8, 'line-opacity': 0.15, 'line-blur': 3 },
   });
 
   // Route main line
@@ -161,7 +161,11 @@ export function addCustomLayers(
     type: 'line',
     source: 'route',
     layout: { 'line-join': 'round', 'line-cap': 'round' },
-    paint: { 'line-color': '#3b82f6', 'line-width': 3 },
+    paint: {
+      'line-color': '#f97316',
+      'line-width': 3.5,
+      'line-opacity': 0.9,
+    },
   });
 }
 
