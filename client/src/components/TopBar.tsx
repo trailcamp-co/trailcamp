@@ -135,10 +135,22 @@ export default function TopBar({
           onClick={() => setTripDropdownOpen(!tripDropdownOpen)}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-150 bg-dark-700 hover:bg-dark-600 text-gray-200 [.light_&]:bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-700"
         >
-          <MapPin size={14} className="opacity-60" />
-          <span className="max-w-[300px] truncate">
-            {selectedTrip?.name ?? 'Select Trip'}
-          </span>
+          <MapPin size={14} className="opacity-60 flex-shrink-0" />
+          <div className="text-left min-w-0">
+            <span className="max-w-[300px] truncate block">
+              {selectedTrip?.name ?? 'Select Trip'}
+            </span>
+            {selectedTrip && (
+              <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-normal">
+                {selectedTrip.start_date && (
+                  <span>{new Date(selectedTrip.start_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                )}
+                {selectedTrip.stop_count != null && <span>{selectedTrip.stop_count} stops</span>}
+                {selectedTrip.total_nights != null && selectedTrip.total_nights > 0 && <span>{selectedTrip.total_nights} nights</span>}
+                {selectedTrip.total_distance != null && selectedTrip.total_distance > 0 && <span>{Math.round(selectedTrip.total_distance).toLocaleString()} mi</span>}
+              </div>
+            )}
+          </div>
           <ChevronDown
             size={14}
             className={`opacity-50 transition-transform duration-150 ${
@@ -195,7 +207,10 @@ export default function TopBar({
                       <span className="text-[10px] text-gray-500 [.light_&]:text-gray-400">{trip.stop_count} stops</span>
                     )}
                     {trip.total_nights != null && trip.total_nights > 0 && (
-                      <span className="text-[10px] text-gray-500 [.light_&]:text-gray-400">{trip.total_nights}n</span>
+                      <span className="text-[10px] text-gray-500 [.light_&]:text-gray-400">{trip.total_nights} nights</span>
+                    )}
+                    {trip.total_distance != null && trip.total_distance > 0 && (
+                      <span className="text-[10px] text-gray-500 [.light_&]:text-gray-400">{Math.round(trip.total_distance).toLocaleString()} mi</span>
                     )}
                   </div>
                 </div>
