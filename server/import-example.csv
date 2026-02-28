@@ -1,0 +1,3 @@
+name,description,latitude,longitude,category,sub_type,trail_types,difficulty,distance_miles,scenery_rating,best_season,cell_signal,permit_required,permit_info,cost_per_night,notes,source
+Example Trail,Beautiful single-track through pine forest,40.1234,-105.6789,riding,,Single Track,Moderate,15,8,Summer,Moderate,1,USFS Northwest Forest Pass,,Best ridden clockwise,manual
+Example Campground,Dispersed camping with mountain views,38.5678,-106.1234,campsite,boondocking,,,,9,Summer,None,0,,0,High-clearance recommended,manual
