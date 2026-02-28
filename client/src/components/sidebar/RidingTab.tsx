@@ -80,6 +80,8 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
     if (sortField === 'distance_from') setSortField('name');
   }, [sortField]);
 
+  const totalRiding = useMemo(() => locations.filter(l => l.category === 'riding').length, [locations]);
+
   const ridingLocations = useMemo(() => {
     let filtered = locations.filter((l) => l.category === 'riding');
 
@@ -192,6 +194,16 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
             {viewportFilter ? 'In view' : 'Show all'}
           </button>
         </div>
+      </div>
+
+      {/* Quick stats bar */}
+      <div className="px-3 py-1.5 text-[10px] text-gray-500 [.light_&]:text-gray-400 border-b border-dark-700/30 [.light_&]:border-gray-100 flex items-center justify-between">
+        <span>Showing <span className="text-gray-300 [.light_&]:text-gray-600 font-medium">{ridingLocations.length}</span> of {totalRiding} riding areas</span>
+        {ridingLocations.length > 0 && (
+          <span className="text-gray-600">
+            {ridingLocations.reduce((sum, l) => sum + (l.distance_miles || 0), 0).toLocaleString()} total trail mi
+          </span>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto">
