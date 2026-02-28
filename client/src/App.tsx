@@ -10,6 +10,7 @@ import TopBar from './components/TopBar';
 import LeftSidebar from './components/sidebar';
 import RightPanel from './components/RightPanel';
 import StatsPanel from './components/StatsPanel';
+import ErrorBoundary from './components/ErrorBoundary';
 import AddLocationModal from './components/AddLocationModal';
 import type { Location, MapStyle } from './types';
 import { MAP_STYLES } from './types';
@@ -139,6 +140,7 @@ export default function App() {
           lg:relative lg:w-80 lg:block
           ${leftSidebarOpen ? 'fixed inset-y-0 left-0 w-80 z-30 lg:relative' : 'w-0 -left-80 lg:w-0'}
         `}>
+          <ErrorBoundary fallbackLabel="Sidebar error">
           <LeftSidebar
             selectedTrip={selectedTrip}
             trips={trips}
@@ -166,6 +168,7 @@ export default function App() {
               setFilters(prev => ({ ...prev, visitedStatus: mode }))
             }
           />
+          </ErrorBoundary>
         </div>
 
         {/* Map */}
