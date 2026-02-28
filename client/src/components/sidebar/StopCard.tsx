@@ -221,6 +221,20 @@ export function SortableStopCard({
                 onClick={(e) => e.stopPropagation()}
                 className="w-full bg-dark-900 [.light_&]:bg-gray-50 border border-gray-700 [.light_&]:border-gray-200 rounded px-2 py-1.5 text-xs text-gray-300 [.light_&]:text-gray-700 placeholder-gray-600 [.light_&]:placeholder-gray-400 resize-none focus:outline-none focus:border-orange-500 transition-colors"
               />
+              <div className="flex gap-1.5 mt-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); window.open(`https://www.google.com/maps/dir/?api=1&destination=${stop.latitude},${stop.longitude}`, '_blank'); }}
+                  className="text-[10px] font-medium px-2.5 py-1.5 rounded-lg bg-orange-500/10 text-orange-400 border border-orange-500/20 hover:bg-orange-500/20 transition-colors"
+                >
+                  📍 Navigate
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onFlyTo(stop.longitude, stop.latitude); }}
+                  className="text-[10px] font-medium px-2.5 py-1.5 rounded-lg bg-dark-700 text-gray-400 border border-dark-600/50 hover:bg-dark-600 transition-colors"
+                >
+                  🗺️ Fly to
+                </button>
+              </div>
               <div className="flex items-center gap-2 mt-2">
                 <label className="text-[11px] text-gray-500">Nights:</label>
                 <input
