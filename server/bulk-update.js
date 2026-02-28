@@ -1,282 +1,268 @@
 #!/usr/bin/env node
-// Bulk Update Script for TrailCamp
+// Bulk Update Tool for TrailCamp
 // Safely update multiple locations based on criteria
 
 import Database from 'better-sqlite3';
+import readline from 'readline';
 
 const db = new Database('./trailcamp.db');
 
-function printHelp() {
+const UPDATABLE_FIELDS = [
+  'description', 'category', 'sub_type', 'trail_types', 'difficulty',
+  'distance_miles', 'scenery_rating', 'best_season', 'season', 'cell_signal',
+  'shade', 'level_ground', 'water_available', 'water_nearby', 'stay_limit_days',
+  'permit_required', 'permit_info', 'cost_per_night', 'hours', 'notes',
+  'external_links', 'source', 'featured', 'state'
+];
+
+// Parse command line arguments
+function parseArgs() {
+  const args = process.argv.slice(2);
+  
+  if (args.length === 0 || args.includes('--help')) {
+    showHelp();
+    process.exit(0);
+  }
+  
+  const config = {
+    field: null,
+    value: null,
+    where: '',
+    dryRun: args.includes('--dry-run'),
+    yes: args.includes('--yes')
+  };
+  
+  // Parse --set field=value
+  const setIndex = args.indexOf('--set');
+  if (setIndex >= 0 && args[setIndex + 1]) {
+    const [field, ...valueParts] = args[setIndex + 1].split('=');
+    config.field = field;
+    config.value = valueParts.join('='); // In case value contains =
+  }
+  
+  // Parse --where condition
+  const whereIndex = args.indexOf('--where');
+  if (whereIndex >= 0 && args[whereIndex + 1]) {
+    // Collect all args after --where until next flag
+    const whereArgs = [];
+    for (let i = whereIndex + 1; i < args.length; i++) {
+      if (args[i].startsWith('--')) break;
+      whereArgs.push(args[i]);
+    }
+    config.where = whereArgs.join(' ');
+  }
+  
+  return config;
+}
+
+function showHelp() {
   console.log(`
 TrailCamp Bulk Update Tool
 
 Usage:
-  node bulk-update.js --where "CONDITION" --set "FIELD=VALUE" [--dry-run]
+  node bulk-update.js --set FIELD=VALUE --where CONDITION [--dry-run] [--yes]
 
 Options:
-  --where    SQL WHERE clause to match locations
-  --set      Field and value to update (can specify multiple)
-  --dry-run  Preview changes without applying them
-  --help     Show this help
+  --set FIELD=VALUE    Field to update and new value
+  --where CONDITION    SQL WHERE clause (without WHERE keyword)
+  --dry-run           Preview changes without applying
+  --yes               Skip confirmation prompt
+  --help              Show this help
+
+Updatable Fields:
+  ${UPDATABLE_FIELDS.join(', ')}
 
 Examples:
-  # Add permit info to all California National Forest OHV areas
-  node bulk-update.js \\
-    --where "state = 'CA' AND name LIKE '%National Forest%'" \\
-    --set "permit_required=1" \\
-    --set "permit_info='CA OHV registration required'" \\
-    --dry-run
+  # Update scenery rating for all California boondocking
+  node bulk-update.js --set scenery_rating=8 --where "state = 'CA' AND sub_type = 'boondocking'" --dry-run
 
-  # Update best season for all Alaska locations
-  node bulk-update.js \\
-    --where "state = 'AK'" \\
-    --set "best_season='Summer'" \\
-    --dry-run
+  # Fix trail types format
+  node bulk-update.js --set trail_types='Single Track,Enduro' --where "trail_types = 'Single Track, Enduro'"
 
-  # Add cell signal info to remote desert areas
-  node bulk-update.js \\
-    --where "state IN ('NV', 'AZ') AND sub_type = 'boondocking'" \\
-    --set "cell_signal='None'" \\
-    --dry-run
+  # Add best_season to locations in Alaska
+  node bulk-update.js --set best_season='Summer' --where "state = 'AK' AND best_season IS NULL"
 
-  # Update scenery rating for a specific region
-  node bulk-update.js \\
-    --where "latitude BETWEEN 40 AND 41 AND longitude BETWEEN -120 AND -119" \\
-    --set "scenery_rating=8"
+  # Mark featured locations
+  node bulk-update.js --set featured=1 --where "scenery_rating = 10"
 
-Safety Notes:
-  - ALWAYS use --dry-run first to preview changes
-  - Be specific with WHERE clauses to avoid unintended updates
-  - Cannot update id, latitude, longitude (protected fields)
-  - Updates are logged with before/after values
-  `);
+  # Update permit info for National Parks
+  node bulk-update.js --set permit_required=1 --where "name LIKE '%National Park%'"
+
+Notes:
+  - Always use --dry-run first to preview changes
+  - WHERE conditions use SQL syntax
+  - String values should be quoted: "state = 'CA'"
+  - Use LIKE for pattern matching: "name LIKE '%Trail%'"
+  - Multiple conditions: "state = 'CA' AND category = 'riding'"
+`);
 }
 
-// Parse command line arguments
-function parseArgs(args) {
-  const parsed = {
-    where: null,
-    set: [],
-    dryRun: false,
-    help: false
-  };
-
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--help') {
-      parsed.help = true;
-    } else if (args[i] === '--dry-run') {
-      parsed.dryRun = true;
-    } else if (args[i] === '--where' && i + 1 < args.length) {
-      parsed.where = args[i + 1];
-      i++;
-    } else if (args[i] === '--set' && i + 1 < args.length) {
-      parsed.set.push(args[i + 1]);
-      i++;
-    }
-  }
-
-  return parsed;
-}
-
-// Validate field name
-function validateField(field) {
-  const protectedFields = ['id', 'latitude', 'longitude'];
+// Validate inputs
+function validate(config) {
+  const errors = [];
   
-  if (protectedFields.includes(field.toLowerCase())) {
-    return { valid: false, error: `Cannot update protected field: ${field}` };
+  if (!config.field) {
+    errors.push('Missing --set parameter');
+  } else if (!UPDATABLE_FIELDS.includes(config.field)) {
+    errors.push(`Invalid field: ${config.field}. Allowed: ${UPDATABLE_FIELDS.join(', ')}`);
   }
-
-  // List of allowed fields (from locations table schema)
-  const allowedFields = [
-    'name', 'description', 'category', 'sub_type', 'trail_types',
-    'difficulty', 'distance_miles', 'scenery_rating', 'best_season',
-    'season', 'cell_signal', 'shade', 'level_ground', 'water_available',
-    'water_nearby', 'stay_limit_days', 'permit_required', 'permit_info',
-    'cost_per_night', 'hours', 'notes', 'external_links', 'source',
-    'featured', 'state', 'county', 'country'
-  ];
-
-  if (!allowedFields.includes(field.toLowerCase())) {
-    return { valid: false, error: `Unknown field: ${field}. Allowed fields: ${allowedFields.join(', ')}` };
+  
+  if (!config.where) {
+    errors.push('Missing --where parameter (required for safety)');
   }
-
-  return { valid: true };
+  
+  if (config.value === null || config.value === undefined) {
+    errors.push('Missing value in --set parameter (use FIELD=VALUE)');
+  }
+  
+  return errors;
 }
 
-// Parse SET clause
-function parseSetClause(setString) {
-  const parts = setString.split('=');
-  if (parts.length !== 2) {
-    return { valid: false, error: `Invalid SET format: ${setString}. Use FIELD=VALUE` };
-  }
-
-  const field = parts[0].trim();
-  let value = parts[1].trim();
-
-  // Validate field
-  const fieldValidation = validateField(field);
-  if (!fieldValidation.valid) {
-    return fieldValidation;
-  }
-
-  // Parse value (handle NULL, numbers, strings)
-  if (value.toUpperCase() === 'NULL') {
-    value = null;
-  } else if (value === 'true' || value === 'false') {
-    value = value === 'true' ? 1 : 0;
-  } else if (!isNaN(value) && value !== '') {
-    value = parseFloat(value);
-  } else {
-    // Remove quotes if present
-    value = value.replace(/^['"]|['"]$/g, '');
-  }
-
-  return { valid: true, field, value };
-}
-
-// Build UPDATE query
-function buildUpdateQuery(setFields, whereClause) {
-  const setClauses = setFields.map(s => `${s.field} = ?`).join(', ');
-  const query = `UPDATE locations SET ${setClauses} WHERE ${whereClause}`;
-  return query;
-}
-
-// Get matching locations
-function getMatching(whereClause) {
+// Preview changes
+function previewChanges(config) {
+  const query = `SELECT id, name, ${config.field} FROM locations WHERE ${config.where} LIMIT 20`;
+  
   try {
-    const query = `SELECT * FROM locations WHERE ${whereClause}`;
-    return db.prepare(query).all();
+    const matches = db.prepare(query).all();
+    return matches;
   } catch (err) {
     throw new Error(`Invalid WHERE clause: ${err.message}`);
   }
 }
 
-// Perform bulk update
-function bulkUpdate(whereClause, setFields, dryRun) {
-  console.log(`\n${dryRun ? 'DRY RUN - ' : ''}Bulk Update Operation\n${'='.repeat(60)}\n`);
-
-  // Get matching locations
-  console.log(`Finding locations matching: ${whereClause}\n`);
-  const matching = getMatching(whereClause);
-
-  if (matching.length === 0) {
-    console.log('✗ No locations match the criteria.\n');
-    return;
+// Count affected rows
+function countAffected(config) {
+  const query = `SELECT COUNT(*) as count FROM locations WHERE ${config.where}`;
+  
+  try {
+    const result = db.prepare(query).get();
+    return result.count;
+  } catch (err) {
+    throw new Error(`Invalid WHERE clause: ${err.message}`);
   }
+}
 
-  console.log(`Found ${matching.length} locations to update\n`);
+// Perform update
+function performUpdate(config) {
+  const query = `UPDATE locations SET ${config.field} = ? WHERE ${config.where}`;
+  
+  try {
+    const result = db.prepare(query).run(config.value);
+    return result.changes;
+  } catch (err) {
+    throw new Error(`Update failed: ${err.message}`);
+  }
+}
 
-  // Build update query
-  const updateQuery = buildUpdateQuery(setFields, whereClause);
-  const updateValues = setFields.map(s => s.value);
-
-  console.log(`Query: ${updateQuery}`);
-  console.log(`Values: ${updateValues.map(v => v === null ? 'NULL' : v).join(', ')}\n`);
-
-  // Show preview of changes
-  console.log('Preview of changes:\n');
-  console.log(`${'─'.repeat(60)}`);
-
-  const maxPreview = 10;
-  for (let i = 0; i < Math.min(matching.length, maxPreview); i++) {
-    const loc = matching[i];
-    console.log(`Location #${loc.id}: ${loc.name}`);
+// Ask for confirmation
+function askConfirmation(question) {
+  return new Promise((resolve) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
     
-    for (const setField of setFields) {
-      const oldValue = loc[setField.field];
-      const newValue = setField.value;
-      const displayOld = oldValue === null ? 'NULL' : oldValue;
-      const displayNew = newValue === null ? 'NULL' : newValue;
-      
-      if (oldValue !== newValue) {
-        console.log(`  ${setField.field}: ${displayOld} → ${displayNew}`);
-      }
-    }
-    console.log('');
-  }
-
-  if (matching.length > maxPreview) {
-    console.log(`... and ${matching.length - maxPreview} more\n`);
-  }
-
-  console.log(`${'─'.repeat(60)}\n`);
-
-  // Execute update
-  if (!dryRun) {
-    try {
-      const stmt = db.prepare(updateQuery);
-      const result = stmt.run(...updateValues);
-      
-      console.log(`✓ Successfully updated ${result.changes} locations\n`);
-      
-      // Show summary
-      console.log('Updated fields:');
-      for (const setField of setFields) {
-        const displayValue = setField.value === null ? 'NULL' : setField.value;
-        console.log(`  ${setField.field} = ${displayValue}`);
-      }
-      console.log('');
-      
-    } catch (err) {
-      console.error(`\n✗ Update failed: ${err.message}\n`);
-      process.exit(1);
-    }
-  } else {
-    console.log('DRY RUN - No changes applied.\n');
-    console.log('To apply these changes, run without --dry-run:\n');
-    console.log(`  node bulk-update.js --where "${whereClause}" ${setFields.map(s => `--set "${s.field}=${s.value}"`).join(' ')}\n`);
-  }
-
-  console.log(`${'='.repeat(60)}\n`);
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes');
+    });
+  });
 }
 
 // Main
-const args = process.argv.slice(2);
-
-if (args.length === 0 || args.includes('--help')) {
-  printHelp();
-  process.exit(0);
-}
-
-const parsed = parseArgs(args);
-
-if (parsed.help) {
-  printHelp();
-  process.exit(0);
-}
-
-// Validate arguments
-if (!parsed.where) {
-  console.error('✗ Error: --where clause is required\n');
-  console.log('Usage: node bulk-update.js --where "CONDITION" --set "FIELD=VALUE" [--dry-run]\n');
-  console.log('Run --help for examples\n');
-  process.exit(1);
-}
-
-if (parsed.set.length === 0) {
-  console.error('✗ Error: At least one --set clause is required\n');
-  console.log('Usage: node bulk-update.js --where "CONDITION" --set "FIELD=VALUE" [--dry-run]\n');
-  console.log('Run --help for examples\n');
-  process.exit(1);
-}
-
-// Parse SET clauses
-const setFields = [];
-for (const setString of parsed.set) {
-  const parsed = parseSetClause(setString);
-  if (!parsed.valid) {
-    console.error(`✗ Error: ${parsed.error}\n`);
+async function main() {
+  const config = parseArgs();
+  
+  // Validate
+  const errors = validate(config);
+  if (errors.length > 0) {
+    console.error('\n❌ Validation errors:');
+    errors.forEach(err => console.error(`  - ${err}`));
+    console.error('\nRun with --help for usage information.\n');
     process.exit(1);
   }
-  setFields.push({ field: parsed.field, value: parsed.value });
+  
+  console.log('\nTrailCamp Bulk Update\n');
+  console.log('='.repeat(60));
+  console.log(`Field:    ${config.field}`);
+  console.log(`Value:    ${config.value}`);
+  console.log(`WHERE:    ${config.where}`);
+  console.log(`Mode:     ${config.dryRun ? 'DRY RUN (no changes)' : 'LIVE UPDATE'}`);
+  console.log('='.repeat(60) + '\n');
+  
+  try {
+    // Count affected rows
+    const count = countAffected(config);
+    
+    if (count === 0) {
+      console.log('⚠️  No locations match the WHERE condition.\n');
+      process.exit(0);
+    }
+    
+    console.log(`📊 ${count} location(s) will be affected\n`);
+    
+    // Preview changes
+    const preview = previewChanges(config);
+    
+    if (preview.length > 0) {
+      console.log('Preview (showing up to 20 locations):\n');
+      console.log('ID    | Name                              | Current Value');
+      console.log('-'.repeat(60));
+      
+      for (const row of preview) {
+        const currentValue = row[config.field] === null ? 'NULL' : row[config.field];
+        console.log(
+          `${row.id.toString().padEnd(5)} | ` +
+          `${(row.name || '').substring(0, 33).padEnd(33)} | ` +
+          `${currentValue}`
+        );
+      }
+      
+      if (count > preview.length) {
+        console.log(`... and ${count - preview.length} more`);
+      }
+      
+      console.log('');
+    }
+    
+    // Exit if dry run
+    if (config.dryRun) {
+      console.log('✓ Dry run complete. Run without --dry-run to apply changes.\n');
+      process.exit(0);
+    }
+    
+    // Confirm update
+    if (!config.yes) {
+      console.log(`⚠️  This will UPDATE ${count} location(s):`);
+      console.log(`   SET ${config.field} = '${config.value}'`);
+      console.log(`   WHERE ${config.where}\n`);
+      
+      const confirmed = await askConfirmation('Continue? (y/n): ');
+      
+      if (!confirmed) {
+        console.log('\n❌ Update cancelled.\n');
+        process.exit(0);
+      }
+    }
+    
+    // Perform update
+    console.log('\nApplying update...');
+    const updated = performUpdate(config);
+    
+    console.log('\n' + '='.repeat(60));
+    console.log(`✅ Successfully updated ${updated} location(s)!`);
+    console.log('='.repeat(60) + '\n');
+    
+    console.log('Recommended next steps:');
+    console.log('  1. Run data quality check: ./check-data-quality.sh');
+    console.log('  2. Backup database: ./backup-database.sh\n');
+    
+  } catch (err) {
+    console.error(`\n❌ Error: ${err.message}\n`);
+    process.exit(1);
+  } finally {
+    db.close();
+  }
 }
 
-// Execute bulk update
-try {
-  bulkUpdate(parsed.where, setFields, parsed.dryRun);
-} catch (err) {
-  console.error(`\n✗ Operation failed: ${err.message}\n`);
-  process.exit(1);
-} finally {
-  db.close();
-}
+main();
