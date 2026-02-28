@@ -94,10 +94,10 @@ export const CAMPSITE_SUBTYPE_ICONS: Record<CampsiteSubType, string> = {
 };
 
 export const CAMPSITE_SUBTYPE_COLORS: Record<CampsiteSubType, string> = {
-  boondocking: '#a855f7',
+  boondocking: '#8b5cf6',
   campground: '#22c55e',
-  parking: '#6b7280',
-  other: '#22c55e',
+  parking: '#64748b',
+  other: '#14b8a6',
 };
 
 export const CAMPSITE_SUBTYPE_LABELS: Record<CampsiteSubType, string> = {
@@ -124,10 +124,10 @@ export const CATEGORY_COLORS: Record<LocationCategory, string> = {
   campsite: '#22c55e',
   riding: '#f97316',
   water: '#3b82f6',
-  dump: '#92400e',
+  dump: '#a16207',
   gas: '#6b7280',
   grocery: '#eab308',
-  scenic: '#a855f7',
+  scenic: '#ec4899',
   laundromat: '#14b8a6',
 };
 
