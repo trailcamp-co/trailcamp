@@ -8,9 +8,10 @@ interface CampsiteCardProps {
   distanceFrom?: number;
   onLocationClick?: (location: Location) => void;
   onToggleFavorite?: (id: number) => void;
+  nearbyRidingCount?: number;
 }
 
-export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, onLocationClick, onToggleFavorite }: CampsiteCardProps) {
+export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, onLocationClick, onToggleFavorite, nearbyRidingCount }: CampsiteCardProps) {
   const subType = (loc.sub_type as keyof typeof CAMPSITE_SUBTYPE_ICONS) || 'other';
   const subColor = CAMPSITE_SUBTYPE_COLORS[subType] || '#6b7280';
   const isFree = loc.cost_per_night != null && Number(loc.cost_per_night) === 0;
@@ -68,6 +69,11 @@ export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, onL
             {loc.water_available === 1 && (
               <span className="flex items-center gap-0.5 text-blue-400">
                 <Droplets size={9} /> Water
+              </span>
+            )}
+            {nearbyRidingCount != null && nearbyRidingCount > 0 && (
+              <span className="flex items-center gap-0.5 text-red-400/80 font-medium">
+                🏍️ {nearbyRidingCount}
               </span>
             )}
           </div>

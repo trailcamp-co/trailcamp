@@ -110,6 +110,22 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
 
   const boondockCount = useMemo(() => locations.filter(l => l.category === 'campsite' && l.sub_type === 'boondocking').length, [locations]);
 
+  // Pre-compute nearby riding counts for campsites
+  const ridingLocations = useMemo(() => allLocations.filter(l => l.category === 'riding'), [allLocations]);
+  const nearbyRidingCounts = useMemo(() => {
+    const counts: Record<number, number> = {};
+    for (const camp of campsiteLocations.slice(0, 100)) { // limit to visible for perf
+      let count = 0;
+      for (const ride of ridingLocations) {
+        const dLat = (ride.latitude - camp.latitude) * 69;
+        const dLng = (ride.longitude - camp.longitude) * 69 * Math.cos(camp.latitude * Math.PI / 180);
+        if (dLat * dLat + dLng * dLng < 400) count++; // ~20mi radius
+      }
+      counts[camp.id] = count;
+    }
+    return counts;
+  }, [campsiteLocations, ridingLocations]);
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex-shrink-0 px-2.5 py-2 border-b border-dark-700/50 space-y-1.5">
@@ -204,7 +220,7 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
           </div>
         )}
         {campsiteLocations.map(loc => (
-          <CampsiteCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} />
+          <CampsiteCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} nearbyRidingCount={nearbyRidingCounts[loc.id]} />
         ))}
       </div>
     </div>

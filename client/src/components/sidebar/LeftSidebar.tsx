@@ -126,7 +126,7 @@ export default function LeftSidebar({
       {/* Campsite Tab */}
       {activeTab === 'camp' && (
         <div className="flex-1 overflow-hidden animate-fade-in">
-          <CampsiteTab locations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} />
+          <CampsiteTab locations={locations} allLocations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} />
         </div>
       )}
 
