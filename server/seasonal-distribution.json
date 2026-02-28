@@ -1,0 +1,125 @@
+{
+  "generatedAt": "2026-02-28T23:00:52.328Z",
+  "summary": {
+    "totalLocations": 6148,
+    "coverage": 100,
+    "peakMonth": "June",
+    "peakMonthCount": 4494
+  },
+  "byMonth": [
+    {
+      "month": "January",
+      "monthAbbr": "Jan",
+      "monthIndex": 0,
+      "total": 3630,
+      "riding": 521,
+      "boondocking": 388,
+      "campgrounds": 2709
+    },
+    {
+      "month": "February",
+      "monthAbbr": "Feb",
+      "monthIndex": 1,
+      "total": 3630,
+      "riding": 521,
+      "boondocking": 388,
+      "campgrounds": 2709
+    },
+    {
+      "month": "March",
+      "monthAbbr": "Mar",
+      "monthIndex": 2,
+      "total": 3141,
+      "riding": 513,
+      "boondocking": 313,
+      "campgrounds": 2303
+    },
+    {
+      "month": "April",
+      "monthAbbr": "Apr",
+      "monthIndex": 3,
+      "total": 3141,
+      "riding": 513,
+      "boondocking": 313,
+      "campgrounds": 2303
+    },
+    {
+      "month": "May",
+      "monthAbbr": "May",
+      "monthIndex": 4,
+      "total": 3141,
+      "riding": 513,
+      "boondocking": 313,
+      "campgrounds": 2303
+    },
+    {
+      "month": "June",
+      "monthAbbr": "Jun",
+      "monthIndex": 5,
+      "total": 4494,
+      "riding": 590,
+      "boondocking": 448,
+      "campgrounds": 3444
+    },
+    {
+      "month": "July",
+      "monthAbbr": "Jul",
+      "monthIndex": 6,
+      "total": 4494,
+      "riding": 590,
+      "boondocking": 448,
+      "campgrounds": 3444
+    },
+    {
+      "month": "August",
+      "monthAbbr": "Aug",
+      "monthIndex": 7,
+      "total": 4494,
+      "riding": 590,
+      "boondocking": 448,
+      "campgrounds": 3444
+    },
+    {
+      "month": "September",
+      "monthAbbr": "Sep",
+      "monthIndex": 8,
+      "total": 3141,
+      "riding": 513,
+      "boondocking": 313,
+      "campgrounds": 2303
+    },
+    {
+      "month": "October",
+      "monthAbbr": "Oct",
+      "monthIndex": 9,
+      "total": 3141,
+      "riding": 513,
+      "boondocking": 313,
+      "campgrounds": 2303
+    },
+    {
+      "month": "November",
+      "monthAbbr": "Nov",
+      "monthIndex": 10,
+      "total": 3141,
+      "riding": 513,
+      "boondocking": 313,
+      "campgrounds": 2303
+    },
+    {
+      "month": "December",
+      "monthAbbr": "Dec",
+      "monthIndex": 11,
+      "total": 3630,
+      "riding": 521,
+      "boondocking": 388,
+      "campgrounds": 2709
+    }
+  ],
+  "seasons": {
+    "spring": 9423,
+    "summer": 13482,
+    "fall": 9423,
+    "winter": 10890
+  }
+}
