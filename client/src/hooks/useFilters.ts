@@ -82,8 +82,8 @@ export function useFilters(locations: Location[], routeGeoJSON: GeoJSON.GeoJsonO
         coords = lineFeature?.geometry?.coordinates;
       }
       if (coords && coords.length >= 2) {
-        // Sample every Nth point to keep checks fast (max ~200 points)
-        const step = Math.max(1, Math.floor(coords.length / 200));
+        // Sample every Nth point to keep checks fast (max ~500 points for better accuracy)
+        const step = Math.max(1, Math.floor(coords.length / 500));
         routeCoords = [];
         for (let i = 0; i < coords.length; i += step) routeCoords.push(coords[i]);
         if (routeCoords[routeCoords.length - 1] !== coords[coords.length - 1]) {
