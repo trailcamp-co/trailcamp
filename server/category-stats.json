@@ -1,0 +1,563 @@
+{
+  "generatedAt": "2026-02-28T22:51:15.604Z",
+  "summary": {
+    "totalLocations": 6148
+  },
+  "categories": [
+    {
+      "category": "campsite",
+      "count": 4582
+    },
+    {
+      "category": "riding",
+      "count": 1554
+    },
+    {
+      "category": "scenic",
+      "count": 8
+    },
+    {
+      "category": "dump",
+      "count": 3
+    },
+    {
+      "category": "water",
+      "count": 1
+    }
+  ],
+  "campsiteSubTypes": [
+    {
+      "sub_type": "campground",
+      "count": 3846
+    },
+    {
+      "sub_type": "boondocking",
+      "count": 732
+    },
+    {
+      "sub_type": "parking",
+      "count": 4
+    }
+  ],
+  "trailTypes": {
+    "individual": {
+      "Fire Road": 713,
+      "Single Track": 588,
+      "Dual Sport": 296,
+      "Desert": 254,
+      "Ridge Riding": 168,
+      "Enduro": 151,
+      "Motocross": 111,
+      "Technical": 151,
+      "Mountain": 114,
+      "Forest": 135,
+      "Sand Dunes": 43,
+      "Beginner": 28,
+      "Alpine": 51,
+      "Scenic": 25,
+      "Slickrock": 11,
+      "Remote": 27,
+      "Rolling": 6,
+      "Hills": 7,
+      "Pine": 5,
+      "Lake": 15,
+      "Sand": 22,
+      "Dunes": 5,
+      "Historic": 21,
+      "Volcanic": 21,
+      "Coastal": 8,
+      "Extreme": 20,
+      "Rock Crawling": 14,
+      "Canyon": 8,
+      "Mining": 3,
+      "Lava": 2,
+      "River": 7,
+      "Ridge": 10,
+      "Red Rock": 3,
+      "Pass": 2,
+      "Waterfalls": 2,
+      "Bluff": 2,
+      "Extreme Enduro": 2,
+      "Paved Mix": 2,
+      "Crater": 1,
+      "Tundra": 2,
+      "Rocky": 2,
+      "Steep": 1,
+      "Valley": 2,
+      "Fins": 1,
+      "Scrub": 1,
+      "Prairie": 7,
+      "Pine Barrens": 1,
+      "Beach": 1,
+      "Sand Hills": 1,
+      "Alpine-like": 2,
+      "Arctic": 1,
+      "Rail Trail": 1,
+      "Wildlife": 1,
+      "Meadow": 3,
+      "Badlands": 1,
+      "Switchbacks": 1,
+      "Resort": 1,
+      "PCT": 1,
+      "Lookout": 1,
+      "Hot Springs": 1,
+      "High Desert": 1,
+      "Inca Trails": 1,
+      "Desert Mountain": 1,
+      "Hill Country": 1,
+      "Winding": 1,
+      "Waterfall": 1,
+      "Urban Edge": 1,
+      "Swamp Edge": 1,
+      "Southern": 1,
+      "Rocks": 1,
+      "Mud": 1,
+      "Logging Roads": 1,
+      "Gorge": 1,
+      "Cave Country": 1,
+      "Coal Roads": 1,
+      "Iron Mine": 1,
+      "Granite": 1,
+      "Exposure": 1,
+      "Rock": 1,
+      "Research": 1,
+      "Ranch": 1,
+      "Playa": 1,
+      "Open": 1,
+      "Desert Transition": 1,
+      "Backcountry": 2,
+      "Easy": 1
+    },
+    "combinations": [
+      {
+        "trail_types": "Fire Road,Single Track",
+        "count": 265
+      },
+      {
+        "trail_types": "Dual Sport,Fire Road",
+        "count": 101
+      },
+      {
+        "trail_types": "Dual Sport",
+        "count": 98
+      },
+      {
+        "trail_types": "Desert,Fire Road",
+        "count": 95
+      },
+      {
+        "trail_types": "Fire Road,Ridge Riding",
+        "count": 88
+      },
+      {
+        "trail_types": "Enduro,Single Track",
+        "count": 46
+      },
+      {
+        "trail_types": "Motocross",
+        "count": 35
+      },
+      {
+        "trail_types": "Single Track,Technical",
+        "count": 31
+      },
+      {
+        "trail_types": "Single Track",
+        "count": 27
+      },
+      {
+        "trail_types": "Mountain, Forest",
+        "count": 25
+      },
+      {
+        "trail_types": "Forest, Mountain",
+        "count": 25
+      },
+      {
+        "trail_types": "Enduro,Motocross,Single Track",
+        "count": 21
+      },
+      {
+        "trail_types": "Single Track,Fire Road,Ridge Riding",
+        "count": 20
+      },
+      {
+        "trail_types": "Mountain, Technical",
+        "count": 17
+      },
+      {
+        "trail_types": "Fire Road,Ridge Riding,Dual Sport",
+        "count": 17
+      },
+      {
+        "trail_types": "Dual Sport,Enduro",
+        "count": 17
+      },
+      {
+        "trail_types": "Desert,Technical",
+        "count": 17
+      },
+      {
+        "trail_types": "Dual Sport,Single Track",
+        "count": 16
+      },
+      {
+        "trail_types": "Sand Dunes",
+        "count": 15
+      },
+      {
+        "trail_types": "Enduro,Motocross",
+        "count": 15
+      },
+      {
+        "trail_types": "Enduro,Fire Road,Single Track",
+        "count": 15
+      },
+      {
+        "trail_types": "Desert,Sand Dunes",
+        "count": 15
+      },
+      {
+        "trail_types": "Desert,Dual Sport,Fire Road",
+        "count": 15
+      },
+      {
+        "trail_types": "Single Track,Ridge Riding",
+        "count": 13
+      },
+      {
+        "trail_types": "Motocross,Single Track",
+        "count": 12
+      },
+      {
+        "trail_types": "Desert,Single Track",
+        "count": 11
+      },
+      {
+        "trail_types": "Motocross,Beginner",
+        "count": 10
+      },
+      {
+        "trail_types": "Single Track,Fire Road,Technical",
+        "count": 9
+      },
+      {
+        "trail_types": "Single Track, Fire Road",
+        "count": 9
+      },
+      {
+        "trail_types": "Desert,Fire Road,Dual Sport",
+        "count": 8
+      },
+      {
+        "trail_types": "Single Track, Forest",
+        "count": 7
+      },
+      {
+        "trail_types": "Fire Road",
+        "count": 7
+      },
+      {
+        "trail_types": "Dual Sport,Fire Road,Ridge Riding",
+        "count": 7
+      },
+      {
+        "trail_types": "Desert, Mountain",
+        "count": 7
+      },
+      {
+        "trail_types": "Alpine, Scenic",
+        "count": 7
+      },
+      {
+        "trail_types": "Slickrock, Technical",
+        "count": 6
+      },
+      {
+        "trail_types": "Single Track,Fire Road,Beginner",
+        "count": 6
+      },
+      {
+        "trail_types": "Mountain, Remote",
+        "count": 6
+      },
+      {
+        "trail_types": "Forest, Rolling",
+        "count": 6
+      },
+      {
+        "trail_types": "Forest, Hills",
+        "count": 6
+      },
+      {
+        "trail_types": "Fire Road,Technical",
+        "count": 6
+      },
+      {
+        "trail_types": "Fire Road,Dual Sport,Ridge Riding",
+        "count": 6
+      },
+      {
+        "trail_types": "Enduro",
+        "count": 6
+      },
+      {
+        "trail_types": "Single Track, Technical",
+        "count": 5
+      },
+      {
+        "trail_types": "Motocross,Single Track,Enduro",
+        "count": 5
+      },
+      {
+        "trail_types": "Forest, Pine",
+        "count": 5
+      },
+      {
+        "trail_types": "Desert, Remote",
+        "count": 5
+      },
+      {
+        "trail_types": "Alpine, Technical",
+        "count": 5
+      },
+      {
+        "trail_types": "Alpine, Lake",
+        "count": 5
+      },
+      {
+        "trail_types": "Single Track,Technical,Enduro",
+        "count": 4
+      }
+    ]
+  },
+  "difficulties": [
+    {
+      "difficulty": "Easy",
+      "count": 384
+    },
+    {
+      "difficulty": "Moderate",
+      "count": 843
+    },
+    {
+      "difficulty": "Hard",
+      "count": 285
+    },
+    {
+      "difficulty": "Expert",
+      "count": 42
+    }
+  ],
+  "seasons": [
+    {
+      "best_season": "Year-round",
+      "count": 2115
+    },
+    {
+      "best_season": "Summer",
+      "count": 1353
+    },
+    {
+      "best_season": "Spring/Fall",
+      "count": 1026
+    },
+    {
+      "best_season": "Winter",
+      "count": 489
+    },
+    {
+      "best_season": "May-Oct",
+      "count": 265
+    },
+    {
+      "best_season": "Jul-Sep",
+      "count": 159
+    },
+    {
+      "best_season": "Jun-Oct",
+      "count": 153
+    },
+    {
+      "best_season": "Oct-Apr",
+      "count": 150
+    },
+    {
+      "best_season": "Jun-Sep",
+      "count": 149
+    },
+    {
+      "best_season": "Apr-Nov",
+      "count": 107
+    },
+    {
+      "best_season": "Mar-Nov",
+      "count": 59
+    },
+    {
+      "best_season": "Apr-Oct",
+      "count": 49
+    },
+    {
+      "best_season": "Mar-May, Sep-Nov",
+      "count": 23
+    },
+    {
+      "best_season": "Oct-May",
+      "count": 22
+    },
+    {
+      "best_season": "Jul-Aug",
+      "count": 4
+    },
+    {
+      "best_season": "Jun-Aug",
+      "count": 4
+    },
+    {
+      "best_season": "Jul-Oct",
+      "count": 3
+    },
+    {
+      "best_season": "Nov-Mar",
+      "count": 3
+    },
+    {
+      "best_season": "Dec-Mar",
+      "count": 2
+    },
+    {
+      "best_season": "Jul",
+      "count": 2
+    },
+    {
+      "best_season": "May-Sep",
+      "count": 2
+    },
+    {
+      "best_season": "Oct-Mar",
+      "count": 2
+    },
+    {
+      "best_season": "Apr-Sep",
+      "count": 1
+    },
+    {
+      "best_season": "Aug",
+      "count": 1
+    },
+    {
+      "best_season": "Jun",
+      "count": 1
+    },
+    {
+      "best_season": "Mar-Dec",
+      "count": 1
+    },
+    {
+      "best_season": "Mar-May",
+      "count": 1
+    },
+    {
+      "best_season": "Nov-Apr",
+      "count": 1
+    },
+    {
+      "best_season": "Race events",
+      "count": 1
+    }
+  ],
+  "cellSignal": [
+    {
+      "cell_signal": "None",
+      "count": 35
+    },
+    {
+      "cell_signal": "Limited",
+      "count": 28
+    },
+    {
+      "cell_signal": "Good",
+      "count": 13
+    },
+    {
+      "cell_signal": "Fair",
+      "count": 2
+    },
+    {
+      "cell_signal": "Moderate",
+      "count": 1
+    },
+    {
+      "cell_signal": "Excellent",
+      "count": 1
+    }
+  ],
+  "costRanges": {
+    "Free": 704,
+    "$1-10": 3,
+    "$11-20": 54,
+    "$21-30": 95,
+    "$31-50": 0,
+    "$50+": 0
+  },
+  "sceneryDistribution": [
+    {
+      "scenery_rating": 10,
+      "count": 111
+    },
+    {
+      "scenery_rating": 9,
+      "count": 195
+    },
+    {
+      "scenery_rating": 8,
+      "count": 233
+    },
+    {
+      "scenery_rating": 7,
+      "count": 721
+    },
+    {
+      "scenery_rating": 6,
+      "count": 3775
+    },
+    {
+      "scenery_rating": 5,
+      "count": 418
+    },
+    {
+      "scenery_rating": 4,
+      "count": 338
+    },
+    {
+      "scenery_rating": 3,
+      "count": 287
+    },
+    {
+      "scenery_rating": 2,
+      "count": 56
+    },
+    {
+      "scenery_rating": 1,
+      "count": 2
+    }
+  ],
+  "permits": {
+    "required": 374,
+    "notRequired": 5774,
+    "withInfo": 356
+  },
+  "water": {
+    "onSite": 3875,
+    "nearby": 13,
+    "none": 33
+  },
+  "insights": {
+    "ridingPercentage": 25,
+    "campsitePercentage": 75,
+    "freeCampingPercentage": 82,
+    "highSceneryPercentage": 9,
+    "averageScenery": 6
+  }
+}
