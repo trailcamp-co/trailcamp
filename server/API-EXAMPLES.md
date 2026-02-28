@@ -1,611 +1,592 @@
 # TrailCamp API Usage Examples
 
-Practical examples for interacting with the TrailCamp API using curl, fetch, and axios.
+Practical examples for interacting with the TrailCamp API using curl and JavaScript fetch.
 
 ## Base URL
 
-Development: `http://localhost:3001/api`
+```
+http://localhost:3001/api
+```
+
+*(Production: update with deployed URL)*
+
+---
+
+## Quick Reference
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check |
+| `/locations` | GET | List all locations (with filters) |
+| `/locations/:id` | GET | Get single location |
+| `/trips` | GET | List all trips |
+| `/trips` | POST | Create new trip |
+| `/trips/:id` | GET | Get single trip |
+| `/trips/:id` | PUT | Update trip |
+| `/trips/:id` | DELETE | Delete trip |
+| `/trips/:id/stops` | GET | Get trip stops |
+| `/trips/:id/stops` | POST | Add stop to trip |
+| `/trips/:id/stops/:stopId` | DELETE | Remove stop from trip |
+| `/directions` | POST | Get driving directions |
 
 ---
 
 ## Health Check
 
-### curl
+Check if API is running:
+
 ```bash
 curl http://localhost:3001/api/health
 ```
 
-### fetch
-```javascript
-const health = await fetch('http://localhost:3001/api/health')
-  .then(r => r.json());
-console.log(health);
-// { status: "ok", timestamp: "2026-02-28T..." }
+**Response:**
+```json
+{
+  "status": "ok",
+  "timestamp": "2026-02-28T19:12:00.000Z"
+}
 ```
 
 ---
 
-## Get All Locations
+## Locations
 
-### curl
+### Get All Locations
+
 ```bash
-# Get all locations
 curl http://localhost:3001/api/locations
-
-# Get first 50 locations
-curl http://localhost:3001/api/locations?limit=50
-
-# Get next 50 (pagination)
-curl http://localhost:3001/api/locations?limit=50&offset=50
 ```
 
-### fetch
+**JavaScript:**
 ```javascript
-// Get all locations
-const locations = await fetch('http://localhost:3001/api/locations')
-  .then(r => r.json());
-
+const response = await fetch('http://localhost:3001/api/locations');
+const locations = await response.json();
 console.log(`Found ${locations.length} locations`);
 ```
 
-### axios
-```javascript
-import axios from 'axios';
+### Filter by Category
 
-const { data } = await axios.get('http://localhost:3001/api/locations');
-console.log(`Found ${data.length} locations`);
-```
+Get only riding locations:
 
----
-
-## Filter Locations by Category
-
-### curl
 ```bash
-# Get all riding locations
 curl "http://localhost:3001/api/locations?category=riding"
-
-# Get all campsites
-curl "http://localhost:3001/api/locations?category=campsite"
-
-# Get dump stations
-curl "http://localhost:3001/api/locations?category=dump"
 ```
 
-### fetch
+**JavaScript:**
 ```javascript
-// Get riding locations
-const riding = await fetch('http://localhost:3001/api/locations?category=riding')
-  .then(r => r.json());
-
-console.log(`Found ${riding.length} riding spots`);
+const response = await fetch('http://localhost:3001/api/locations?category=riding');
+const ridingSpots = await response.json();
 ```
 
----
+**Available categories:** `riding`, `campsite`, `dump`, `water`, `scenic`
 
-## Filter by Sub-Type
+### Filter by Scenery Rating
 
-### curl
+Get locations with scenery rating ≥ 8:
+
 ```bash
-# Get boondocking spots
-curl "http://localhost:3001/api/locations?category=campsite&sub_type=boondocking"
-
-# Get developed campgrounds
-curl "http://localhost:3001/api/locations?category=campsite&sub_type=campground"
-```
-
-### fetch
-```javascript
-const boondocking = await fetch(
-  'http://localhost:3001/api/locations?category=campsite&sub_type=boondocking'
-).then(r => r.json());
-
-console.log(`Found ${boondocking.length} boondocking spots`);
-```
-
----
-
-## Filter by Scenery Rating
-
-### curl
-```bash
-# Get locations with scenery >= 8
 curl "http://localhost:3001/api/locations?scenery_min=8"
-
-# Get locations with scenery >= 9
-curl "http://localhost:3001/api/locations?scenery_min=9"
-
-# Get epic riding (category=riding AND scenery >= 9)
-curl "http://localhost:3001/api/locations?category=riding&scenery_min=9"
 ```
 
-### fetch
+**JavaScript:**
 ```javascript
-// Get epic riding spots (9+ scenery)
-const epicRiding = await fetch(
-  'http://localhost:3001/api/locations?category=riding&scenery_min=9'
-).then(r => r.json());
-
-console.log(`Found ${epicRiding.length} epic riding locations`);
+const response = await fetch('http://localhost:3001/api/locations?scenery_min=8');
+const scenicLocations = await response.json();
 ```
 
----
+### Filter by Sub-Type
 
-## Filter by Difficulty
+Get only boondocking campsites:
 
-### curl
 ```bash
-# Get easy trails
-curl "http://localhost:3001/api/locations?difficulty=Easy"
+curl "http://localhost:3001/api/locations?category=campsite&sub_type=boondocking"
+```
 
-# Get hard trails
+### Filter by Difficulty
+
+Get hard riding trails:
+
+```bash
 curl "http://localhost:3001/api/locations?difficulty=Hard"
-
-# Get expert-level trails
-curl "http://localhost:3001/api/locations?difficulty=Expert"
 ```
 
-### fetch
-```javascript
-const easyTrails = await fetch(
-  'http://localhost:3001/api/locations?difficulty=Easy'
-).then(r => r.json());
-```
+**Available difficulties:** `Easy`, `Beginner`, `Moderate`, `Intermediate`, `Hard`, `Advanced`, `Expert`
 
----
+### Filter by Season
 
-## Filter by Season
+Get summer riding spots:
 
-### curl
 ```bash
-# Get summer riding
 curl "http://localhost:3001/api/locations?best_season=Summer"
-
-# Get winter camping
-curl "http://localhost:3001/api/locations?best_season=Winter"
-
-# Get year-round locations
-curl "http://localhost:3001/api/locations?best_season=Year-round"
 ```
 
-### fetch
-```javascript
-const summerRiding = await fetch(
-  'http://localhost:3001/api/locations?best_season=Summer'
-).then(r => r.json());
-```
+**Available seasons:** `Summer`, `Winter`, `Spring`, `Fall`, `Year-round`
 
----
+### Combine Multiple Filters
 
-## Get Single Location by ID
+Get moderate difficulty riding spots with high scenery:
 
-### curl
 ```bash
-# Get location with ID 123
+curl "http://localhost:3001/api/locations?category=riding&difficulty=Moderate&scenery_min=8"
+```
+
+### Pagination
+
+Get first 50 locations:
+
+```bash
+curl "http://localhost:3001/api/locations?limit=50"
+```
+
+**JavaScript with pagination:**
+```javascript
+async function getAllLocations() {
+  const limit = 100;
+  let offset = 0;
+  let allLocations = [];
+  
+  while (true) {
+    const response = await fetch(
+      `http://localhost:3001/api/locations?limit=${limit}&offset=${offset}`
+    );
+    const locations = await response.json();
+    
+    if (locations.length === 0) break;
+    
+    allLocations = allLocations.concat(locations);
+    offset += limit;
+  }
+  
+  return allLocations;
+}
+```
+
+### Get Single Location
+
+```bash
 curl http://localhost:3001/api/locations/123
 ```
 
-### fetch
+**JavaScript:**
 ```javascript
 const locationId = 123;
-const location = await fetch(`http://localhost:3001/api/locations/${locationId}`)
-  .then(r => r.json());
-
+const response = await fetch(`http://localhost:3001/api/locations/${locationId}`);
+const location = await response.json();
 console.log(location.name);
+```
+
+### Get Featured Locations
+
+Get bucket-list / featured locations:
+
+```bash
+curl "http://localhost:3001/api/locations/featured"
+```
+
+**JavaScript:**
+```javascript
+const response = await fetch('http://localhost:3001/api/locations/featured');
+const featured = await response.json();
 ```
 
 ---
 
-## Get All Trips
+## Trips
 
-### curl
+### Get All Trips
+
 ```bash
 curl http://localhost:3001/api/trips
 ```
 
-### fetch
+**JavaScript:**
 ```javascript
-const trips = await fetch('http://localhost:3001/api/trips')
-  .then(r => r.json());
-
-console.log(`You have ${trips.length} saved trips`);
+const response = await fetch('http://localhost:3001/api/trips');
+const trips = await response.json();
 ```
 
----
+### Get Single Trip
 
-## Get Single Trip with Stops
-
-### curl
 ```bash
-# Get trip with ID 5 (includes all stops with full location data)
-curl http://localhost:3001/api/trips/5
+curl http://localhost:3001/api/trips/1
 ```
 
-### fetch
-```javascript
-const tripId = 5;
-const trip = await fetch(`http://localhost:3001/api/trips/${tripId}`)
-  .then(r => r.json());
+### Create New Trip
 
-console.log(`${trip.name} has ${trip.stops.length} stops`);
-
-// Access stop details
-trip.stops.forEach((stop, index) => {
-  console.log(`Stop ${index + 1}: ${stop.location.name}`);
-});
-```
-
----
-
-## Create a New Trip
-
-### curl
 ```bash
 curl -X POST http://localhost:3001/api/trips \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Colorado Adventure",
-    "description": "Epic mountain riding",
-    "start_date": "2026-07-15",
-    "end_date": "2026-07-22"
+    "name": "Southwest Desert Adventure",
+    "notes": "7-day trip exploring Arizona and Utah"
   }'
 ```
 
-### fetch
+**JavaScript:**
 ```javascript
-const newTrip = await fetch('http://localhost:3001/api/trips', {
+const newTrip = {
+  name: "Southwest Desert Adventure",
+  notes: "7-day trip exploring Arizona and Utah"
+};
+
+const response = await fetch('http://localhost:3001/api/trips', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    name: 'Colorado Adventure',
-    description: 'Epic mountain riding',
-    start_date: '2026-07-15',
-    end_date: '2026-07-22'
-  })
-}).then(r => r.json());
-
-console.log(`Created trip with ID: ${newTrip.id}`);
-```
-
-### axios
-```javascript
-const newTrip = await axios.post('http://localhost:3001/api/trips', {
-  name: 'Colorado Adventure',
-  description: 'Epic mountain riding',
-  start_date: '2026-07-15',
-  end_date: '2026-07-22'
+  body: JSON.stringify(newTrip)
 });
 
-console.log(`Created trip with ID: ${newTrip.data.id}`);
+const trip = await response.json();
+console.log(`Created trip #${trip.id}`);
 ```
 
----
+### Update Trip
 
-## Add Stop to Trip
-
-### curl
 ```bash
-# Add location 456 to trip 5 at position 1
-curl -X POST http://localhost:3001/api/trips/5/stops \
+curl -X PUT http://localhost:3001/api/trips/1 \
   -H "Content-Type: application/json" \
   -d '{
-    "location_id": 456,
-    "order_index": 1
+    "name": "Updated Trip Name",
+    "notes": "Modified notes"
   }'
 ```
 
-### fetch
+**JavaScript:**
 ```javascript
-const tripId = 5;
-const locationId = 456;
+const tripId = 1;
+const updates = {
+  name: "Updated Trip Name",
+  notes: "Modified notes"
+};
 
-const stop = await fetch(`http://localhost:3001/api/trips/${tripId}/stops`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    location_id: locationId,
-    order_index: 1
-  })
-}).then(r => r.json());
-
-console.log(`Added stop with ID: ${stop.id}`);
-```
-
----
-
-## Update Trip
-
-### curl
-```bash
-curl -X PUT http://localhost:3001/api/trips/5 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Colorado Summer Ride",
-    "description": "Updated description"
-  }'
-```
-
-### fetch
-```javascript
-const tripId = 5;
-
-const updated = await fetch(`http://localhost:3001/api/trips/${tripId}`, {
+await fetch(`http://localhost:3001/api/trips/${tripId}`, {
   method: 'PUT',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    name: 'Colorado Summer Ride',
-    description: 'Updated description'
-  })
-}).then(r => r.json());
-```
-
----
-
-## Delete Trip Stop
-
-### curl
-```bash
-# Delete stop with ID 123
-curl -X DELETE http://localhost:3001/api/trip-stops/123
-```
-
-### fetch
-```javascript
-const stopId = 123;
-
-await fetch(`http://localhost:3001/api/trip-stops/${stopId}`, {
-  method: 'DELETE'
+  body: JSON.stringify(updates)
 });
-
-console.log('Stop deleted');
 ```
 
----
+### Delete Trip
 
-## Delete Trip
-
-### curl
 ```bash
-# Delete trip with ID 5
-curl -X DELETE http://localhost:3001/api/trips/5
+curl -X DELETE http://localhost:3001/api/trips/1
 ```
 
-### fetch
+**JavaScript:**
 ```javascript
-const tripId = 5;
-
+const tripId = 1;
 await fetch(`http://localhost:3001/api/trips/${tripId}`, {
   method: 'DELETE'
 });
-
-console.log('Trip deleted');
 ```
 
 ---
 
-## Get Mapbox Directions
+## Trip Stops
 
-### curl
+### Get Trip Stops
+
+Get all stops for a trip (with location details):
+
 ```bash
-# Get driving route between two coordinates
-curl "http://localhost:3001/api/directions?waypoints=-105.2705,40.0150;-106.8175,39.5501"
+curl http://localhost:3001/api/trips/1/stops
 ```
 
-### fetch
+**JavaScript:**
 ```javascript
-// Get route between two waypoints
-const waypoints = '-105.2705,40.0150;-106.8175,39.5501';
+const tripId = 1;
+const response = await fetch(`http://localhost:3001/api/trips/${tripId}/stops`);
+const stops = await response.json();
 
-const route = await fetch(
-  `http://localhost:3001/api/directions?waypoints=${waypoints}`
-).then(r => r.json());
+stops.forEach((stop, i) => {
+  console.log(`Stop ${i + 1}: ${stop.location.name}`);
+});
+```
 
+### Add Stop to Trip
+
+```bash
+curl -X POST http://localhost:3001/api/trips/1/stops \
+  -H "Content-Type: application/json" \
+  -d '{
+    "location_id": 456,
+    "order_index": 0
+  }'
+```
+
+**JavaScript:**
+```javascript
+const tripId = 1;
+const locationId = 456;
+const orderIndex = 0;  // First stop
+
+const response = await fetch(`http://localhost:3001/api/trips/${tripId}/stops`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ location_id: locationId, order_index: orderIndex })
+});
+
+const newStop = await response.json();
+```
+
+### Remove Stop from Trip
+
+```bash
+curl -X DELETE http://localhost:3001/api/trips/1/stops/5
+```
+
+**JavaScript:**
+```javascript
+const tripId = 1;
+const stopId = 5;
+
+await fetch(`http://localhost:3001/api/trips/${tripId}/stops/${stopId}`, {
+  method: 'DELETE'
+});
+```
+
+---
+
+## Directions
+
+### Get Driving Route
+
+Get driving directions between two locations:
+
+```bash
+curl -X POST http://localhost:3001/api/directions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "waypoints": [
+      {"latitude": 40.7128, "longitude": -74.0060},
+      {"latitude": 34.0522, "longitude": -118.2437}
+    ]
+  }'
+```
+
+**JavaScript:**
+```javascript
+const waypoints = [
+  { latitude: 40.7128, longitude: -74.0060 },  // NYC
+  { latitude: 34.0522, longitude: -118.2437 }  // LA
+];
+
+const response = await fetch('http://localhost:3001/api/directions', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ waypoints })
+});
+
+const route = await response.json();
 console.log(`Distance: ${route.distance} miles`);
 console.log(`Duration: ${route.duration} hours`);
 ```
 
----
-
-## Common Use Case Examples
-
-### 1. Find Epic Boondocking in Colorado
+### Get Route for Entire Trip
 
 ```javascript
-// Get high-scenery boondocking spots
-const epicBoondocking = await fetch(
-  'http://localhost:3001/api/locations?' +
-  'category=campsite&' +
-  'sub_type=boondocking&' +
-  'scenery_min=8'
-).then(r => r.json());
-
-// Filter for Colorado (latitude ~37-41, longitude ~-109 to -102)
-const colorado = epicBoondocking.filter(loc =>
-  loc.latitude >= 37 && loc.latitude <= 41 &&
-  loc.longitude >= -109 && loc.longitude <= -102
-);
-
-console.log(`Found ${colorado.length} epic boondocking spots in Colorado`);
-```
-
-### 2. Build a Trip Itinerary
-
-```javascript
-// Create new trip
-const trip = await fetch('http://localhost:3001/api/trips', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    name: 'Utah Adventure',
-    start_date: '2026-09-01',
-    end_date: '2026-09-07'
-  })
-}).then(r => r.json());
-
-// Add stops
-const stops = [345, 678, 912];  // location IDs
-
-for (let i = 0; i < stops.length; i++) {
-  await fetch(`http://localhost:3001/api/trips/${trip.id}/stops`, {
+async function getTripRoute(tripId) {
+  // Get trip stops
+  const stopsResponse = await fetch(`http://localhost:3001/api/trips/${tripId}/stops`);
+  const stops = await stopsResponse.json();
+  
+  // Build waypoints array
+  const waypoints = stops.map(stop => ({
+    latitude: stop.location.latitude,
+    longitude: stop.location.longitude
+  }));
+  
+  // Get directions
+  const directionsResponse = await fetch('http://localhost:3001/api/directions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      location_id: stops[i],
-      order_index: i
-    })
+    body: JSON.stringify({ waypoints })
   });
+  
+  return await directionsResponse.json();
 }
 
-console.log('Trip created with', stops.length, 'stops');
+const route = await getTripRoute(1);
+console.log(`Total trip: ${route.distance} miles, ${route.duration} hours`);
 ```
 
-### 3. Find Summer Riding Near a Location
+---
+
+## Advanced Examples
+
+### Find Nearby Locations
+
+Find campsites within 50 miles of a riding location:
 
 ```javascript
-// Get summer riding spots
-const summerRiding = await fetch(
-  'http://localhost:3001/api/locations?category=riding&best_season=Summer'
-).then(r => r.json());
+function distance(lat1, lon1, lat2, lon2) {
+  const R = 3959; // Earth's radius in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
 
-// Filter within radius of target (simple lat/lon box)
-const targetLat = 40.0;
-const targetLon = -105.0;
-const radius = 1.0;  // degrees (~70 miles)
+async function findNearbyCamping(ridingLocationId, maxDistance = 50) {
+  // Get riding location
+  const ridingResponse = await fetch(
+    `http://localhost:3001/api/locations/${ridingLocationId}`
+  );
+  const riding = await ridingResponse.json();
+  
+  // Get all campsites
+  const campsitesResponse = await fetch(
+    'http://localhost:3001/api/locations?category=campsite'
+  );
+  const campsites = await campsitesResponse.json();
+  
+  // Filter by distance
+  const nearby = campsites
+    .map(camp => ({
+      ...camp,
+      distance: distance(
+        riding.latitude, riding.longitude,
+        camp.latitude, camp.longitude
+      )
+    }))
+    .filter(camp => camp.distance <= maxDistance)
+    .sort((a, b) => a.distance - b.distance);
+  
+  return nearby;
+}
 
-const nearby = summerRiding.filter(loc =>
-  Math.abs(loc.latitude - targetLat) < radius &&
-  Math.abs(loc.longitude - targetLon) < radius
-);
-
-console.log(`Found ${nearby.length} summer riding spots nearby`);
+const nearbyCamping = await findNearbyCamping(123, 50);
+console.log(`Found ${nearbyCamping.length} campsites within 50 miles`);
 ```
 
-### 4. Get Free Camping Options
+### Build Complete Trip Itinerary
 
 ```javascript
-// Get all free campsites
-const freeCamping = await fetch(
-  'http://localhost:3001/api/locations?category=campsite&cost_per_night=0'
-).then(r => r.json());
-
-// Or get boondocking (usually free)
-const boondocking = await fetch(
-  'http://localhost:3001/api/locations?category=campsite&sub_type=boondocking'
-).then(r => r.json());
-
-console.log(`${freeCamping.length} free campsites`);
-console.log(`${boondocking.length} boondocking spots`);
+async function buildTripItinerary(tripId) {
+  // Get trip
+  const tripResponse = await fetch(`http://localhost:3001/api/trips/${tripId}`);
+  const trip = await tripResponse.json();
+  
+  // Get stops
+  const stopsResponse = await fetch(`http://localhost:3001/api/trips/${tripId}/stops`);
+  const stops = await stopsResponse.json();
+  
+  // Get route
+  const waypoints = stops.map(s => ({
+    latitude: s.location.latitude,
+    longitude: s.location.longitude
+  }));
+  
+  const routeResponse = await fetch('http://localhost:3001/api/directions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ waypoints })
+  });
+  const route = await routeResponse.json();
+  
+  return {
+    trip,
+    stops,
+    route,
+    summary: {
+      totalDistance: route.distance,
+      totalDuration: route.duration,
+      stopCount: stops.length
+    }
+  };
+}
 ```
 
 ---
 
 ## Error Handling
 
-### Best Practice
+### JavaScript with Error Handling
+
 ```javascript
-async function getLocations() {
+async function safeApiFetch(url, options = {}) {
   try {
-    const response = await fetch('http://localhost:3001/api/locations');
+    const response = await fetch(url, options);
     
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
     
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error('Error fetching locations:', error);
-    return [];
+    console.error('API request failed:', error);
+    throw error;
   }
 }
-```
 
-### With axios
-```javascript
-import axios from 'axios';
-
+// Usage
 try {
-  const { data } = await axios.get('http://localhost:3001/api/locations');
-  return data;
+  const locations = await safeApiFetch('http://localhost:3001/api/locations');
+  console.log(`Loaded ${locations.length} locations`);
 } catch (error) {
-  if (error.response) {
-    console.error('Server error:', error.response.status);
-  } else if (error.request) {
-    console.error('Network error');
-  } else {
-    console.error('Error:', error.message);
-  }
-  return [];
+  console.error('Failed to load locations');
 }
 ```
 
----
+### Common HTTP Status Codes
 
-## Query Parameter Reference
-
-| Parameter | Type | Example | Description |
-|-----------|------|---------|-------------|
-| `category` | string | `riding`, `campsite` | Filter by location type |
-| `sub_type` | string | `boondocking`, `campground` | Filter by sub-type |
-| `difficulty` | string | `Easy`, `Moderate`, `Hard` | Filter riding by difficulty |
-| `best_season` | string | `Summer`, `Winter` | Filter by best season |
-| `scenery_min` | integer | `8`, `9` | Minimum scenery rating |
-| `limit` | integer | `50`, `100` | Limit results (pagination) |
-| `offset` | integer | `50`, `100` | Skip N results (pagination) |
+- `200` - Success
+- `201` - Created (for POST requests)
+- `400` - Bad Request (invalid data)
+- `404` - Not Found
+- `500` - Internal Server Error
 
 ---
 
-## Response Formats
+## Performance Tips
 
-### Location Object
-```json
-{
-  "id": 123,
-  "name": "Trail Name",
-  "description": "Description...",
-  "latitude": 40.1234,
-  "longitude": -105.6789,
-  "category": "riding",
-  "sub_type": null,
-  "trail_types": "Single Track,Enduro",
-  "difficulty": "Moderate",
-  "distance_miles": 25,
-  "scenery_rating": 8,
-  "best_season": "Summer",
-  "cell_signal": "None",
-  "permit_required": 1,
-  "permit_info": "USFS pass required",
-  "cost_per_night": null,
-  "notes": "Trailhead at mile 12",
-  "external_links": "https://...",
-  "source": "manual"
-}
-```
+1. **Use pagination** for large datasets (limit + offset)
+2. **Filter server-side** instead of fetching all and filtering client-side
+3. **Cache frequently-used data** (like all locations) in localStorage
+4. **Debounce search inputs** to reduce API calls during typing
 
-### Trip Object (with stops)
-```json
-{
-  "id": 5,
-  "name": "Colorado Adventure",
-  "description": "Epic mountain riding",
-  "start_date": "2026-07-15",
-  "end_date": "2026-07-22",
-  "stops": [
-    {
-      "id": 45,
-      "trip_id": 5,
-      "location_id": 123,
-      "order_index": 0,
-      "location": {
-        "id": 123,
-        "name": "Location Name",
-        ...
-      }
+### Caching Example
+
+```javascript
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+async function getCachedLocations() {
+  const cached = localStorage.getItem('locations');
+  const timestamp = localStorage.getItem('locations_timestamp');
+  
+  if (cached && timestamp) {
+    const age = Date.now() - parseInt(timestamp);
+    if (age < CACHE_DURATION) {
+      return JSON.parse(cached);
     }
-  ]
+  }
+  
+  // Fetch fresh data
+  const response = await fetch('http://localhost:3001/api/locations');
+  const locations = await response.json();
+  
+  // Cache it
+  localStorage.setItem('locations', JSON.stringify(locations));
+  localStorage.setItem('locations_timestamp', Date.now().toString());
+  
+  return locations;
 }
 ```
 
 ---
 
-*See API.md for complete endpoint documentation*
+## Rate Limiting
+
+*(Currently no rate limiting enforced - update if added)*
+
+For production use, implement reasonable rate limits:
+- Max 100 requests per minute per IP
+- Use caching to minimize repeated requests
+- Batch operations when possible
+
+---
+
+*For more details, see API.md for full endpoint documentation*
