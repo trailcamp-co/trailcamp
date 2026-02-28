@@ -83,6 +83,11 @@ export default function MapContainer({
     });
 
     map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+    map.addControl(new mapboxgl.GeolocateControl({
+      positionOptions: { enableHighAccuracy: true },
+      trackUserLocation: false,
+      showUserHeading: true,
+    }), 'bottom-right');
 
     map.on('style.load', () => {
       addCustomLayers(map, locationsRef.current, routeRef.current);
