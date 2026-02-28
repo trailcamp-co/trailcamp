@@ -597,6 +597,19 @@ export default function TripTab({
               )}
               {sortedStops.length > 0 && (
                 <button
+                  onClick={() => {
+                    import('../utils/printItinerary').then(({ printItinerary }) => {
+                      printItinerary(selectedTrip, sortedStops);
+                    });
+                  }}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-amber-400 hover:bg-amber-500/10 hover:border-amber-500/20 transition-all [.light_&]:bg-white [.light_&]:border-gray-200 [.light_&]:text-amber-600 [.light_&]:hover:bg-amber-50"
+                  title="Print trip itinerary"
+                >
+                  🖨️ Print
+                </button>
+              )}
+              {sortedStops.length > 0 && (
+                <button
                   onClick={() => window.print()}
                   className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-gray-400 hover:bg-dark-700 hover:text-gray-300 transition-all [.light_&]:bg-white [.light_&]:border-gray-200 [.light_&]:text-gray-500 [.light_&]:hover:bg-gray-50"
                   title="Print trip summary"
