@@ -88,6 +88,8 @@ export default function MapContainer({
       trackUserLocation: false,
       showUserHeading: true,
     }), 'bottom-right');
+    map.addControl(new mapboxgl.ScaleControl({ maxWidth: 100 }), 'bottom-left');
+    map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
 
     map.on('style.load', () => {
       addCustomLayers(map, locationsRef.current, routeRef.current);
