@@ -598,7 +598,7 @@ export default function TripTab({
               {sortedStops.length > 0 && (
                 <button
                   onClick={() => {
-                    import('../utils/printItinerary').then(({ printItinerary }) => {
+                    import('../../utils/printItinerary').then(({ printItinerary }) => {
                       printItinerary(selectedTrip, sortedStops);
                     });
                   }}
