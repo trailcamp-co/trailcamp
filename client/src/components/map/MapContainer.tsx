@@ -6,6 +6,7 @@ import { updateEmojiMarkers, createStopMarkers } from './markers';
 import { setupHoverTooltip, setupClickPopup, setupClusterClick } from './popups';
 import LayerPanel from './LayerPanel';
 import MapLegend from './MapLegend';
+import MapStats from './MapStats';
 import RegionQuickJump from './RegionQuickJump';
 import { DEFAULT_CENTER, DEFAULT_ZOOM, FLY_TO_ZOOM, FLY_TO_DURATION } from './constants';
 
@@ -243,6 +244,12 @@ export default function MapContainer({
         onChangeMapStyle={onChangeMapStyle || (() => {})}
       />
       <MapLegend />
+      <MapStats
+        ridingCount={locations.filter(l => l.category === 'riding').length}
+        campsiteCount={locations.filter(l => l.category === 'campsite').length}
+        boondockingCount={locations.filter(l => l.category === 'campsite' && l.sub_type === 'boondocking').length}
+        totalCount={locations.length}
+      />
       <RegionQuickJump mapRef={mapRef} />
       
       {/* Home button */}
