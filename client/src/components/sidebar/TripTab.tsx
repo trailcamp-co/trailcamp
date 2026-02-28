@@ -30,6 +30,7 @@ import {
   Shuffle,
   Download,
   Share2,
+  Printer,
 } from 'lucide-react';
 import type { Location, Trip, TripStop, WeatherData, JournalEntry } from '../../types';
 import { SortableStopCard, OverlayStopCard } from './StopCard';
@@ -528,6 +529,16 @@ export default function TripTab({
                 >
                   <Share2 size={11} />
                   {shareCopied ? 'Copied!' : 'Share'}
+                </button>
+              )}
+              {sortedStops.length > 0 && (
+                <button
+                  onClick={() => window.print()}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-gray-400 hover:bg-dark-700 hover:text-gray-300 transition-all [.light_&]:bg-white [.light_&]:border-gray-200 [.light_&]:text-gray-500 [.light_&]:hover:bg-gray-50"
+                  title="Print trip summary"
+                >
+                  <Printer size={11} />
+                  Print
                 </button>
               )}
             </div>

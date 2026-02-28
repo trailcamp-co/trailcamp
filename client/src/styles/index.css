@@ -233,3 +233,16 @@ input[type="range"]::-webkit-slider-thumb {
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  body { background: white !important; color: black !important; }
+  .no-print, nav, .mapboxgl-map, [class*="LayerPanel"],
+  [class*="MapLegend"], [class*="RegionQuickJump"],
+  [class*="TopBar"], [class*="StatsPanel"] { display: none !important; }
+  .print-only { display: block !important; }
+  * { color: black !important; background: white !important; border-color: #ddd !important; }
+  a { text-decoration: underline; }
+}
