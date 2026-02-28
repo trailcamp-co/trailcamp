@@ -251,7 +251,12 @@ export default function RightPanel({
       <div className="flex-1 overflow-y-auto scroll-smooth">
         {/* Hero gradient when no photos */}
         {!hasPhotos && (
-          <div className="h-24 w-full" style={{ background: `linear-gradient(135deg, ${categoryColor}15, ${categoryColor}05)` }} />
+          <div className="h-32 w-full relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${categoryColor}20, ${categoryColor}08, transparent)` }}>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-5xl opacity-30">{CATEGORY_ICONS[location.category] || '📍'}</span>
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-dark-950 [.light_&]:from-white to-transparent" />
+          </div>
         )}
 
         {/* Quick Actions */}
