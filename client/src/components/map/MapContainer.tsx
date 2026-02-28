@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import type { Location, TripStop, LocationCategory, CampsiteSubType, MapStyle } from '../../types';
 import { addCustomLayers, addOverlayLayers, buildLocationsGeoJSON, buildRouteGeoJSON } from './layers';
-import { updateEmojiMarkers, createStopMarkers } from './markers';
+import { createStopMarkers } from './markers';
 import { setupHoverTooltip, setupClickPopup, setupClusterClick } from './popups';
 import LayerPanel from './LayerPanel';
 import MapLegend from './MapLegend';
@@ -57,7 +57,7 @@ export default function MapContainer({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const stopMarkersRef = useRef<any[]>([]);
-  const emojiMarkersRef = useRef<Record<number, any>>({});
+  // Emoji markers removed — native Mapbox circle layers handle all location rendering
   const [layerPanelOpen, setLayerPanelOpen] = useState(false);
   const [blmVisible, setBlmVisible] = useState(false);
   const [usfsVisible, setUsfsVisible] = useState(false);
@@ -141,7 +141,7 @@ export default function MapContainer({
     // Close context menu on click
     map.on('click', () => setContextMenu(null));
 
-    const handleEmojiUpdate = () => updateEmojiMarkers(map, emojiMarkersRef);
+    // Emoji markers removed — dots render natively via Mapbox layers
     const reportBounds = () => {
       if (!onBoundsChange) return;
       const b = map.getBounds();
@@ -153,20 +153,12 @@ export default function MapContainer({
       });
     };
 
-    map.on('moveend', handleEmojiUpdate);
     map.on('moveend', reportBounds);
-    map.on('zoomend', handleEmojiUpdate);
-    map.on('sourcedata', (e: any) => {
-      if (e.sourceId === 'locations' && e.isSourceLoaded) {
-        setTimeout(handleEmojiUpdate, 100);
-      }
-    });
 
     mapRef.current = map;
 
     return () => {
-      Object.values(emojiMarkersRef.current).forEach(m => m.remove());
-      emojiMarkersRef.current = {};
+      // (emoji markers removed)
       stopMarkersRef.current.forEach((m) => m.remove());
       stopMarkersRef.current = [];
       map.remove();
