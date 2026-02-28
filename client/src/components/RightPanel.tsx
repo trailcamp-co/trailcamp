@@ -228,7 +228,7 @@ export default function RightPanel({
   const hasPhotos = location.photos && location.photos.length > 0;
 
   return (
-    <div className={`w-[400px] h-full flex flex-col shadow-2xl animate-slide-in-right bg-dark-950 border-l border-dark-700/50 text-gray-100 [.light_&]:bg-white [.light_&]:border-gray-200 [.light_&]:text-gray-900`}>
+    <div className={`w-full sm:w-[400px] h-full flex flex-col shadow-2xl animate-slide-in-right bg-dark-950 border-l border-dark-700/50 text-gray-100 [.light_&]:bg-white [.light_&]:border-gray-200 [.light_&]:text-gray-900`}>
       {/* Header */}
       <div className={`flex-shrink-0 p-5 pb-4 ${sectionDivider}`}>
         <div className="flex items-start justify-between gap-3">
