@@ -332,6 +332,12 @@ export default function TopBar({
                               {location.difficulty}
                             </span>
                           )}
+                          {location.distance_miles != null && (
+                            <span className="text-[9px] text-gray-500">{Math.round(location.distance_miles)} mi</span>
+                          )}
+                          {location.scenery_rating != null && location.scenery_rating >= 8 && (
+                            <span className="text-[9px]" title={`Scenery: ${location.scenery_rating}/10`}>🏔️</span>
+                          )}
                           {trailTypes.slice(0, 2).map((tt) => {
                             const colors = TRAIL_TYPE_COLORS[tt] || { bg: 'rgba(107,114,128,0.15)', text: '#9ca3af' };
                             return (
