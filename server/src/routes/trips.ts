@@ -380,4 +380,89 @@ router.get('/:id/route', async (req: Request, res: Response) => {
   }
 });
 
+// GPX Export
+router.get('/:id/export-gpx', (req: Request, res: Response) => {
+  const db = getDb();
+  const trip = db.prepare('SELECT * FROM trips WHERE id = ?').get(req.params.id) as any;
+  if (!trip) { res.status(404).json({ error: 'Trip not found' }); return; }
+
+  const stops = db.prepare('SELECT * FROM trip_stops WHERE trip_id = ? ORDER BY sort_order').all(req.params.id) as any[];
+
+  // Find nearby riding spots for each stop (within 20mi)
+  const nearbyRiding = db.prepare(`
+    SELECT * FROM (
+      SELECT *,
+        (3959 * acos(min(1, max(-1,
+          cos(? * 3.14159265359 / 180) * cos(latitude * 3.14159265359 / 180) * cos((longitude - ?) * 3.14159265359 / 180) +
+          sin(? * 3.14159265359 / 180) * sin(latitude * 3.14159265359 / 180)
+        )))) AS dist
+      FROM locations WHERE category = 'riding'
+    ) WHERE dist <= 20 ORDER BY dist LIMIT 10
+  `);
+
+  let waypoints = '';
+  for (const stop of stops) {
+    waypoints += `  <wpt lat="${stop.latitude}" lon="${stop.longitude}">
+    <name>${escapeXml(stop.name)}</name>
+    <desc>Stop ${stop.sort_order + 1}: ${stop.nights || 0} nights</desc>
+    <sym>Campground</sym>
+  </wpt>\n`;
+
+    // Add nearby riding as waypoints
+    const nearby = nearbyRiding.all(stop.latitude, stop.longitude, stop.latitude) as any[];
+    for (const spot of nearby) {
+      waypoints += `  <wpt lat="${spot.latitude}" lon="${spot.longitude}">
+    <name>${escapeXml(spot.name)}</name>
+    <desc>Riding: ${spot.difficulty || 'Unknown'} - ${spot.distance_miles || '?'}mi - ${(spot.dist as number).toFixed(1)}mi from ${escapeXml(stop.name)}</desc>
+    <sym>Trail Head</sym>
+  </wpt>\n`;
+    }
+  }
+
+  const gpx = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="TrailCamp" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>${escapeXml(trip.name)}</name>
+    <desc>${escapeXml(trip.description || '')}</desc>
+    <time>${new Date().toISOString()}</time>
+  </metadata>
+${waypoints}</gpx>`;
+
+  res.setHeader('Content-Type', 'application/gpx+xml');
+  res.setHeader('Content-Disposition', `attachment; filename="${trip.name.replace(/[^a-zA-Z0-9 -]/g, '')}.gpx"`);
+  res.send(gpx);
+});
+
+function escapeXml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Trip Journal
+router.get('/:id/journal', (req: Request, res: Response) => {
+  const db = getDb();
+  const entries = db.prepare(`
+    SELECT j.*, ts.name as stop_name 
+    FROM trip_journal j 
+    LEFT JOIN trip_stops ts ON j.stop_id = ts.id 
+    WHERE j.trip_id = ? ORDER BY j.created_at DESC
+  `).all(req.params.id);
+  res.json(entries);
+});
+
+router.post('/:id/journal', (req: Request, res: Response) => {
+  const db = getDb();
+  const { stop_id, content } = req.body;
+  const result = db.prepare(
+    'INSERT INTO trip_journal (trip_id, stop_id, content) VALUES (?, ?, ?)'
+  ).run(req.params.id, stop_id || null, content);
+  const entry = db.prepare('SELECT * FROM trip_journal WHERE id = ?').get(result.lastInsertRowid);
+  res.status(201).json(entry);
+});
+
+router.delete('/:id/journal/:entryId', (req: Request, res: Response) => {
+  const db = getDb();
+  db.prepare('DELETE FROM trip_journal WHERE id = ? AND trip_id = ?').run(req.params.entryId, req.params.id);
+  res.json({ success: true });
+});
+
 export default router;
