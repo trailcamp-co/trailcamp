@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" 
+     creator="TrailCamp"
+     xmlns="http://www.topografix.com/GPX/1/1"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <name>TrailCamp Export</name>
+    <time>2026-02-28T22:00:48.491Z</time>
+  </metadata>
+  <wpt lat="45.575" lon="-69.125">
+    <name>100 Mile Wilderness — ME</name>
+    <desc>Remote Maine forest riding along old logging roads. 100+ miles of gravel through uninhabited forest. True wilderness.</desc>
+    <cmt>Difficulty: Easy. Distance: 80mi. Scenery: 4/10. </cmt>
+    <type>Trail</type>
+    <sym>Trail Head</sym>
+  </wpt>
+  <wpt lat="29.3567" lon="-98.3234">
+    <name>281 Country Club — San Antonio</name>
+    <desc></desc>
+    <cmt>Difficulty: Moderate. Distance: 10mi. Scenery: 2/10. </cmt>
+    <type>Trail</type>
+    <sym>Trail Head</sym>
+  </wpt>
+  <wpt lat="47.0567" lon="-112.1234">
+    <name>7R Guest Ranch — Wolf Creek MT</name>
+    <desc></desc>
+    <cmt>Difficulty: Moderate. Distance: 35mi. Scenery: 5/10. </cmt>
+    <type>Trail</type>
+    <sym>Trail Head</sym>
+  </wpt>
+  <wpt lat="39.6012" lon="-119.2567">
+    <name>95 Motorsports Complex — Fernley</name>
+    <desc></desc>
+    <cmt>Difficulty: Moderate. Distance: 3mi. Scenery: 2/10. </cmt>
+    <type>Trail</type>
+    <sym>Trail Head</sym>
+  </wpt>
+  <wpt lat="39.825" lon="-81.575">
+    <name>AEP ReCreation Land</name>
+    <desc>SE Ohio. 60,000 acres of reclaimed mining land. Extensive trails.</desc>
+    <cmt>Difficulty: Easy. Distance: 30mi. Scenery: 5/10. </cmt>
+    <type>Trail</type>
+    <sym>Trail Head</sym>
+  </wpt>
+  <wpt lat="32.4567" lon="-99.7234">
+    <name>ATP Moto-X — Abilene</name>
+    <desc></desc>
+    <cmt>Difficulty: Moderate. Distance: 3mi. Scenery: 2/10. </cmt>
+    <type>Trail</type>
+    <sym>Trail Head</sym>
+  </wpt>
+  <wpt lat="44.475" lon="-109.575">
+    <name>Absaroka Range Trails</name>
+    <desc>East of Yellowstone. Rugged volcanic mountains. Very remote.</desc>
+    <cmt>Difficulty: Hard. Distance: 50mi. Scenery: 9/10. </cmt>
+    <type>Trail</type>
+    <sym>Trail Head</sym>
+  </wpt>
+  <wpt lat="44.5234" lon="-109.0567">
+    <name>Absaroka Range — Cody Area</name>
+    <desc></desc>
+    <cmt>Difficulty: Moderate. Distance: 30mi. Scenery: 5/10. </cmt>
+    <type>Trail</type>
+    <sym>Trail Head</sym>
+  </wpt>
+  <wpt lat="39.3678" lon="-82.1234">
+    <name>Action Sports Moto Park</name>
+    <desc></desc>
+    <cmt>Difficulty: Moderate. Distance: 5mi. Scenery: 3/10. </cmt>
+    <type>Trail</type>
+    <sym>Trail Head</sym>
+  </wpt>
+  <wpt lat="34.5789" lon="-117.4234">
+    <name>Adelanto GP Course</name>
+    <desc></desc>
+    <cmt>Difficulty: Moderate. Distance: 20mi. Scenery: 3/10. </cmt>
+    <type>Trail</type>
+    <sym>Trail Head</sym>
+  </wpt>
+</gpx>
