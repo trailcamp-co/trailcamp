@@ -99,17 +99,17 @@ export default function LeftSidebar({
           <button
             key={id}
             onClick={() => setActiveTab(id)}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-2 h-10 text-xs font-medium transition-all ${
+            className={`flex-1 flex items-center justify-center gap-1 px-1 h-10 text-[11px] font-medium transition-all min-w-0 ${
               activeTab === id
                 ? 'text-orange-400 border-b-[3px] border-orange-400 bg-dark-800/70 font-semibold'
                 : 'text-gray-500 hover:text-gray-300 border-b-[3px] border-transparent'
             }`}
           >
-            <Icon size={16} />
-            {label}
+            <Icon size={14} className="flex-shrink-0" />
+            <span className="truncate">{label}</span>
             {count !== undefined && count > 0 && (
-              <span className="ml-0.5 text-[10px] font-semibold bg-dark-700 text-gray-400 rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
-                {count}
+              <span className="flex-shrink-0 text-[9px] font-semibold text-gray-500">
+                {count > 999 ? `${(count / 1000).toFixed(1)}k` : count}
               </span>
             )}
           </button>
