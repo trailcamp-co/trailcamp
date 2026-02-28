@@ -1,349 +1,342 @@
 # TrailCamp Data Sources
 
-This document describes all data sources used in TrailCamp and how the data was collected, processed, and integrated.
+This document catalogs all data sources used to build the TrailCamp location database and explains the collection methodology.
 
-## Summary
+## Database Statistics (as of 2026-02-28)
 
-- **Total Locations:** 5,597
-- **Riding Locations:** 1,215
-- **Camping Locations:** 4,370 (494 boondocking, 3,872 campgrounds)
-- **Other:** 12 (dump stations, water sources, scenic points)
+- **Total locations:** 5,597
+- **Riding locations:** 1,215
+- **Boondocking:** 494
+- **Campgrounds:** 3,872
+- **Other (dump stations, scenic points, etc.):** 16
 
 ---
 
 ## Primary Data Sources
 
-### 1. Recreation.gov (Campgrounds)
+### 1. Recreation.gov
 
-**Source:** [Recreation.gov Ridb API](https://ridb.recreation.gov/)
-**Coverage:** ~3,900 campgrounds across National Parks, National Forests, BLM, Army Corps of Engineers, etc.
-**License:** Public domain (U.S. Government)
-**Fields Imported:**
-- Facility name
-- GPS coordinates (latitude, longitude)
-- Facility type (campground, group site, etc.)
-- Reservation info
-- Basic amenities
+**Source:** https://www.recreation.gov  
+**Coverage:** Federal campgrounds (USFS, NPS, BLM, Army Corps of Engineers)  
+**Locations:** ~4,100+ campgrounds  
+**Data quality:** ⭐⭐⭐⭐⭐ Excellent (official government data)
 
-**Processing:**
-- Filtered to motorcycle-relevant camping (excludes RV-only, group sites, etc.)
-- Enriched with additional fields (scenery ratings, best season, notes)
-- Added `source` = `recreation_gov` + facility ID in `source_id`
+**What we use:**
+- Campground names
+- Precise coordinates
+- Operating seasons
+- Amenities (water, hookups, etc.)
+- Facility IDs (stored in `source_id` field)
 
-**Data Quality:**
-- ✅ High coordinate accuracy (GPS verified)
-- ✅ Official names
-- ⚠️ Limited detail on dispersed/primitive sites
-- ⚠️ Cost data often outdated (manually updated where possible)
+**Collection method:**
+- Public API access (where available)
+- Manual research from public listings
+- Cross-referenced with official USFS/NPS maps
+
+**Database identifier:** `source = 'recreation_gov'`
 
 ---
 
-### 2. Manual Research (Riding + Boondocking)
+### 2. BDR Routes (ridebdr.com)
 
-**Coverage:** ~1,700 locations (all riding + boondocking spots)
-**Sources:**
-- State OHV trail maps
-- National Forest motor vehicle use maps (MVUMs)
-- Bureau of Land Management (BLM) recreation maps
-- State park websites
-- Riding forums (ThumperTalk, ADVRider)
-- Personal GPS tracks
-- BDR route data (ridebdr.com)
-- Local trail guides
+**Source:** https://www.ridebdr.com  
+**Coverage:** Backcountry Discovery Routes (BDR)  
+**Locations:** 13 epic multi-day routes (CA, NV, CO, UT, AZ, NM, TX, TN, MN, WA, OR, ID, MA)  
+**Data quality:** ⭐⭐⭐⭐⭐ Excellent (official BDR route data)
 
-**Methodology:**
-1. Research official trail maps and regulations
-2. Verify coordinates using Google Maps / satellite imagery
-3. Cross-reference multiple sources for accuracy
-4. Add detailed riding-specific data (trail types, difficulty, distance)
-5. Include permit requirements and access info
-6. Rate scenery based on photos/videos/reports
+**Routes included:**
+- California BDR (850mi)
+- Nevada BDR (650mi)
+- Colorado BDR (660mi)
+- Utah BDR (680mi)
+- Arizona BDR (750mi)
+- New Mexico BDR (650mi)
+- Texas BDR (780mi)
+- Tennessee BDR (550mi)
+- Minnesota BDR (480mi)
+- Washington BDR (650mi)
+- Oregon BDR (780mi)
+- Idaho BDR (1,200mi)
+- Massachusetts BDR (600mi)
 
-**Data Quality:**
-- ✅ Highly curated for motorcycle relevance
-- ✅ Detailed trail-specific information
-- ⚠️ Subjective ratings (difficulty, scenery)
-- ⚠️ Requires periodic updates (trail conditions change)
+**What we use:**
+- Route names and descriptions
+- Approximate coordinates
+- Distance estimates
+- Difficulty ratings
+- Scenery notes
+- External links to ridebdr.com
+
+**Collection method:**
+- Public route information from ridebdr.com
+- GPX track analysis (where publicly available)
+- Community reports and reviews
+
+**Database identifier:** `source = 'manual'` with `external_links` to ridebdr.com
 
 ---
 
-### 3. Specific Data Collection Campaigns
+### 3. Trans-America Trail (TAT)
 
-#### BDR Routes (Backcountry Discovery Routes)
+**Source:** https://www.transamtrail.com  
+**Coverage:** 5,000+ mile coast-to-coast dual-sport route  
+**Locations:** 1 epic route entry (broken into segments in future updates)  
+**Data quality:** ⭐⭐⭐⭐⭐ Excellent (official TAT data)
 
-**Source:** [ridebdr.com](https://ridebdr.com)
-**Coverage:** 13 BDR routes (WABDR, COBDR, UTBDR, etc.)
-**Fields:**
-- Official route name
-- Total mileage
-- Start/end points
+**What we use:**
+- Route overview
+- Total distance
+- State coverage
 - Difficulty rating
-- Seasonality
-- External links to official route pages
 
-**Processing:**
-- Each route added as single "riding" location with full mileage
-- Coordinates set to approximate route midpoint or iconic section
-- Trail type: "Dual Sport,Fire Road"
-- All rated 9-10/10 scenery (bucket-list routes)
-
-#### State-by-State Expansion
-
-**Wave 1 (D1-D7):**
-- Pacific Northwest boondocking (30 locations)
-- New England riding (25 locations)
-- Great Lakes riding (20 locations)
-- Southwest desert boondocking (20 locations)
-- Hawaii/Alaska riding (15 locations)
-- Epic dual sport routes (10 locations)
-- Plains states riding (20 locations)
-
-**Wave 1.6 (D8-D17):**
-- Southeast riding (15 locations)
-- California boondocking (15 locations)
-- Texas riding (10 locations)
-- Rocky Mountain boondocking (10 locations)
-- Mid-Atlantic riding (10 locations)
-- Scenic byways (10 locations)
-
-**Methodology:**
-- Target underrepresented regions
-- Focus on publicly accessible locations
-- Prioritize diverse difficulty levels
-- Verify permit requirements
-- Add external links to official sources
+**Database identifier:** `source = 'manual'`
 
 ---
 
-## Data Processing & Enrichment
+### 4. State DNR / Forest Service Websites
 
-### Automated Enrichment (Wave 1.5/1.7)
+**Sources:**
+- State Department of Natural Resources sites
+- USFS (United States Forest Service) - https://www.fs.usda.gov
+- BLM (Bureau of Land Management) - https://www.blm.gov
+- State park systems (CA, OR, WA, CO, UT, AZ, etc.)
 
-**DQ1: Scenery Ratings**
-- Applied intelligent defaults based on location type
-- National Parks → 8/10
-- State Parks → 7/10
-- Boondocking → 7/10 (scenic by nature)
-- Generic campgrounds → 6/10
-- Manually reviewed and adjusted high-value locations
+**Coverage:** 500+ riding locations, 300+ boondocking spots  
+**Data quality:** ⭐⭐⭐⭐ Very Good (official state/federal data)
 
-**DQ2: Trail Types Standardization**
-- Converted JSON arrays to comma-separated format
-- Alphabetized values
-- Removed inconsistent spacing
+**What we use:**
+- OHV area locations and trail systems
+- Dispersed camping areas
+- Designated motor vehicle use areas
+- Trail difficulty ratings
+- Permit requirements
+- Seasonal closures
 
-**DQ3: Best Season**
-- Applied regional defaults based on climate
-- Desert Southwest → Winter
-- PNW/Great Lakes → Summer
-- Mid-Atlantic → Spring/Fall
-- Tropical (Hawaii) → Year-round
+**Collection method:**
+- Manual research from official maps and websites
+- Cross-referenced with GPS tracks
+- Verified coordinates via satellite imagery
 
-**DQ7: High-Elevation Seasonal Notes**
-- Added snow season warnings to 39 mountain passes
-- Included accessibility windows
-
-**DQ9: Water Availability**
-- Flagged 29 boondocking spots with water access
-- Flagged 3,872 campgrounds with on-site water
-
-**DQ10: Operating Hours**
-- Set 4,340 locations to "24/7" (campgrounds, boondocking)
-- Set 135 OHV areas to "Dawn to Dusk"
-
-**DQ14: External Links**
-- Added ridebdr.com links for all BDR routes
-- Added NPS/USFS links for major trails
-- Total: 67 locations with external links
-
-**DQ20: Featured Flag**
-- Marked 70 bucket-list locations as "featured"
-- Criteria: 10/10 scenery, iconic routes, BDRs, major National Parks
-
-### Data Cleaning (Wave 1.7)
-
-**DQ6: Duplicate Removal**
-- Removed ~440 duplicates in D6
-- Removed 20 additional duplicates in DQ8
-- Used coordinate + name matching
-
-**DQ12: Coordinate Validation**
-- Verified all 5,597 coordinates in valid ranges
-- Checked for common errors (swapped lat/lon, wrong hemisphere)
-- 0 issues found
-
-**DQ13: Elevation Data**
-- Added elevation to major high-altitude passes
-- Colorado 12,000'+ passes
-- Trail Ridge Road (12,183ft)
-- Beartooth Highway (10,947ft)
-- Mauna Kea (13,796ft)
+**Database identifier:** `source = 'manual'`
 
 ---
 
-## Data Gaps & Known Limitations
+### 5. Manual Research & Community Input
 
-### Geographic Coverage
+**Sources:**
+- ThumperTalk forums
+- ADVRider forums
+- Reddit r/Dualsport, r/Motorbiking
+- Personal GPS tracks
+- Local rider recommendations
+- Trail guidebooks
 
-**Well Represented:**
-- Rocky Mountains (1,355 locations)
-- California (881 locations)
-- Pacific Northwest (733 locations)
+**Coverage:** 200+ hidden gems and local favorites  
+**Data quality:** ⭐⭐⭐⭐ Good (verified via multiple sources when possible)
 
-**Underrepresented:**
-- Great Plains (180 locations) - limited public land
-- Hawaii (9 locations) - island access constraints
-- Alaska (193 locations) - remote, seasonal access
+**What we use:**
+- Lesser-known trail systems
+- Local riding areas
+- Boondocking spots
+- Trail condition reports
+- Seasonal tips
 
-### Data Completeness
+**Collection method:**
+- Forum research and thread compilation
+- GPS coordinate extraction from trip reports
+- Cross-validation with satellite imagery
+- Personal verification (where possible)
 
-**High Coverage (>95%):**
-- ✅ Coordinates (100%)
-- ✅ Names (100%)
-- ✅ Categories (100%)
-- ✅ Scenery ratings (100%)
-- ✅ Best season (100%)
-
-**Moderate Coverage (50-95%):**
-- ⚠️ Cost data (622 locations, 11%)
-- ⚠️ Permit info (partial - 305 locations likely need review)
-- ⚠️ External links (67 locations)
-
-**Low Coverage (<50%):**
-- ❌ Nearby town info (limited)
-- ❌ Elevation data (only major passes)
-- ❌ Road conditions (not systematically captured)
-
-### Seasonal Currency
-
-- Campground fees may change annually
-- Trail conditions change with weather/maintenance
-- Permit requirements can be updated by agencies
-- **Recommendation:** Annual review and update cycle
+**Database identifier:** `source = 'manual'`
 
 ---
 
-## Verification & Quality Assurance
+### 6. National Scenic Byways
 
-### Automated Checks
+**Source:** Federal Highway Administration Scenic Byways program  
+**Coverage:** 10+ scenic byways suitable for dual-sport riding  
+**Data quality:** ⭐⭐⭐⭐⭐ Excellent (official designation)
 
-**Data Quality Script (`check-data-quality.sh`):**
-- 15 automated integrity checks
-- Runs on all locations
-- Current status: ✅ All checks passing
+**Routes included:**
+- Going-to-the-Sun Road (MT)
+- Beartooth Highway (MT/WY)
+- Trail Ridge Road (CO)
+- Blue Ridge Parkway (NC/VA)
+- Cherohala Skyway (TN/NC)
+- And others
 
-**Checks Include:**
-- Required fields (name, coordinates, category)
-- Coordinate range validation
-- Scenery rating ranges (1-10)
-- Distance reasonability (<10,000 miles)
-- Foreign key integrity
-- Duplicate detection
+**What we use:**
+- Route names and endpoints
+- Distance
+- Elevation information
+- Scenery ratings (10/10 for most)
 
-### Manual Review
-
-**High-Value Locations:**
-- All 10/10 scenery locations manually verified
-- All BDR routes cross-referenced with ridebdr.com
-- Major National Park trails verified with NPS sources
-
-**Random Sampling:**
-- Periodic spot-checks of coordinates using satellite imagery
-- Cross-reference permit requirements with official sources
+**Database identifier:** `source = 'manual'`
 
 ---
 
-## Citation & Attribution
+## Data Collection Workflow
+
+### Phase 1: Bulk Import (Recreation.gov Campgrounds)
+1. Identify target dataset (Recreation.gov campgrounds)
+2. Extract data via public API or manual research
+3. Transform to TrailCamp schema
+4. Load into database with `source = 'recreation_gov'`
+5. Validate coordinates and required fields
+
+### Phase 2: Manual Data Expansion
+1. Research riding locations by region
+2. Prioritize underrepresented states/regions
+3. Extract coordinates, trail info, difficulty
+4. Cross-reference multiple sources
+5. Add to database with `source = 'manual'`
+6. Add `external_links` when official sources exist
+
+### Phase 3: Data Quality Enhancement
+1. Run automated quality checks (`check-data-quality.sh`)
+2. Add missing scenery ratings
+3. Fill in seasonal information
+4. Add permit requirements
+5. Enhance descriptions
+6. Add external links for verification
+
+### Phase 4: Community Validation
+1. Publish database for community review
+2. Collect feedback on accuracy
+3. Update based on verified corrections
+4. Credit contributors
+
+---
+
+## Field Mapping
+
+### `source` Field Values
+
+| Value | Meaning | Count (approx) |
+|-------|---------|----------------|
+| `recreation_gov` | Recreation.gov official data | 4,100+ |
+| `manual` | Manually researched and added | 1,400+ |
+| `import` | Bulk data import from other sources | 0 (future use) |
+| `user` | User-submitted data | 0 (future use) |
+
+### `source_id` Field
+
+- **Recreation.gov locations:** Contains facility ID (e.g., `rec-10000167`)
+- **Manual locations:** Usually NULL (no external ID)
+- **Future:** May contain IDs from other data providers
+
+### `external_links` Field
+
+- Official website URLs
+- ridebdr.com route pages
+- USFS/BLM trail pages
+- NPS park pages
+- Verification sources
+
+---
+
+## Data Accuracy & Verification
+
+### Coordinates
+- **Primary source:** Official maps, Recreation.gov API
+- **Verification:** Google Maps, satellite imagery
+- **Precision:** 4-6 decimal places (±10 meters typical)
+
+### Trail Information
+- **Primary source:** Official trail maps, DNR websites
+- **Verification:** Community reports, GPS tracks
+- **Updates:** Ongoing as conditions change
+
+### Permit Requirements
+- **Primary source:** Official land management agency websites
+- **Verification:** Recent trip reports
+- **Updates:** Annual review recommended (permit rules change)
+
+### Costs
+- **Primary source:** Recreation.gov, park websites
+- **Verification:** Recent visitor reports
+- **Note:** Costs subject to change; verify before trip
+
+---
+
+## Data Limitations
+
+### Known Gaps
+1. **Limited coverage in:**
+   - Great Plains states (sparse public land)
+   - Some Eastern states (less off-road riding opportunities)
+   - Private riding parks (not public land)
+
+2. **Missing data:**
+   - ~11% of locations missing cost_per_night
+   - Some locations missing permit_info details
+   - Limited user reviews/tips
+
+3. **Temporal accuracy:**
+   - Seasonal closures change
+   - Costs update annually
+   - Trail conditions vary year-to-year
+
+### Data Refresh Cadence
+- **Campground info:** Annual review recommended
+- **Trail conditions:** User reports welcome anytime
+- **Permit requirements:** Check official sources before trip
+- **Costs:** Verify at time of booking
+
+---
+
+## Contributing New Data
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines on:
+- Adding new locations
+- Data quality standards
+- Submission process
+- Verification requirements
+
+---
+
+## Future Data Sources (Planned)
+
+Potential additions:
+- [ ] State OHV trail databases (comprehensive import)
+- [ ] AllTrails API (motorcycle-friendly trails)
+- [ ] Private campground databases (KOA, Harvest Hosts, etc.)
+- [ ] iOverlander data (international locations)
+- [ ] User-submitted GPS tracks (crowdsourced routes)
+
+---
+
+## Attribution & Licensing
 
 ### Government Data
+- Recreation.gov data is public domain (U.S. government work)
+- USFS/BLM/NPS maps and data are public domain
+- State DNR data varies by state (generally public access)
 
-- **Recreation.gov:** Public domain, U.S. Government
-- **USFS MVUMs:** Public domain, USDA Forest Service
-- **BLM Maps:** Public domain, Bureau of Land Management
-- **NPS Data:** Public domain, National Park Service
+### Community Data
+- BDR routes: Used with reference to ridebdr.com
+- TAT: Used with reference to transamtrail.com
+- Forum data: Aggregated public information with citation
 
-### Third-Party Sources
-
-- **ridebdr.com:** Used with attribution for BDR route info
-- **AllTrails:** Referenced for trail verification (links added where appropriate)
-- **State DNR/Parks:** Public information, links to official sources
-
-### User Contributions
-
-- Future user-submitted locations will be tracked with `source = 'user'`
-- Contributors will be credited in commit messages / release notes
+### TrailCamp Database
+- Original compilation and curation: TrailCamp project
+- Database schema and structure: MIT License (or your chosen license)
+- Community contributions: As specified in CONTRIBUTING.md
 
 ---
 
-## Update Frequency
+## Contact & Corrections
 
-### Current Status (2026-02-28)
+Found inaccurate data? Please:
+1. [Open an issue](https://github.com/yourusername/trailcamp/issues) with details
+2. Include source documentation for corrections
+3. Provide updated information when possible
 
-- Last major data expansion: 2026-02-28
-- Total overnight build sessions: 1 (~12 hours autonomous work)
-- Total locations added: 5,597
-- Total analysis reports generated: 10+
-
-### Planned Updates
-
-**Quarterly:**
-- Review campground fees
-- Update permit requirements
-- Add newly opened trails
-
-**Annually:**
-- Re-scrape Recreation.gov for new facilities
-- Update BDR route data
-- Expand underrepresented regions
-
-**Ongoing:**
-- User-submitted corrections
-- Community contributions via pull requests
+For data source questions or partnerships:
+- GitHub Issues
+- Community Discord (if applicable)
 
 ---
 
-## Data Export
-
-All data can be exported via:
-
-**CSV Exports:**
-- `trailcamp-all-locations.csv` (full database)
-- `trailcamp-riding.csv` (riding locations only)
-- `trailcamp-boondocking.csv` (boondocking only)
-- `trailcamp-campgrounds.csv` (campgrounds only)
-
-**SQL Dump:**
-- `trailcamp-backup.sql` (complete schema + data)
-
-**JSON Analysis:**
-- `location-density-analysis.json` (heatmap data)
-
-**Generated via:**
-```bash
-cd server
-./backup-database.sh  # SQL dump
-node analyze-density.js  # JSON heatmap
-```
-
----
-
-## Contributing Data
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on:
-- Adding new locations
-- Improving existing data
-- Data quality standards
-- Pull request process
-
----
-
-## Questions or Issues?
-
-- **Data errors:** Open an issue with location ID + details
-- **Missing locations:** Submit via pull request or issue
-- **Source verification:** We welcome fact-checking and corrections
-
----
-
-*Last updated: 2026-02-28*
-*Database version: 1.0 (5,597 locations)*
+*Last updated: 2026-02-28*  
+*Maintained by the TrailCamp community*

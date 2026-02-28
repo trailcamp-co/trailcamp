@@ -16,13 +16,14 @@ function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: numbe
 
 interface CampsiteTabProps {
   locations: Location[];
+  allLocations: Location[];
   onFlyTo: (lng: number, lat: number) => void;
   mapBounds: { north: number; south: number; east: number; west: number } | null;
   onLocationClick?: (location: Location) => void;
   onToggleFavorite?: (id: number) => void;
 }
 
-export default function CampsiteTab({ locations, onFlyTo, mapBounds, onLocationClick, onToggleFavorite }: CampsiteTabProps) {
+export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBounds, onLocationClick, onToggleFavorite }: CampsiteTabProps) {
   const [sortField, setSortField] = useState<CampsiteSortField>('name');
   const [sortAsc, setSortAsc] = useState(true);
   const [filterSubType, setFilterSubType] = useState<CampsiteSubType | 'all'>('all');
