@@ -1,430 +1,53 @@
 {
-  "generatedAt": "2026-02-28T20:14:15.688Z",
-  "summary": {
-    "total": 6238,
-    "geocoded": 6221,
-    "failed": 17,
-    "stateCount": 45
-  },
-  "states": [
+  "total": 5,
+  "success": 5,
+  "failed": 0,
+  "skipped": 0,
+  "locations": [
     {
-      "code": "CA",
-      "name": "California",
-      "total": 978,
-      "riding": 226,
-      "campsites": 751
+      "id": 1,
+      "name": "Ghost Town Road Dispersed",
+      "state": "Arizona",
+      "stateAbbrev": "AZ",
+      "county": "Maricopa County",
+      "city": null,
+      "country": "United States"
     },
     {
-      "code": "ID",
-      "name": "Idaho",
-      "total": 736,
-      "riding": 131,
-      "campsites": 605
+      "id": 2,
+      "name": "Vulture Peak State Trust Land",
+      "state": "Arizona",
+      "stateAbbrev": "AZ",
+      "county": "Maricopa County",
+      "city": null,
+      "country": "United States"
     },
     {
-      "code": "OR",
-      "name": "Oregon",
-      "total": 479,
-      "riding": 62,
-      "campsites": 417
+      "id": 3,
+      "name": "Boulders OHV Area Camping",
+      "state": "Arizona",
+      "stateAbbrev": "AZ",
+      "county": "Maricopa County",
+      "city": "Peoria",
+      "country": "United States"
     },
     {
-      "code": "UT",
-      "name": "Utah",
-      "total": 434,
-      "riding": 109,
-      "campsites": 322
+      "id": 4,
+      "name": "Rincon Road BLM",
+      "state": "Arizona",
+      "stateAbbrev": "AZ",
+      "county": "Maricopa County",
+      "city": null,
+      "country": "United States"
     },
     {
-      "code": "CO",
-      "name": "Colorado",
-      "total": 362,
-      "riding": 117,
-      "campsites": 245
-    },
-    {
-      "code": "AZ",
-      "name": "Arizona",
-      "total": 285,
-      "riding": 79,
-      "campsites": 200
-    },
-    {
-      "code": "WA",
-      "name": "Washington",
-      "total": 217,
-      "riding": 43,
-      "campsites": 174
-    },
-    {
-      "code": "AK",
-      "name": "Alaska",
-      "total": 201,
-      "riding": 25,
-      "campsites": 176
-    },
-    {
-      "code": "WY",
-      "name": "Wyoming",
-      "total": 170,
-      "riding": 34,
-      "campsites": 136
-    },
-    {
-      "code": "NC",
-      "name": "North Carolina",
-      "total": 154,
-      "riding": 48,
-      "campsites": 106
-    },
-    {
-      "code": "TX",
-      "name": "Texas",
-      "total": 146,
-      "riding": 54,
-      "campsites": 92
-    },
-    {
-      "code": "GA",
-      "name": "Georgia",
-      "total": 137,
-      "riding": 34,
-      "campsites": 103
-    },
-    {
-      "code": "NM",
-      "name": "New Mexico",
-      "total": 135,
-      "riding": 49,
-      "campsites": 86
-    },
-    {
-      "code": "MI",
-      "name": "Michigan",
-      "total": 133,
-      "riding": 53,
-      "campsites": 80
-    },
-    {
-      "code": "AR",
-      "name": "Arkansas",
-      "total": 132,
-      "riding": 11,
-      "campsites": 121
-    },
-    {
-      "code": "KY",
-      "name": "Kentucky",
-      "total": 110,
-      "riding": 37,
-      "campsites": 72
-    },
-    {
-      "code": "OK",
-      "name": "Oklahoma",
-      "total": 105,
-      "riding": 17,
-      "campsites": 87
-    },
-    {
-      "code": "VA",
-      "name": "Virginia",
-      "total": 98,
-      "riding": 30,
-      "campsites": 68
-    },
-    {
-      "code": "MN",
-      "name": "Minnesota",
-      "total": 98,
-      "riding": 31,
-      "campsites": 67
-    },
-    {
-      "code": "MT",
-      "name": "Montana",
-      "total": 89,
-      "riding": 9,
-      "campsites": 80
-    },
-    {
-      "code": "MO",
-      "name": "Missouri",
-      "total": 87,
-      "riding": 9,
-      "campsites": 78
-    },
-    {
-      "code": "KS",
-      "name": "Kansas",
-      "total": 84,
-      "riding": 10,
-      "campsites": 74
-    },
-    {
-      "code": "NY",
-      "name": "New York",
-      "total": 75,
-      "riding": 43,
-      "campsites": 32
-    },
-    {
-      "code": "OH",
-      "name": "Ohio",
-      "total": 69,
-      "riding": 31,
-      "campsites": 38
-    },
-    {
-      "code": "IL",
-      "name": "Illinois",
-      "total": 66,
-      "riding": 16,
-      "campsites": 50
-    },
-    {
-      "code": "AL",
-      "name": "Alabama",
-      "total": 66,
-      "riding": 24,
-      "campsites": 42
-    },
-    {
-      "code": "FL",
-      "name": "Florida",
-      "total": 66,
-      "riding": 38,
-      "campsites": 28
-    },
-    {
-      "code": "TN",
-      "name": "Tennessee",
-      "total": 64,
-      "riding": 18,
-      "campsites": 46
-    },
-    {
-      "code": "MD",
-      "name": "Maryland",
-      "total": 62,
-      "riding": 25,
-      "campsites": 37
-    },
-    {
-      "code": "NH",
-      "name": "New Hampshire",
-      "total": 54,
-      "riding": 29,
-      "campsites": 25
-    },
-    {
-      "code": "IA",
-      "name": "Iowa",
-      "total": 42,
-      "riding": 6,
-      "campsites": 36
-    },
-    {
-      "code": "ND",
-      "name": "North Dakota",
-      "total": 40,
-      "riding": 8,
-      "campsites": 32
-    },
-    {
-      "code": "SD",
-      "name": "South Dakota",
-      "total": 31,
-      "riding": 11,
-      "campsites": 20
-    },
-    {
-      "code": "IN",
-      "name": "Indiana",
-      "total": 30,
-      "riding": 17,
-      "campsites": 13
-    },
-    {
-      "code": "LA",
-      "name": "Louisiana",
-      "total": 29,
-      "riding": 15,
-      "campsites": 14
-    },
-    {
-      "code": "PA",
-      "name": "Pennsylvania",
-      "total": 28,
-      "riding": 4,
-      "campsites": 24
-    },
-    {
-      "code": "NE",
-      "name": "Nebraska",
-      "total": 26,
-      "riding": 10,
-      "campsites": 16
-    },
-    {
-      "code": "ME",
-      "name": "Maine",
-      "total": 22,
-      "riding": 17,
-      "campsites": 5
-    },
-    {
-      "code": "MA",
-      "name": "Massachusetts",
-      "total": 20,
-      "riding": 14,
-      "campsites": 6
-    },
-    {
-      "code": "MS",
-      "name": "Mississippi",
-      "total": 15,
-      "riding": 5,
-      "campsites": 10
-    },
-    {
-      "code": "HI",
-      "name": "Hawaii",
-      "total": 15,
-      "riding": 14,
-      "campsites": 1
-    },
-    {
-      "code": "CT",
-      "name": "Connecticut",
-      "total": 12,
-      "riding": 8,
-      "campsites": 4
-    },
-    {
-      "code": "SC",
-      "name": "South Carolina",
-      "total": 8,
-      "riding": 5,
-      "campsites": 3
-    },
-    {
-      "code": "NJ",
-      "name": "New Jersey",
-      "total": 8,
-      "riding": 5,
-      "campsites": 3
-    },
-    {
-      "code": "DE",
-      "name": "Delaware",
-      "total": 3,
-      "riding": 3,
-      "campsites": 0
-    }
-  ],
-  "failed": [
-    {
-      "id": 5844,
-      "name": "Whipsaw Trail — British Columbia",
-      "lat": 49.325,
-      "lon": -120.625
-    },
-    {
-      "id": 5847,
-      "name": "Baja California — Mike's Sky Ranch",
-      "lat": 31.075,
-      "lon": -115.575
-    },
-    {
-      "id": 6358,
-      "name": "Baja 1000 Route",
-      "lat": 31.875,
-      "lon": -116.625
-    },
-    {
-      "id": 6359,
-      "name": "Finke Desert Race Route",
-      "lat": -23.825,
-      "lon": 133.975
-    },
-    {
-      "id": 6360,
-      "name": "Erzberg Rodeo",
-      "lat": 47.525,
-      "lon": 14.875
-    },
-    {
-      "id": 6361,
-      "name": "Romaniacs Route",
-      "lat": 46.325,
-      "lon": 25.625
-    },
-    {
-      "id": 6362,
-      "name": "TKO Trail",
-      "lat": 45.925,
-      "lon": 16.825
-    },
-    {
-      "id": 6499,
-      "name": "Roof of Africa",
-      "lat": -25.775,
-      "lon": 30.825
-    },
-    {
-      "id": 6500,
-      "name": "Red Bull Romaniacs Prologue",
-      "lat": 45.875,
-      "lon": 25.775
-    },
-    {
-      "id": 6501,
-      "name": "Spanish Enduro Championship Trails",
-      "lat": 42.575,
-      "lon": -0.675
-    },
-    {
-      "id": 6502,
-      "name": "Italian Alps — Livigno",
-      "lat": 46.525,
-      "lon": 10.125
-    },
-    {
-      "id": 6503,
-      "name": "New Zealand — Rainbow Road",
-      "lat": -42.075,
-      "lon": 172.625
-    },
-    {
-      "id": 6504,
-      "name": "Scottish Highlands — Fort William",
-      "lat": 56.825,
-      "lon": -5.125
-    },
-    {
-      "id": 6505,
-      "name": "Iceland — F208 Fjallabak",
-      "lat": 63.975,
-      "lon": -19.075
-    },
-    {
-      "id": 6506,
-      "name": "Patagonia — Carretera Austral",
-      "lat": -46.575,
-      "lon": -71.975
-    },
-    {
-      "id": 6507,
-      "name": "Morocco — Atlas Mountains",
-      "lat": 31.275,
-      "lon": -7.925
-    },
-    {
-      "id": 6508,
-      "name": "Peru — Machu Picchu Trek",
-      "lat": -13.175,
-      "lon": -72.575
+      "id": 5,
+      "name": "Moon Rocks — Warner Valley",
+      "state": "Utah",
+      "stateAbbrev": "UT",
+      "county": "Washington County",
+      "city": null,
+      "country": "United States"
     }
   ]
 }
