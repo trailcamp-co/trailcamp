@@ -77,15 +77,17 @@ export function updateEmojiMarkers(
 /** Create numbered stop markers on the map */
 export function createStopMarkers(
   map: any,
-  stops: { id: number; latitude: number; longitude: number; name?: string; order_index: number }[],
+  stops: { id: number; latitude: number; longitude: number; name?: string; sort_order?: number }[],
 ): any[] {
   const markers: any[] = [];
-  for (const stop of stops) {
+  for (let i = 0; i < stops.length; i++) {
+    const stop = stops[i];
+    const num = (stop.sort_order != null ? stop.sort_order : i) + 1;
     const el = document.createElement('div');
     el.className = 'stop-marker';
     el.innerHTML = `
       <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#06b6d4,#0891b2);display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:13px;box-shadow:0 2px 8px rgba(6,182,212,0.4),0 0 0 3px rgba(6,182,212,0.15);border:2px solid white;">
-        ${stop.order_index + 1}
+        ${num}
       </div>
     `;
     const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
