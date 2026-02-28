@@ -7,14 +7,7 @@ import {
 } from '../../types';
 import { BLM_FILL_COLOR, USFS_FILL_COLOR } from './constants';
 
-const ALL_CAMPSITE_SUBTYPES: CampsiteSubType[] = ['boondocking', 'campground', 'parking', 'other'];
 
-const OTHER_CATEGORIES: { key: LocationCategory; label: string }[] = [
-  { key: 'riding', label: 'Riding Areas' },
-  { key: 'water', label: 'Water Stations' },
-  { key: 'dump', label: 'Dump Stations' },
-  { key: 'scenic', label: 'Scenic Viewpoints' },
-];
 
 interface LayerPanelProps {
   isOpen: boolean;
@@ -105,16 +98,9 @@ export default function LayerPanel({
         ))}
       </div>
 
-      {/* Locations */}
+      {/* Camp types */}
       <div className="py-0.5">
-        <LayerRow
-          emoji={CATEGORY_ICONS.riding}
-          color={CATEGORY_COLORS.riding}
-          label="Riding Areas"
-          visible={visibleLayers.has('riding')}
-          onToggle={() => onToggleLayer('riding')}
-        />
-        {ALL_CAMPSITE_SUBTYPES.map((st) => {
+        {(['campground', 'boondocking', 'parking', 'other'] as CampsiteSubType[]).map((st) => {
           const visible = visibleLayers.has('campsite') && (campsiteSubTypes?.has(st) ?? true);
           return (
             <LayerRow
@@ -127,19 +113,17 @@ export default function LayerPanel({
             />
           );
         })}
-        {OTHER_CATEGORIES.filter(c => c.key !== 'riding').map(({ key, label }) => (
-          <LayerRow
-            key={key}
-            emoji={CATEGORY_ICONS[key]}
-            color={CATEGORY_COLORS[key]}
-            label={label}
-            visible={visibleLayers.has(key)}
-            onToggle={() => onToggleLayer(key)}
-          />
-        ))}
       </div>
 
-      {/* Overlays */}
+      {/* Other location types */}
+      <div className="border-t border-dark-600/30 py-0.5">
+        <LayerRow emoji={CATEGORY_ICONS.riding} color={CATEGORY_COLORS.riding} label="Riding Areas" visible={visibleLayers.has('riding')} onToggle={() => onToggleLayer('riding')} />
+        <LayerRow emoji={CATEGORY_ICONS.water} color={CATEGORY_COLORS.water} label="Water Stations" visible={visibleLayers.has('water')} onToggle={() => onToggleLayer('water')} />
+        <LayerRow emoji={CATEGORY_ICONS.dump} color={CATEGORY_COLORS.dump} label="Dump Stations" visible={visibleLayers.has('dump')} onToggle={() => onToggleLayer('dump')} />
+        <LayerRow emoji={CATEGORY_ICONS.scenic} color={CATEGORY_COLORS.scenic} label="Scenic Viewpoints" visible={visibleLayers.has('scenic')} onToggle={() => onToggleLayer('scenic')} />
+      </div>
+
+      {/* Land overlays */}
       <div className="border-t border-dark-600/30 py-0.5">
         <LayerRow emoji="🏜️" color={BLM_FILL_COLOR} label="BLM Land" visible={blmVisible} onToggle={onToggleBlm} />
         <LayerRow emoji="🌲" color={USFS_FILL_COLOR} label="National Forests" visible={usfsVisible} onToggle={onToggleUsfs} />

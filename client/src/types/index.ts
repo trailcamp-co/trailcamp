@@ -103,7 +103,7 @@ export const CAMPSITE_SUBTYPE_COLORS: Record<CampsiteSubType, string> = {
 export const CAMPSITE_SUBTYPE_LABELS: Record<CampsiteSubType, string> = {
   boondocking: 'Boondocking',
   campground: 'Campgrounds',
-  parking: 'Parking',
+  parking: 'Overnight Parking',
   other: 'Other Camps',
 };
 
