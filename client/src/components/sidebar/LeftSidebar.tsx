@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { MapPin, Bike, Sliders } from 'lucide-react';
+import { MapPin, Bike, Sliders, PackageCheck } from 'lucide-react';
 import type { Location, Trip, TripStop, Filters, WeatherData, CampsiteSubType } from '../../types';
 import TripTab from './TripTab';
 import RidingTab from './RidingTab';
 import FiltersTab from './FiltersTab';
+import PackingList from './PackingList';
 
-type SidebarTab = 'trip' | 'riding' | 'filters';
+type SidebarTab = 'trip' | 'riding' | 'filters' | 'packing';
 
 interface LeftSidebarProps {
   selectedTrip: Trip | null;
@@ -72,6 +73,7 @@ export default function LeftSidebar({
             { id: 'trip' as SidebarTab, label: 'Trip', icon: MapPin, count: stopCount },
             { id: 'riding' as SidebarTab, label: 'Riding', icon: Bike, count: ridingCount },
             { id: 'filters' as SidebarTab, label: 'Filters', icon: Sliders, count: undefined },
+            { id: 'packing' as SidebarTab, label: 'Pack', icon: PackageCheck, count: undefined },
           ] as const
         ).map(({ id, label, icon: Icon, count }) => (
           <button
@@ -128,6 +130,12 @@ export default function LeftSidebar({
             weatherCache={weatherCache}
             fetchWeather={fetchWeather}
           />
+        </div>
+      )}
+      {/* Packing List Tab */}
+      {activeTab === 'packing' && (
+        <div className="animate-fade-in flex-1 overflow-hidden flex flex-col">
+          <PackingList />
         </div>
       )}
     </div>
