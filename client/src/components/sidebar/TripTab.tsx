@@ -29,6 +29,7 @@ import {
   Calendar,
   Shuffle,
   Download,
+  Share2,
 } from 'lucide-react';
 import type { Location, Trip, TripStop, WeatherData, JournalEntry } from '../../types';
 import { SortableStopCard, OverlayStopCard } from './StopCard';
@@ -345,6 +346,38 @@ export default function TripTab({
     setTimeout(() => setSavedMiles(null), 5000);
   }, [selectedTrip, onReorderStops]);
 
+  const [shareCopied, setShareCopied] = useState(false);
+  const handleShareTrip = useCallback(() => {
+    if (!selectedTrip || sortedStops.length === 0) return;
+    const lines: string[] = [];
+    lines.push(`🗺️ ${selectedTrip.name}`);
+    if (selectedTrip.start_date) lines.push(`📅 Starting ${formatDate(selectedTrip.start_date)}`);
+    const nights = sortedStops.reduce((s, st) => s + (st.nights ?? 0), 0);
+    const miles = sortedStops.reduce((s, st) => s + (st.drive_distance_miles ?? 0), 0);
+    lines.push(`📍 ${sortedStops.length} stops · ${nights} nights · ${Math.round(miles)} mi`);
+    lines.push('');
+    let currentDate = selectedTrip.start_date || '';
+    sortedStops.forEach((stop, i) => {
+      const name = stop.name || stop.location_name || `Stop ${i + 1}`;
+      let line = `${i + 1}. ${name}`;
+      if (stop.nights) line += ` (${stop.nights} night${stop.nights > 1 ? 's' : ''})`;
+      if (currentDate) {
+        line += ` — ${formatDate(currentDate)}`;
+        currentDate = addDays(currentDate, stop.nights || 1);
+      }
+      lines.push(line);
+      if (stop.drive_distance_miles && i < sortedStops.length - 1) {
+        lines.push(`   ↳ ${Math.round(stop.drive_distance_miles)} mi drive to next stop`);
+      }
+    });
+    lines.push('');
+    lines.push('Planned with TrailCamp 🏕️🏍️');
+    navigator.clipboard.writeText(lines.join('\n')).then(() => {
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    });
+  }, [selectedTrip, sortedStops]);
+
   const totalNights = sortedStops.reduce((sum, s) => sum + (s.nights ?? 0), 0);
   const totalDistance = sortedStops.reduce((sum, s) => sum + (s.drive_distance_miles ?? 0), 0);
 
@@ -486,6 +519,16 @@ export default function TripTab({
                   <Download size={11} />
                   Export GPX
                 </a>
+              )}
+              {sortedStops.length > 0 && (
+                <button
+                  onClick={handleShareTrip}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-purple-400 hover:bg-purple-500/10 hover:border-purple-500/20 transition-all [.light_&]:bg-white [.light_&]:border-gray-200 [.light_&]:text-purple-600 [.light_&]:hover:bg-purple-50"
+                  title="Copy trip summary to clipboard"
+                >
+                  <Share2 size={11} />
+                  {shareCopied ? 'Copied!' : 'Share'}
+                </button>
               )}
             </div>
             {savedMiles !== null && savedMiles > 0 && (
