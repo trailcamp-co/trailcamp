@@ -246,7 +246,6 @@ export default function MapContainer({
         mapStyle={mapStyle || style}
         onChangeMapStyle={onChangeMapStyle || (() => {})}
       />
-      <MapLegend />
       <MapStats
         ridingCount={locations.filter(l => l.category === 'riding').length}
         campsiteCount={locations.filter(l => l.category === 'campsite').length}
@@ -305,34 +304,8 @@ export default function MapContainer({
         </div>
       )}
 
-      {/* Quick nav buttons */}
-      <div className="absolute bottom-16 left-3 z-10 flex flex-col gap-1.5">
-        <button
-          onClick={() => {
-            if (mapRef.current) {
-              mapRef.current.flyTo({ center: [-81.3612, 41.6031], zoom: 10, duration: 1500 });
-            }
-          }}
-          className="px-3 py-2 rounded-xl shadow-lg glass text-gray-200 hover:text-white transition-colors flex items-center gap-1.5 text-sm font-medium"
-          title="Fly to Kirtland, OH"
-        >
-          🏠 Home
-        </button>
-        <button
-          onClick={() => {
-            const featured = locations.filter(l => l.featured);
-            if (featured.length && mapRef.current) {
-              const spot = featured[Math.floor(Math.random() * featured.length)];
-              mapRef.current.flyTo({ center: [spot.longitude, spot.latitude], zoom: 12, duration: 2000 });
-              onLocationClick?.(spot);
-            }
-          }}
-          className="px-3 py-2 rounded-xl shadow-lg glass text-gray-200 hover:text-white transition-colors flex items-center gap-1.5 text-sm font-medium"
-          title="Fly to a random epic spot"
-        >
-          🎲 Random Epic
-        </button>
-      </div>
+      {/* Legend box — bottom left */}
+      <MapLegend />
     </div>
   );
 }

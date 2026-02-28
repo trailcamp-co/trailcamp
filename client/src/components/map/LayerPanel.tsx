@@ -38,7 +38,7 @@ export default function LayerPanel({
       </button>
 
       {isOpen && (
-        <div className="mt-2 rounded-xl shadow-xl border border-dark-600/50 overflow-hidden glass animate-scale-in">
+        <div className="absolute top-full right-0 mt-2 rounded-xl shadow-xl border border-dark-600/50 overflow-hidden glass animate-scale-in">
           {/* Header */}
           <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400 border-b border-dark-600/30">
             Map Layers
