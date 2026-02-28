@@ -65,6 +65,7 @@ export default function MapContainer({
   const routeRef = useRef<GeoJSON.GeoJsonObject | null>(routeGeoJSON);
   const styleUrlRef = useRef(style.url);
   const [mapReady, setMapReady] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; lng: number; lat: number } | null>(null);
 
   useEffect(() => { locationsRef.current = locations; }, [locations]);
   useEffect(() => { routeRef.current = routeGeoJSON; }, [routeGeoJSON]);
@@ -129,6 +130,16 @@ export default function MapContainer({
     map.on('dblclick', (e: any) => {
       onMapClick({ lng: e.lngLat.lng, lat: e.lngLat.lat });
     });
+
+    // Right-click context menu
+    map.on('contextmenu', (e: any) => {
+      e.preventDefault();
+      const { lng, lat } = e.lngLat;
+      setContextMenu({ x: e.point.x, y: e.point.y, lng, lat });
+    });
+
+    // Close context menu on click
+    map.on('click', () => setContextMenu(null));
 
     const handleEmojiUpdate = () => updateEmojiMarkers(map, emojiMarkersRef);
     const reportBounds = () => {
@@ -252,6 +263,56 @@ export default function MapContainer({
       />
       <RegionQuickJump mapRef={mapRef} />
       
+      {/* Right-click context menu */}
+      {contextMenu && (
+        <div
+          className="absolute z-50 bg-dark-900 border border-dark-700 rounded-xl shadow-2xl py-1.5 min-w-[180px] text-sm"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          onClick={() => setContextMenu(null)}
+        >
+          <button
+            onClick={() => {
+              onMapClick({ lng: contextMenu.lng, lat: contextMenu.lat });
+              setContextMenu(null);
+            }}
+            className="w-full text-left px-4 py-2 hover:bg-dark-800 text-gray-300 flex items-center gap-2"
+          >
+            📍 Add Stop Here
+          </button>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(`${contextMenu.lat.toFixed(6)}, ${contextMenu.lng.toFixed(6)}`);
+              setContextMenu(null);
+            }}
+            className="w-full text-left px-4 py-2 hover:bg-dark-800 text-gray-300 flex items-center gap-2"
+          >
+            📋 Copy Coordinates
+          </button>
+          <button
+            onClick={() => {
+              window.open(`https://www.google.com/maps/@${contextMenu.lat},${contextMenu.lng},15z`, '_blank');
+              setContextMenu(null);
+            }}
+            className="w-full text-left px-4 py-2 hover:bg-dark-800 text-gray-300 flex items-center gap-2"
+          >
+            🗺️ View in Google Maps
+          </button>
+          <button
+            onClick={() => {
+              window.open(`https://www.google.com/maps/dir/?api=1&destination=${contextMenu.lat},${contextMenu.lng}`, '_blank');
+              setContextMenu(null);
+            }}
+            className="w-full text-left px-4 py-2 hover:bg-dark-800 text-gray-300 flex items-center gap-2"
+          >
+            🚗 Navigate Here
+          </button>
+          <div className="mx-3 my-1 border-t border-dark-700" />
+          <div className="px-4 py-1 text-[10px] text-gray-500 font-mono">
+            {contextMenu.lat.toFixed(5)}, {contextMenu.lng.toFixed(5)}
+          </div>
+        </div>
+      )}
+
       {/* Quick nav buttons */}
       <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
         <button
