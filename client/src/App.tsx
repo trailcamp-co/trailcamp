@@ -5,6 +5,7 @@ import { useSearch } from './hooks/useSearch';
 import { useRoute } from './hooks/useRoute';
 import { useWeather } from './hooks/useWeather';
 import { useMapInteraction } from './hooks/useMapInteraction';
+import { useToast } from './hooks/useToast';
 import Map from './components/map';
 import TopBar from './components/TopBar';
 import LeftSidebar from './components/sidebar';
@@ -12,6 +13,7 @@ import RightPanel from './components/RightPanel';
 import StatsPanel from './components/StatsPanel';
 import ErrorBoundary from './components/ErrorBoundary';
 import AddLocationModal from './components/AddLocationModal';
+import ToastContainer from './components/ToastContainer';
 import type { Location, MapStyle } from './types';
 import { MAP_STYLES } from './types';
 
@@ -27,6 +29,7 @@ export default function App() {
   const { trips, createTrip, updateTrip, deleteTrip } = useTrips();
   const { stops, addStop, updateStop, reorderStops, deleteStop } = useTripStops(selectedTrip?.id ?? null);
   const { locations, searchLocations, createLocation, updateLocation, deleteLocation, toggleFavorite } = useLocations();
+  const { toasts, showToast, removeToast } = useToast();
 
   const { routeGeoJSON } = useRoute(stops, updateStop);
   const { weatherCache, fetchWeather } = useWeather();
@@ -210,6 +213,7 @@ export default function App() {
               darkMode={darkMode}
               onFlyTo={handleFlyTo}
               onLocationClick={handleLocationClick}
+              showToast={showToast}
             />
           )}
         </div>
@@ -235,6 +239,9 @@ export default function App() {
           darkMode={darkMode}
         />
       )}
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

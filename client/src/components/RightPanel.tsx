@@ -33,6 +33,7 @@ interface RightPanelProps {
   onAddToTrip: (location: Location) => Promise<void>;
   hasActiveTrip: boolean;
   darkMode: boolean;
+  showToast?: (message: string, type?: 'success' | 'error' | 'info') => void;
   onFlyTo?: (lng: number, lat: number) => void;
   onLocationClick?: (location: Location) => void;
 }
@@ -58,7 +59,7 @@ function DetailBadge({ label, value, darkMode }: { label: string; value: string 
 }
 
 export default function RightPanel({
-  location, onClose, onUpdate, onDelete, onAddToTrip, hasActiveTrip, darkMode, onFlyTo, onLocationClick,
+  location, onClose, onUpdate, onDelete, onAddToTrip, hasActiveTrip, darkMode, onFlyTo, onLocationClick, showToast,
 }: RightPanelProps) {
   const [hoverRating, setHoverRating] = useState(0);
   const [editingNotes, setEditingNotes] = useState(false);
@@ -122,8 +123,15 @@ export default function RightPanel({
 
   const handleAddToTrip = useCallback(async () => {
     setAddingToTrip(true);
-    try { await onAddToTrip(location); } finally { setAddingToTrip(false); }
-  }, [location, onAddToTrip]);
+    try {
+      await onAddToTrip(location);
+      showToast?.('Added to trip!', 'success');
+    } catch {
+      showToast?.('Failed to add to trip', 'error');
+    } finally {
+      setAddingToTrip(false);
+    }
+  }, [location, onAddToTrip, showToast]);
 
   const handleDelete = useCallback(async () => {
     if (!confirmDelete) { setConfirmDelete(true); return; }
@@ -299,7 +307,7 @@ export default function RightPanel({
               onClick={() => {
                 const url = `${window.location.origin}?loc=${location.id}`;
                 navigator.clipboard.writeText(url);
-                // Could add toast notification here
+                showToast?.('Link copied to clipboard!', 'success');
               }}
               className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-dark-800 hover:bg-dark-700 text-gray-300 text-xs font-medium transition-colors border border-dark-700/50 [.light_&]:bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-700 [.light_&]:border-gray-200"
               title="Copy link to location"
