@@ -5,6 +5,8 @@ import { addCustomLayers, addOverlayLayers, buildLocationsGeoJSON, buildRouteGeo
 import { updateEmojiMarkers, createStopMarkers } from './markers';
 import { setupHoverTooltip, setupClickPopup, setupClusterClick } from './popups';
 import LayerPanel from './LayerPanel';
+import MapLegend from './MapLegend';
+import RegionQuickJump from './RegionQuickJump';
 import { DEFAULT_CENTER, DEFAULT_ZOOM, FLY_TO_ZOOM, FLY_TO_DURATION } from './constants';
 
 export interface MapBounds {
@@ -209,6 +211,8 @@ export default function MapContainer({
         mapStyle={mapStyle || style}
         onChangeMapStyle={onChangeMapStyle || (() => {})}
       />
+      <MapLegend />
+      <RegionQuickJump mapRef={mapRef} />
     </div>
   );
 }
