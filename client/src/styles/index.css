@@ -308,3 +308,32 @@ input:focus, textarea:focus, select:focus {
   background: rgba(249, 115, 22, 0.3);
   color: #fff;
 }
+
+/* Mapbox control styling - dark theme */
+.mapboxgl-ctrl-scale {
+  background: rgba(10, 15, 26, 0.7) !important;
+  border-color: rgba(100, 116, 139, 0.5) !important;
+  color: #94a3b8 !important;
+  font-size: 10px !important;
+  border-radius: 4px !important;
+  padding: 0 4px !important;
+}
+.mapboxgl-ctrl-fullscreen .mapboxgl-ctrl-icon {
+  filter: invert(0.8);
+}
+.mapboxgl-ctrl-geolocate .mapboxgl-ctrl-icon {
+  filter: invert(0.8);
+}
+.mapboxgl-user-location-dot {
+  background-color: #f97316 !important;
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2) !important;
+}
+.light .mapboxgl-ctrl-scale {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+  color: #374151 !important;
+}
+.light .mapboxgl-ctrl-fullscreen .mapboxgl-ctrl-icon,
+.light .mapboxgl-ctrl-geolocate .mapboxgl-ctrl-icon {
+  filter: none;
+}
