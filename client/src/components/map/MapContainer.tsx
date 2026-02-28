@@ -103,6 +103,19 @@ export default function MapContainer({
       }
       map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.3 });
 
+      // Sky atmosphere
+      if (!map.getLayer('sky')) {
+        map.addLayer({
+          id: 'sky',
+          type: 'sky',
+          paint: {
+            'sky-type': 'atmosphere',
+            'sky-atmosphere-sun': [0.0, 90.0],
+            'sky-atmosphere-sun-intensity': 15,
+          },
+        });
+      }
+
       addCustomLayers(map, locationsRef.current, routeRef.current);
       addOverlayLayers(map);
       setMapReady(true);
