@@ -4,7 +4,7 @@ import type { Location, CampsiteSubType } from '../../types';
 import { CAMPSITE_SUBTYPE_ICONS, CAMPSITE_SUBTYPE_LABELS } from '../../types';
 import CampsiteCard from './CampsiteCard';
 
-type CampsiteSortField = 'name' | 'cost' | 'scenery_rating' | 'distance_from';
+type CampsiteSortField = 'name' | 'cost' | 'scenery_rating' | 'distance_from' | 'riding_nearby';
 
 function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 3959;
@@ -150,6 +150,7 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
           {([
             { field: 'name' as CampsiteSortField, label: 'Name' },
             { field: 'cost' as CampsiteSortField, label: 'Cost' },
+            { field: 'riding_nearby' as CampsiteSortField, label: '🏍️ Rides' },
             { field: 'scenery_rating' as CampsiteSortField, label: 'Scenery' },
             ...(distanceFromCoords ? [{ field: 'distance_from' as CampsiteSortField, label: 'Distance' }] : []),
           ]).map(({ field, label }) => (
@@ -219,7 +220,10 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
             <p className="text-xs text-gray-600">Try zooming out or adjusting filters</p>
           </div>
         )}
-        {campsiteLocations.map(loc => (
+        {(sortField === 'riding_nearby'
+          ? [...campsiteLocations].sort((a, b) => (sortAsc ? 1 : -1) * ((nearbyRidingCounts[b.id] ?? 0) - (nearbyRidingCounts[a.id] ?? 0)))
+          : campsiteLocations
+        ).map(loc => (
           <CampsiteCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} nearbyRidingCount={nearbyRidingCounts[loc.id]} />
         ))}
       </div>
