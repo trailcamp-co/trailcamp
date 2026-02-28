@@ -71,6 +71,7 @@ export default function RightPanel({
   const [nearbyRadius, setNearbyRadius] = useState(20);
   const [loadingNearby, setLoadingNearby] = useState(false);
   const [heartKey, setHeartKey] = useState(0);
+  const [weather, setWeather] = useState<{ temp: number; icon: string; desc: string } | null>(null);
 
   const isCampsite = location.category === 'campsite';
   const categoryColor = CATEGORY_COLORS[location.category] || '#6b7280';
@@ -90,6 +91,36 @@ export default function RightPanel({
     setEditingNotes(false);
     setConfirmDelete(false);
   }, [location.id, location.user_notes]);
+
+  // Fetch current weather
+  useEffect(() => {
+    setWeather(null);
+    const WMO: Record<number, { icon: string; desc: string }> = {
+      0: { icon: '☀️', desc: 'Clear' }, 1: { icon: '🌤️', desc: 'Mostly Clear' },
+      2: { icon: '⛅', desc: 'Partly Cloudy' }, 3: { icon: '☁️', desc: 'Overcast' },
+      45: { icon: '🌫️', desc: 'Fog' }, 48: { icon: '🌫️', desc: 'Rime Fog' },
+      51: { icon: '🌦️', desc: 'Light Drizzle' }, 53: { icon: '🌦️', desc: 'Drizzle' },
+      55: { icon: '🌧️', desc: 'Heavy Drizzle' },
+      61: { icon: '🌧️', desc: 'Light Rain' }, 63: { icon: '🌧️', desc: 'Rain' },
+      65: { icon: '🌧️', desc: 'Heavy Rain' },
+      71: { icon: '🌨️', desc: 'Light Snow' }, 73: { icon: '🌨️', desc: 'Snow' },
+      75: { icon: '❄️', desc: 'Heavy Snow' }, 77: { icon: '🌨️', desc: 'Snow Grains' },
+      80: { icon: '🌦️', desc: 'Rain Showers' }, 81: { icon: '🌧️', desc: 'Rain Showers' },
+      82: { icon: '⛈️', desc: 'Heavy Showers' },
+      85: { icon: '🌨️', desc: 'Snow Showers' }, 86: { icon: '❄️', desc: 'Heavy Snow Showers' },
+      95: { icon: '⛈️', desc: 'Thunderstorm' }, 96: { icon: '⛈️', desc: 'T-Storm + Hail' },
+      99: { icon: '⛈️', desc: 'T-Storm + Heavy Hail' },
+    };
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,weather_code&temperature_unit=fahrenheit`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.current) {
+          const wmo = WMO[data.current.weather_code] || { icon: '🌡️', desc: 'Unknown' };
+          setWeather({ temp: Math.round(data.current.temperature_2m), ...wmo });
+        }
+      })
+      .catch(() => {});
+  }, [location.id, location.latitude, location.longitude]);
 
   const handleRating = useCallback(async (rating: number) => {
     await onUpdate(location.id, { user_rating: location.user_rating === rating ? null : rating });
@@ -239,7 +270,15 @@ export default function RightPanel({
               </span>
               {location.source && <span className={`text-xs px-2 py-0.5 rounded-full ${darkMode ? 'bg-dark-800 text-gray-400' : 'bg-gray-100 text-gray-500'} [.light_&]:bg-gray-100 [.light_&]:text-gray-500`}>{location.source}</span>}
             </div>
-            <h2 className={`text-xl font-bold leading-tight ${darkMode ? 'text-white' : 'text-gray-900'} [.light_&]:text-gray-900`}>{location.name}</h2>
+            <div className="flex items-start justify-between gap-2">
+              <h2 className={`text-xl font-bold leading-tight ${darkMode ? 'text-white' : 'text-gray-900'} [.light_&]:text-gray-900`}>{location.name}</h2>
+              {weather && (
+                <div className="flex-shrink-0 text-right" title={weather.desc}>
+                  <div className="text-lg leading-none">{weather.icon}</div>
+                  <div className="text-xs text-gray-400 mt-0.5">{weather.temp}°F</div>
+                </div>
+              )}
+            </div>
             {location.seasonal_status && (
               <div className="mt-2">
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
