@@ -112,8 +112,20 @@ export default function App() {
       />
 
       <div className="flex-1 flex overflow-hidden relative">
+        {/* Mobile backdrop overlay */}
+        {leftSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+            onClick={() => setLeftSidebarOpen(false)}
+          />
+        )}
+
         {/* Left Sidebar */}
-        <div className={`transition-all duration-300 ${leftSidebarOpen ? 'w-80' : 'w-0'} flex-shrink-0 overflow-hidden`}>
+        <div className={`
+          transition-all duration-300 flex-shrink-0 overflow-hidden
+          lg:relative lg:w-80 lg:block
+          ${leftSidebarOpen ? 'fixed inset-y-0 left-0 w-80 z-30 lg:relative' : 'w-0 -left-80 lg:w-0'}
+        `}>
           <LeftSidebar
             selectedTrip={selectedTrip}
             trips={trips}
