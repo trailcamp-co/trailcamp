@@ -92,6 +92,17 @@ export default function MapContainer({
     map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
 
     map.on('style.load', () => {
+      // Add 3D terrain
+      if (!map.getSource('mapbox-dem')) {
+        map.addSource('mapbox-dem', {
+          type: 'raster-dem',
+          url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+          tileSize: 512,
+          maxzoom: 14,
+        });
+      }
+      map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.3 });
+
       addCustomLayers(map, locationsRef.current, routeRef.current);
       addOverlayLayers(map);
       setMapReady(true);
