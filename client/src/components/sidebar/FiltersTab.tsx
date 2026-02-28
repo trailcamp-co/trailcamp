@@ -87,7 +87,7 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
   ].filter(Boolean).length;
 
   return (
-    <div className="p-3 space-y-4">
+    <div className="p-4 space-y-4">
       {/* Header with active filter count */}
       {activeCount > 0 && (
         <div className="flex items-center justify-between px-1">
