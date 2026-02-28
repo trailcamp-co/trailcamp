@@ -1,296 +1,194 @@
 #!/usr/bin/env node
 // Geocoding Helper for TrailCamp
-// Reverse geocode coordinates to get state/county information
+// Reverse geocodes coordinates to get state/county information
 
 import Database from 'better-sqlite3';
 import https from 'https';
-import fs from 'fs';
 
 const db = new Database('./trailcamp.db');
 
-// Nominatim API (free, respects rate limits)
-const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/reverse';
-const USER_AGENT = 'TrailCamp/1.0';
-const RATE_LIMIT_MS = 1100; // 1 request per second + buffer
+// Simple state mapping from coordinates (faster than API calls for bulk processing)
+const STATE_BOUNDARIES = {
+  'AL': { latMin: 30.2, latMax: 35.0, lonMin: -88.5, lonMax: -84.9 },
+  'AK': { latMin: 51.2, latMax: 71.5, lonMin: -179.0, lonMax: -129.0 },
+  'AZ': { latMin: 31.3, latMax: 37.0, lonMin: -114.8, lonMax: -109.0 },
+  'AR': { latMin: 33.0, latMax: 36.5, lonMin: -94.6, lonMax: -89.6 },
+  'CA': { latMin: 32.5, latMax: 42.0, lonMin: -124.5, lonMax: -114.1 },
+  'CO': { latMin: 37.0, latMax: 41.0, lonMin: -109.1, lonMax: -102.0 },
+  'CT': { latMin: 41.0, latMax: 42.1, lonMin: -73.7, lonMax: -71.8 },
+  'DE': { latMin: 38.5, latMax: 39.8, lonMin: -75.8, lonMax: -75.0 },
+  'FL': { latMin: 24.5, latMax: 31.0, lonMin: -87.6, lonMax: -80.0 },
+  'GA': { latMin: 30.4, latMax: 35.0, lonMin: -85.6, lonMax: -80.8 },
+  'HI': { latMin: 18.9, latMax: 22.2, lonMin: -160.0, lonMax: -154.8 },
+  'ID': { latMin: 42.0, latMax: 49.0, lonMin: -117.2, lonMax: -111.0 },
+  'IL': { latMin: 37.0, latMax: 42.5, lonMin: -91.5, lonMax: -87.5 },
+  'IN': { latMin: 37.8, latMax: 41.8, lonMin: -88.1, lonMax: -84.8 },
+  'IA': { latMin: 40.4, latMax: 43.5, lonMin: -96.6, lonMax: -90.1 },
+  'KS': { latMin: 37.0, latMax: 40.0, lonMin: -102.1, lonMax: -94.6 },
+  'KY': { latMin: 36.5, latMax: 39.1, lonMin: -89.6, lonMax: -81.9 },
+  'LA': { latMin: 29.0, latMax: 33.0, lonMin: -94.0, lonMax: -89.0 },
+  'ME': { latMin: 43.1, latMax: 47.5, lonMin: -71.1, lonMax: -66.9 },
+  'MD': { latMin: 37.9, latMax: 39.7, lonMin: -79.5, lonMax: -75.0 },
+  'MA': { latMin: 41.2, latMax: 42.9, lonMin: -73.5, lonMax: -69.9 },
+  'MI': { latMin: 41.7, latMax: 48.3, lonMin: -90.4, lonMax: -82.4 },
+  'MN': { latMin: 43.5, latMax: 49.4, lonMin: -97.2, lonMax: -89.5 },
+  'MS': { latMin: 30.2, latMax: 35.0, lonMin: -91.7, lonMax: -88.1 },
+  'MO': { latMin: 36.0, latMax: 40.6, lonMin: -95.8, lonMax: -89.1 },
+  'MT': { latMin: 45.0, latMax: 49.0, lonMin: -116.1, lonMax: -104.0 },
+  'NE': { latMin: 40.0, latMax: 43.0, lonMin: -104.1, lonMax: -95.3 },
+  'NV': { latMin: 35.0, latMax: 42.0, lonMin: -120.0, lonMax: -114.0 },
+  'NH': { latMin: 42.7, latMax: 45.3, lonMin: -72.6, lonMax: -70.6 },
+  'NJ': { latMin: 38.9, latMax: 41.4, lonMin: -75.6, lonMax: -73.9 },
+  'NM': { latMin: 31.3, latMax: 37.0, lonMin: -109.1, lonMax: -103.0 },
+  'NY': { latMin: 40.5, latMax: 45.0, lonMin: -79.8, lonMax: -71.9 },
+  'NC': { latMin: 33.8, latMax: 36.6, lonMin: -84.3, lonMax: -75.5 },
+  'ND': { latMin: 45.9, latMax: 49.0, lonMin: -104.1, lonMax: -96.6 },
+  'OH': { latMin: 38.4, latMax: 42.0, lonMin: -84.8, lonMax: -80.5 },
+  'OK': { latMin: 33.6, latMax: 37.0, lonMin: -103.0, lonMax: -94.4 },
+  'OR': { latMin: 42.0, latMax: 46.3, lonMin: -124.6, lonMax: -116.5 },
+  'PA': { latMin: 39.7, latMax: 42.3, lonMin: -80.5, lonMax: -74.7 },
+  'RI': { latMin: 41.1, latMax: 42.0, lonMin: -71.9, lonMax: -71.1 },
+  'SC': { latMin: 32.0, latMax: 35.2, lonMin: -83.4, lonMax: -78.5 },
+  'SD': { latMin: 42.5, latMax: 46.0, lonMin: -104.1, lonMax: -96.4 },
+  'TN': { latMin: 35.0, latMax: 36.7, lonMin: -90.3, lonMax: -81.6 },
+  'TX': { latMin: 25.8, latMax: 36.5, lonMin: -106.6, lonMax: -93.5 },
+  'UT': { latMin: 37.0, latMax: 42.0, lonMin: -114.1, lonMax: -109.0 },
+  'VT': { latMin: 42.7, latMax: 45.0, lonMin: -73.4, lonMax: -71.5 },
+  'VA': { latMin: 36.5, latMax: 39.5, lonMin: -83.7, lonMax: -75.2 },
+  'WA': { latMin: 45.5, latMax: 49.0, lonMin: -124.8, lonMax: -116.9 },
+  'WV': { latMin: 37.2, latMax: 40.6, lonMin: -82.6, lonMax: -77.7 },
+  'WI': { latMin: 42.5, latMax: 47.1, lonMin: -92.9, lonMax: -86.8 },
+  'WY': { latMin: 41.0, latMax: 45.0, lonMin: -111.1, lonMax: -104.0 }
+};
 
-// Sleep function for rate limiting
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// Reverse geocode a single coordinate
-async function reverseGeocode(lat, lon) {
-  const url = `${NOMINATIM_URL}?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
-  
-  return new Promise((resolve, reject) => {
-    const options = {
-      headers: {
-        'User-Agent': USER_AGENT
-      }
-    };
-    
-    https.get(url, options, (res) => {
-      let data = '';
-      
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-      
-      res.on('end', () => {
-        try {
-          const result = JSON.parse(data);
-          
-          if (result.error) {
-            reject(new Error(result.error));
-            return;
-          }
-          
-          const address = result.address || {};
-          
-          resolve({
-            state: address.state || null,
-            county: address.county || null,
-            country: address.country || null,
-            display_name: result.display_name || null
-          });
-        } catch (err) {
-          reject(err);
-        }
-      });
-    }).on('error', (err) => {
-      reject(err);
-    });
-  });
-}
-
-// Geocode a single location by ID
-async function geocodeLocation(locationId) {
-  const location = db.prepare('SELECT id, name, latitude, longitude FROM locations WHERE id = ?').get(locationId);
-  
-  if (!location) {
-    console.error(`Location ID ${locationId} not found`);
-    return null;
+function getStateFromCoords(lat, lon) {
+  for (const [state, bounds] of Object.entries(STATE_BOUNDARIES)) {
+    if (lat >= bounds.latMin && lat <= bounds.latMax &&
+        lon >= bounds.lonMin && lon <= bounds.lonMax) {
+      return state;
+    }
   }
+  return null;
+}
+
+// Check if state column exists, add if not
+function ensureStateColumn() {
+  const tableInfo = db.prepare("PRAGMA table_info(locations)").all();
+  const hasState = tableInfo.some(col => col.name === 'state');
   
-  console.log(`Geocoding: ${location.name} (${location.latitude}, ${location.longitude})`);
-  
-  try {
-    const result = await reverseGeocode(location.latitude, location.longitude);
-    
-    console.log(`  → State: ${result.state || 'Unknown'}, County: ${result.county || 'Unknown'}`);
-    
-    return {
-      ...location,
-      ...result
-    };
-  } catch (err) {
-    console.error(`  ✗ Error: ${err.message}`);
-    return null;
+  if (!hasState) {
+    console.log('Adding state column to locations table...');
+    db.prepare('ALTER TABLE locations ADD COLUMN state VARCHAR(2)').run();
+    console.log('✓ State column added\n');
+  } else {
+    console.log('✓ State column already exists\n');
   }
 }
 
-// Geocode all locations (batch with rate limiting)
-async function geocodeAll(limit = null, dryRun = false) {
-  let query = 'SELECT id, name, latitude, longitude FROM locations ORDER BY id';
-  if (limit) {
-    query += ` LIMIT ${limit}`;
-  }
+// Geocode all locations
+function geocodeAllLocations() {
+  console.log('Geocoding all locations...\n');
   
-  const locations = db.prepare(query).all();
+  const locations = db.prepare('SELECT id, name, latitude, longitude, state FROM locations').all();
+  console.log(`Found ${locations.length} locations\n`);
   
-  console.log(`${dryRun ? 'DRY RUN - ' : ''}Geocoding ${locations.length} locations...\n`);
-  console.log(`Rate limit: 1 request per ${RATE_LIMIT_MS}ms\n`);
+  const stats = {
+    total: locations.length,
+    alreadyHaveState: 0,
+    geocoded: 0,
+    unknown: 0,
+    byState: {}
+  };
   
-  const results = [];
-  let successful = 0;
-  let failed = 0;
+  const updateStmt = db.prepare('UPDATE locations SET state = ? WHERE id = ?');
   
-  for (let i = 0; i < locations.length; i++) {
-    const loc = locations[i];
-    const progress = `[${i + 1}/${locations.length}]`;
-    
-    console.log(`${progress} ${loc.name}`);
-    
-    try {
-      const geo = await reverseGeocode(loc.latitude, loc.longitude);
-      
-      console.log(`  → ${geo.state || 'Unknown'}, ${geo.county || 'Unknown'}`);
-      
-      results.push({
-        id: loc.id,
-        name: loc.name,
-        state: geo.state,
-        county: geo.county,
-        country: geo.country
-      });
-      
-      successful++;
-    } catch (err) {
-      console.error(`  ✗ ${err.message}`);
-      failed++;
+  for (const loc of locations) {
+    if (loc.state) {
+      stats.alreadyHaveState++;
+      stats.byState[loc.state] = (stats.byState[loc.state] || 0) + 1;
+      continue;
     }
     
-    // Rate limiting
-    if (i < locations.length - 1) {
-      await sleep(RATE_LIMIT_MS);
+    const state = getStateFromCoords(loc.latitude, loc.longitude);
+    
+    if (state) {
+      updateStmt.run(state, loc.id);
+      stats.geocoded++;
+      stats.byState[state] = (stats.byState[state] || 0) + 1;
+    } else {
+      stats.unknown++;
     }
   }
   
-  // Generate report
-  const stateMap = {};
-  for (const result of results) {
-    const state = result.state || 'Unknown';
-    if (!stateMap[state]) {
-      stateMap[state] = {
-        count: 0,
-        counties: new Set(),
-        locations: []
-      };
-    }
-    stateMap[state].count++;
-    if (result.county) {
-      stateMap[state].counties.add(result.county);
-    }
-    stateMap[state].locations.push({
-      id: result.id,
-      name: result.name,
-      county: result.county
-    });
-  }
+  return stats;
+}
+
+// Generate state summary report
+function generateStateSummary() {
+  const summary = db.prepare(`
+    SELECT 
+      state,
+      COUNT(*) as total,
+      SUM(CASE WHEN category = 'riding' THEN 1 ELSE 0 END) as riding,
+      SUM(CASE WHEN category = 'campsite' THEN 1 ELSE 0 END) as campsites,
+      SUM(CASE WHEN category = 'campsite' AND sub_type = 'boondocking' THEN 1 ELSE 0 END) as boondocking
+    FROM locations
+    WHERE state IS NOT NULL
+    GROUP BY state
+    ORDER BY total DESC
+  `).all();
   
-  // Print summary
-  console.log('\n' + '='.repeat(60));
-  console.log('GEOCODING SUMMARY');
+  return summary;
+}
+
+// Main execution
+console.log('TrailCamp Geocoding Helper\n');
+console.log('='.repeat(60) + '\n');
+
+try {
+  // Ensure state column exists
+  ensureStateColumn();
+  
+  // Geocode locations
+  const stats = geocodeAllLocations();
+  
+  // Print results
   console.log('='.repeat(60));
-  console.log(`\nTotal locations: ${locations.length}`);
-  console.log(`Successful: ${successful}`);
-  console.log(`Failed: ${failed}`);
-  console.log(`\nLocations by state:\n`);
-  
-  const sortedStates = Object.entries(stateMap).sort((a, b) => b[1].count - a[1].count);
-  
-  for (const [state, data] of sortedStates) {
-    console.log(`  ${state}: ${data.count} locations (${data.counties.size} counties)`);
-  }
-  
-  // Save detailed report
-  if (!dryRun) {
-    const reportPath = './geocoding-report.json';
-    fs.writeFileSync(reportPath, JSON.stringify({
-      generatedAt: new Date().toISOString(),
-      totalLocations: locations.length,
-      successful,
-      failed,
-      byState: Object.fromEntries(
-        Object.entries(stateMap).map(([state, data]) => [
-          state,
-          {
-            count: data.count,
-            counties: Array.from(data.counties).sort(),
-            locations: data.locations.slice(0, 10) // First 10 for each state
-          }
-        ])
-      )
-    }, null, 2));
-    
-    console.log(`\n✓ Detailed report saved to: ${reportPath}`);
-  }
-  
+  console.log('GEOCODING RESULTS\n');
+  console.log(`Total locations:        ${stats.total}`);
+  console.log(`Already had state:      ${stats.alreadyHaveState}`);
+  console.log(`Newly geocoded:         ${stats.geocoded}`);
+  console.log(`Unknown (out of US):    ${stats.unknown}`);
   console.log('='.repeat(60) + '\n');
   
-  return results;
-}
-
-// Export state data to CSV
-function exportStateCSV(results) {
-  const csvPath = './locations-by-state.csv';
+  // Generate and print state summary
+  const summary = generateStateSummary();
   
-  let csv = 'id,name,state,county\n';
+  console.log('Locations by State:\n');
+  console.log('State | Total | Riding | Campsites | Boondocking');
+  console.log('-'.repeat(60));
   
-  for (const result of results) {
-    csv += `${result.id},"${result.name}","${result.state || ''}","${result.county || ''}"\n`;
+  for (const row of summary) {
+    console.log(
+      `${row.state.padEnd(5)} | ` +
+      `${row.total.toString().padStart(5)} | ` +
+      `${row.riding.toString().padStart(6)} | ` +
+      `${row.campsites.toString().padStart(9)} | ` +
+      `${row.boondocking.toString().padStart(11)}`
+    );
   }
   
-  fs.writeFileSync(csvPath, csv);
-  console.log(`✓ Exported to: ${csvPath}\n`);
-}
-
-// Main CLI
-const args = process.argv.slice(2);
-
-if (args.length === 0 || args.includes('--help')) {
-  console.log(`
-TrailCamp Geocoding Helper
-
-Usage:
-  node geocode-locations.js <location-id>              # Geocode single location
-  node geocode-locations.js --all [--limit N]          # Geocode all locations
-  node geocode-locations.js --all --dry-run            # Test without saving
-  node geocode-locations.js --stats                    # Show current state coverage
-
-Options:
-  --all           Geocode all locations (respects rate limits)
-  --limit N       Limit to N locations (for testing)
-  --dry-run       Test mode, don't save results
-  --stats         Show locations by state (from database)
-  --export-csv    Export results to CSV
-  --help          Show this help
-
-Examples:
-  node geocode-locations.js 123                        # Geocode location ID 123
-  node geocode-locations.js --all --limit 10           # Test with first 10 locations
-  node geocode-locations.js --all --export-csv         # Geocode all and export CSV
-
-Note:
-  - Uses OpenStreetMap Nominatim API (free, rate-limited)
-  - Respects 1 request/second limit
-  - Large batches will take time (6000 locations = ~2 hours)
-  - Consider using --limit for testing first
-  `);
-  process.exit(0);
-}
-
-if (args.includes('--stats')) {
-  console.log('Current geographic distribution:\n');
-  console.log('(Based on regional analysis - database has no state field)\n');
-  console.log('Run --all to get precise state/county data via geocoding.\n');
-  process.exit(0);
-}
-
-const locationId = parseInt(args[0]);
-const all = args.includes('--all');
-const dryRun = args.includes('--dry-run');
-const exportCSV = args.includes('--export-csv');
-const limitIndex = args.indexOf('--limit');
-const limit = limitIndex !== -1 ? parseInt(args[limitIndex + 1]) : null;
-
-(async () => {
-  try {
-    if (all) {
-      console.log('⚠️  WARNING: This will make many API requests.');
-      console.log('            Geocoding 6000+ locations will take ~2 hours.');
-      console.log('            Consider using --limit for testing first.\n');
-      
-      if (!dryRun && !limit) {
-        console.log('Use --limit 10 to test with 10 locations first.\n');
-        process.exit(0);
-      }
-      
-      const results = await geocodeAll(limit, dryRun);
-      
-      if (exportCSV && !dryRun) {
-        exportStateCSV(results);
-      }
-    } else if (!isNaN(locationId)) {
-      await geocodeLocation(locationId);
-    } else {
-      console.error('Invalid arguments. Use --help for usage information.');
-      process.exit(1);
-    }
-  } catch (err) {
-    console.error(`\nError: ${err.message}`);
-    process.exit(1);
-  } finally {
-    db.close();
+  console.log('\n' + '='.repeat(60));
+  console.log(`✓ Geocoding complete! ${stats.geocoded} locations updated.\n`);
+  
+  if (stats.unknown > 0) {
+    console.log(`⚠️  ${stats.unknown} locations could not be geocoded (outside US boundaries)`);
+    console.log('These are likely in territories, Canada, or have invalid coordinates.\n');
   }
-})();
+  
+} catch (err) {
+  console.error(`✗ Error: ${err.message}\n`);
+  process.exit(1);
+} finally {
+  db.close();
+}
