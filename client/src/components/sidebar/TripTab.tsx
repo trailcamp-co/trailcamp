@@ -36,6 +36,7 @@ import {
 import type { Location, Trip, TripStop, WeatherData, JournalEntry } from '../../types';
 import { SortableStopCard, OverlayStopCard } from './StopCard';
 import { optimizeTrip, fetchJournal, createJournalEntry, deleteJournalEntry, duplicateTrip } from '../../hooks/useApi';
+import { TRIP_TEMPLATES } from '../../data/tripTemplates';
 
 // --------------- Constants ---------------
 
@@ -610,28 +611,61 @@ export default function TripTab({
             )}
           </>
         ) : (
-          <div className="p-6 text-center">
-            <div className="text-4xl mb-3">🗺️</div>
-            <h3 className="text-base font-bold text-gray-200 [.light_&]:text-gray-800 mb-1">Plan Your Adventure</h3>
-            <p className="text-xs text-gray-500 [.light_&]:text-gray-400 mb-4">Create a trip to start adding stops, tracking miles, and organizing your route.</p>
-            <button
-              onClick={handleCreateTrip}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:from-orange-600 hover:to-orange-700 transition-all press-scale"
-            >
-              <Plus size={16} /> Create First Trip
-            </button>
-            <div className="mt-5 grid grid-cols-3 gap-2">
-              <div className="rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 p-2">
-                <div className="text-lg font-bold text-orange-400">🏍️</div>
-                <div className="text-[10px] text-gray-500 mt-0.5">1,260+ Rides</div>
+          <div className="p-5">
+            <div className="text-center mb-5">
+              <div className="text-4xl mb-3">🗺️</div>
+              <h3 className="text-base font-bold text-gray-200 [.light_&]:text-gray-800 mb-1">Plan Your Adventure</h3>
+              <p className="text-xs text-gray-500 [.light_&]:text-gray-400 mb-4">Create a custom trip or start from a template below.</p>
+              <button
+                onClick={handleCreateTrip}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:from-orange-600 hover:to-orange-700 transition-all press-scale"
+              >
+                <Plus size={16} /> Blank Trip
+              </button>
+            </div>
+
+            {/* Trip Templates */}
+            <div className="mb-4">
+              <h4 className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Quick Start Templates</h4>
+              <div className="space-y-1.5">
+                {TRIP_TEMPLATES.map((tmpl) => (
+                  <button
+                    key={tmpl.name}
+                    onClick={async () => {
+                      const trip = await onCreateTrip({ name: tmpl.name, status: 'planning' });
+                      onSelectTrip(trip);
+                    }}
+                    className="w-full text-left px-3 py-2.5 rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 border border-dark-700/30 [.light_&]:border-gray-200 hover:border-orange-500/30 hover:bg-dark-800 [.light_&]:hover:bg-gray-100 transition-all group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-xl">{tmpl.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-semibold text-gray-200 [.light_&]:text-gray-800 group-hover:text-white [.light_&]:group-hover:text-gray-900 transition-colors">{tmpl.name}</div>
+                        <div className="text-[10px] text-gray-500 [.light_&]:text-gray-400">{tmpl.description}</div>
+                      </div>
+                      <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-400 font-medium">{tmpl.estimatedDays}d</span>
+                        <span className="text-[9px] text-gray-600">{tmpl.season}</span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
               </div>
-              <div className="rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 p-2">
-                <div className="text-lg font-bold text-green-400">🏕️</div>
-                <div className="text-[10px] text-gray-500 mt-0.5">540+ Free Camps</div>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-2">
+              <div className="rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 p-2 text-center">
+                <div className="text-lg">🏍️</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">1,300+ Rides</div>
               </div>
-              <div className="rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 p-2">
-                <div className="text-lg font-bold text-blue-400">📍</div>
-                <div className="text-[10px] text-gray-500 mt-0.5">5,680+ Spots</div>
+              <div className="rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 p-2 text-center">
+                <div className="text-lg">🏕️</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">550+ Free Camps</div>
+              </div>
+              <div className="rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 p-2 text-center">
+                <div className="text-lg">📍</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">5,740+ Spots</div>
               </div>
             </div>
           </div>
