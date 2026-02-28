@@ -1,5 +1,5 @@
 import type { Location, CampsiteSubType } from '../../types';
-import { CATEGORY_COLORS, CATEGORY_ICONS, DIFFICULTY_COLORS, CAMPSITE_SUBTYPE_COLORS, CAMPSITE_SUBTYPE_ICONS } from '../../types';
+import { CATEGORY_COLORS, CATEGORY_ICONS, CAMPSITE_SUBTYPE_COLORS, CAMPSITE_SUBTYPE_ICONS } from '../../types';
 import {
   CLUSTER_MAX_ZOOM,
   CLUSTER_RADIUS,
@@ -15,10 +15,7 @@ export function buildLocationsGeoJSON(locations: Location[]): GeoJSON.FeatureCol
     features: locations.map((loc) => {
       let color: string;
       let icon: string;
-      if (loc.category === 'riding' && loc.difficulty) {
-        color = DIFFICULTY_COLORS[loc.difficulty] ?? '#6b7280';
-        icon = CATEGORY_ICONS[loc.category] ?? '📍';
-      } else if (loc.category === 'campsite' && loc.sub_type) {
+      if (loc.category === 'campsite' && loc.sub_type) {
         color = CAMPSITE_SUBTYPE_COLORS[loc.sub_type as CampsiteSubType] ?? CATEGORY_COLORS[loc.category] ?? '#6b7280';
         icon = CAMPSITE_SUBTYPE_ICONS[loc.sub_type as CampsiteSubType] ?? CATEGORY_ICONS[loc.category] ?? '📍';
       } else {

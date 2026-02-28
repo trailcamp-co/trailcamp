@@ -87,17 +87,17 @@ export type LocationCategory = 'campsite' | 'riding' | 'water' | 'dump' | 'gas' 
 export type CampsiteSubType = 'boondocking' | 'campground' | 'parking' | 'other';
 
 export const CAMPSITE_SUBTYPE_ICONS: Record<CampsiteSubType, string> = {
-  boondocking: '🏜️',
+  boondocking: '⛺',
   campground: '🏕️',
   parking: '🅿️',
-  other: '⛺',
+  other: '🏕️',
 };
 
 export const CAMPSITE_SUBTYPE_COLORS: Record<CampsiteSubType, string> = {
-  boondocking: '#D97706',
-  campground: '#22C55E',
-  parking: '#6B7280',
-  other: '#F97316',
+  boondocking: '#a855f7',
+  campground: '#22c55e',
+  parking: '#6b7280',
+  other: '#22c55e',
 };
 
 export const CAMPSITE_SUBTYPE_LABELS: Record<CampsiteSubType, string> = {
@@ -121,8 +121,8 @@ export const MAP_STYLES: MapStyle[] = [
 ];
 
 export const CATEGORY_COLORS: Record<LocationCategory, string> = {
-  campsite: '#f97316',
-  riding: '#ef4444',
+  campsite: '#22c55e',
+  riding: '#f97316',
   water: '#3b82f6',
   dump: '#92400e',
   gas: '#6b7280',
