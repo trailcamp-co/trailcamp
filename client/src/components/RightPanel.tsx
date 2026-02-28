@@ -261,6 +261,17 @@ export default function RightPanel({
           </div>
         )}
 
+        {/* Coordinates */}
+        <div className="px-5 pt-3 flex items-center gap-2">
+          <button
+            onClick={() => navigator.clipboard.writeText(`${location.latitude.toFixed(5)}, ${location.longitude.toFixed(5)}`)}
+            className="text-[10px] text-gray-600 [.light_&]:text-gray-400 hover:text-orange-400 transition-colors font-mono cursor-pointer"
+            title="Click to copy coordinates"
+          >
+            📍 {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
+          </button>
+        </div>
+
         {/* Distance from home */}
         {(() => {
           const HOME_LAT = 41.6031, HOME_LNG = -81.3612;
