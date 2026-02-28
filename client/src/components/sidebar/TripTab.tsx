@@ -28,10 +28,11 @@ import {
   Check,
   Calendar,
   Shuffle,
+  Download,
 } from 'lucide-react';
-import type { Location, Trip, TripStop, WeatherData } from '../../types';
+import type { Location, Trip, TripStop, WeatherData, JournalEntry } from '../../types';
 import { SortableStopCard, OverlayStopCard } from './StopCard';
-import { optimizeTrip } from '../../hooks/useApi';
+import { optimizeTrip, fetchJournal, createJournalEntry, deleteJournalEntry } from '../../hooks/useApi';
 
 // --------------- Constants ---------------
 
@@ -159,6 +160,10 @@ export default function TripTab({
   const [addStopSearch, setAddStopSearch] = useState('');
   const [activeDragId, setActiveDragId] = useState<number | null>(null);
   const [editingStartDate, setEditingStartDate] = useState(false);
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
+  const [journalContent, setJournalContent] = useState('');
+  const [journalStopId, setJournalStopId] = useState<number | null>(null);
+  const [journalSubmitting, setJournalSubmitting] = useState(false);
 
   const nameInputRef = useRef<HTMLInputElement>(null);
 
@@ -272,6 +277,35 @@ export default function TripTab({
       await onUpdateTrip(selectedTrip.id, { notes: journalValue });
     }
   }, [selectedTrip, journalValue, onUpdateTrip]);
+
+  // Load journal entries when trip changes
+  useEffect(() => {
+    if (!selectedTrip) { setJournalEntries([]); return; }
+    fetchJournal(selectedTrip.id).then(setJournalEntries).catch(() => {});
+  }, [selectedTrip?.id]);
+
+  const handleAddJournalEntry = useCallback(async () => {
+    if (!selectedTrip || !journalContent.trim()) return;
+    setJournalSubmitting(true);
+    try {
+      const entry = await createJournalEntry(selectedTrip.id, {
+        stop_id: journalStopId,
+        content: journalContent.trim(),
+      });
+      setJournalEntries(prev => [entry, ...prev]);
+      setJournalContent('');
+      setJournalStopId(null);
+    } catch { /* failed */ }
+    setJournalSubmitting(false);
+  }, [selectedTrip, journalContent, journalStopId]);
+
+  const handleDeleteJournalEntry = useCallback(async (entryId: number) => {
+    if (!selectedTrip) return;
+    try {
+      await deleteJournalEntry(selectedTrip.id, entryId);
+      setJournalEntries(prev => prev.filter(e => e.id !== entryId));
+    } catch { /* failed */ }
+  }, [selectedTrip]);
 
   const handleCreateTrip = useCallback(async () => {
     const trip = await onCreateTrip({ name: 'New Trip', status: 'planning' });
@@ -442,6 +476,17 @@ export default function TripTab({
                   {optimizing ? '...' : 'Optimize'}
                 </button>
               )}
+              {sortedStops.length > 0 && (
+                <a
+                  href={`/api/trips/${selectedTrip.id}/export-gpx`}
+                  download
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/20 transition-all [.light_&]:bg-white [.light_&]:border-gray-200 [.light_&]:text-emerald-600 [.light_&]:hover:bg-emerald-50"
+                  title="Export trip as GPX file"
+                >
+                  <Download size={11} />
+                  Export GPX
+                </a>
+              )}
             </div>
             {savedMiles !== null && savedMiles > 0 && (
               <div className="text-xs text-emerald-400 mt-1.5 animate-fade-in">Saved {savedMiles} miles!</div>
@@ -605,25 +650,88 @@ export default function TripTab({
             className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-400 [.light_&]:text-gray-600 hover:text-gray-200 [.light_&]:hover:text-gray-800 transition-colors"
           >
             <span className="font-medium">Trip Journal</span>
-            {journalOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+            <div className="flex items-center gap-2">
+              {journalEntries.length > 0 && (
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 [.light_&]:bg-orange-100 [.light_&]:text-orange-600 font-medium">
+                  {journalEntries.length}
+                </span>
+              )}
+              {journalOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+            </div>
           </button>
 
           {journalOpen && (
-            <div className="px-4 pb-4 animate-fade-in">
-              {!journalValue && !editingName ? (
-                <p className="text-xs text-gray-600 italic cursor-pointer hover:text-gray-400 transition-colors py-2" onClick={() => { setJournalValue(''); }}>
-                  No entries yet — add your first note
+            <div className="px-4 pb-4 animate-fade-in space-y-3">
+              {/* Add entry form */}
+              <div className="space-y-2">
+                <textarea
+                  value={journalContent}
+                  onChange={(e) => setJournalContent(e.target.value)}
+                  placeholder="Write a journal entry..."
+                  rows={3}
+                  className="w-full bg-dark-800 [.light_&]:bg-white border border-dark-700/50 [.light_&]:border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-300 [.light_&]:text-gray-700 placeholder-gray-600 [.light_&]:placeholder-gray-400 resize-none focus:outline-none focus:border-orange-500 transition-colors"
+                />
+                <div className="flex items-center gap-2">
+                  <select
+                    value={journalStopId ?? ''}
+                    onChange={(e) => setJournalStopId(e.target.value ? Number(e.target.value) : null)}
+                    className="flex-1 bg-dark-800 [.light_&]:bg-white border border-dark-700/50 [.light_&]:border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-400 [.light_&]:text-gray-600 focus:outline-none focus:border-orange-500 transition-colors"
+                  >
+                    <option value="">No stop (general)</option>
+                    {sortedStops.map((s) => (
+                      <option key={s.id} value={s.id}>{s.name || s.location_name || `Stop ${s.sort_order + 1}`}</option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={handleAddJournalEntry}
+                    disabled={!journalContent.trim() || journalSubmitting}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium
+                      bg-orange-500/20 text-orange-400 border border-orange-500/30
+                      hover:bg-orange-500/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed
+                      [.light_&]:bg-orange-100 [.light_&]:text-orange-600 [.light_&]:border-orange-200 [.light_&]:hover:bg-orange-200"
+                  >
+                    <Plus size={12} />
+                    Add Note
+                  </button>
+                </div>
+              </div>
+
+              {/* Entry list */}
+              {journalEntries.length === 0 ? (
+                <p className="text-xs text-gray-600 [.light_&]:text-gray-400 italic text-center py-3">
+                  No journal entries yet. Start documenting your trip!
                 </p>
-              ) : null}
-              <textarea
-                value={journalValue}
-                onChange={(e) => setJournalValue(e.target.value)}
-                onBlur={handleJournalBlur}
-                placeholder="Write your trip notes, memories, and journal entries here..."
-                rows={5}
-                className="w-full bg-dark-800 [.light_&]:bg-white border border-dark-700/50 [.light_&]:border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-300 [.light_&]:text-gray-700 placeholder-gray-600 [.light_&]:placeholder-gray-400 resize-none focus:outline-none focus:border-orange-500 transition-colors"
-              />
-              <p className="text-[9px] text-gray-600 mt-1">Auto-saves on blur</p>
+              ) : (
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {journalEntries.map((entry) => (
+                    <div key={entry.id} className="bg-dark-800 [.light_&]:bg-gray-50 border border-dark-700/50 [.light_&]:border-gray-200 rounded-lg px-3 py-2 group">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[10px] text-gray-500">
+                              {new Date(entry.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                            </span>
+                            {entry.stop_name && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-dark-700 [.light_&]:bg-gray-200 text-gray-400 [.light_&]:text-gray-600 truncate max-w-[120px]">
+                                <MapPin size={8} className="inline mr-0.5 -mt-0.5" />
+                                {entry.stop_name}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-300 [.light_&]:text-gray-700 whitespace-pre-wrap break-words">{entry.content}</p>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteJournalEntry(entry.id)}
+                          className="p-0.5 text-gray-600 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"
+                          title="Delete entry"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
