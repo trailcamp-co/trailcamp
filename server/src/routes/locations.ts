@@ -416,4 +416,17 @@ function computeSeasonalStatus(loc: any, month: number): 'great' | 'shoulder' | 
   return 'great';
 }
 
+// GET /api/locations/export — download all locations as JSON
+router.get('/export', (_req: Request, res: Response) => {
+  const db = getDb();
+  const locations = db.prepare('SELECT * FROM locations ORDER BY category, name').all();
+  res.setHeader('Content-Disposition', 'attachment; filename="trailcamp-locations.json"');
+  res.setHeader('Content-Type', 'application/json');
+  res.json({
+    exported: new Date().toISOString(),
+    count: locations.length,
+    locations,
+  });
+});
+
 export default router;
