@@ -1,20 +1,7 @@
-# Database Vacuum & Optimization Guide
+# Database Vacuum Guide
 
 ## Overview
-The `vacuum-database.sh` script optimizes the SQLite database by reclaiming unused space and updating query planner statistics.
-
-## What It Does
-
-### 1. VACUUM
-- Rebuilds the database file
-- Reclaims space from deleted records
-- Defragments the database
-- Reduces file size
-
-### 2. ANALYZE
-- Updates query optimizer statistics
-- Improves query performance
-- Helps SQLite choose better query plans
+The `vacuum-database.sh` script optimizes the TrailCamp database by reclaiming unused space and updating query planner statistics.
 
 ## Quick Start
 
@@ -23,222 +10,248 @@ cd /Users/nicosstrnad/Projects/trailcamp/server
 ./vacuum-database.sh
 ```
 
+## What It Does
+
+### 1. Integrity Check
+Runs `PRAGMA integrity_check` to ensure database is healthy before vacuuming.
+
+### 2. VACUUM
+- Reclaims space from deleted records
+- Defragments the database file
+- Rebuilds database to optimal structure
+- Reduces file size (typically)
+
+### 3. ANALYZE
+- Updates internal statistics about data distribution
+- Helps SQLite query planner make better decisions
+- Improves query performance
+
 ## When to Run
 
 ### Recommended Schedule
-- **Monthly:** Routine maintenance (1st of each month)
-- **After large imports:** When adding 1000+ locations
-- **After deletions:** When removing significant data
-- **Before backups:** Ensures backup is optimized
 
-### Automated (Cron)
-Add to crontab for monthly execution:
+**Monthly:** For active development/data additions
 ```cron
-# Run on 1st of each month at 3 AM
-0 3 1 * * cd /Users/nicosstrnad/Projects/trailcamp/server && ./vacuum-database.sh >> ./logs/vacuum.log 2>&1
+# First day of month at 3 AM
+0 3 1 * * cd /path/to/trailcamp/server && ./vacuum-database.sh >> logs/vacuum.log 2>&1
 ```
 
-## How It Works
+**Weekly:** If making frequent bulk changes
+```cron
+# Every Sunday at 3 AM
+0 3 * * 0 cd /path/to/trailcamp/server && ./vacuum-database.sh >> logs/vacuum.log 2>&1
+```
 
-### Safety Features
-1. **Backup first** - Creates temporary backup before optimization
-2. **Integrity check** - Verifies database health before proceeding
-3. **Abort on errors** - Stops if any issues detected
-4. **Cleanup** - Removes backup after successful completion
+**After Major Changes:**
+- After deleting many locations
+- After bulk imports
+- After schema migrations
+- After removing duplicates
 
-### Performance
-- **Small DB (< 10 MB):** < 1 second
-- **Medium DB (10-100 MB):** 1-5 seconds
-- **Large DB (100 MB-1 GB):** 5-30 seconds
-- **Very large (> 1 GB):** 30+ seconds
+### Signs You Should Run VACUUM
 
-### Space Savings
-Typical savings depend on database activity:
-- **New database:** 0-5% (already optimized)
-- **After imports:** 5-15%
-- **After deletions:** 10-30%
-- **Fragmented DB:** 20-50%
+- Database file size seems larger than expected
+- Queries getting slower over time
+- After deleting 10%+ of records
+- After adding/removing indexes or triggers
+
+## Expected Results
+
+### First Run After Schema Changes
+Database may **grow** slightly due to:
+- New indexes being created
+- Triggers being added
+- Internal optimizations
+
+This is **normal and expected**.
+
+### Typical Vacuum Run
+```
+Size before:      4.5M
+Size after:       4.2M
+Space reclaimed:  0.3MB (6.7%)
+```
+
+### Already Optimized
+```
+Size before:      9.9M
+Size after:       9.9M
+Space reclaimed:  0MB
+✅ Database already optimized!
+```
 
 ## Output Example
 
 ```
 ═══════════════════════════════════════════════════════
-    TrailCamp Database Vacuum & Optimize
-    2026-02-28 18:40:28
+    TrailCamp Database Vacuum
+    2026-02-28 18:50:33
 ═══════════════════════════════════════════════════════
 
 Database size before: 9.9M
 
-Creating safety backup...
-✓ Backup created: ./trailcamp.db.vacuum-backup
+━━━ 1. Checking Database Integrity ━━━
+✓ Database integrity: OK
 
-Running integrity check...
-✓ Integrity check passed
+━━━ 2. Running VACUUM ━━━
+Reclaiming unused space and defragmenting...
+✓ VACUUM completed in 0 seconds
 
-Running VACUUM...
-(This may take a while for large databases)
-
-✓ VACUUM completed in 2 seconds
-
-Running ANALYZE...
-(Updates query planner statistics)
-
-✓ ANALYZE completed in 1 seconds
+━━━ 3. Running ANALYZE ━━━
+Updating query planner statistics...
+✓ ANALYZE completed in 0 seconds
 
 ═══════════════════════════════════════════════════════
-Results
+Summary
 
-Size before:     9.9M
-Size after:      8.6M
-Space saved:     1.30 MB (13.1%)
-Vacuum time:     2s
-Analyze time:    1s
-Total time:      3s
+Size before:      9.9M
+Size after:       9.9M
+Space reclaimed:  0MB
 
+✅ Database already optimized!
 ═══════════════════════════════════════════════════════
 
-✓ Optimization complete!
+Database Statistics:
+Locations: 6148
+Trips: 1
+Trip Stops: 8
 ```
 
-## Benefits
+## Performance Impact
 
-### Performance Improvements
-- ✅ **Faster queries** - Better query plans from updated statistics
-- ✅ **Reduced I/O** - Smaller, defragmented database
-- ✅ **Better caching** - Smaller size = more fits in memory
-- ✅ **Consistent performance** - Prevents gradual degradation
+### Small Database (< 10MB)
+- **Duration:** < 1 second
+- **Downtime:** Negligible
+- **Safe to run:** Anytime
 
-### Storage Savings
-- ✅ **Reclaimed space** - Removes deleted record overhead
-- ✅ **Smaller backups** - Optimized database = smaller backup files
-- ✅ **Efficient disk usage** - No wasted fragmentation
+### Medium Database (10-100MB)
+- **Duration:** 1-5 seconds
+- **Downtime:** Minimal
+- **Safe to run:** During low traffic
+
+### Large Database (> 100MB)
+- **Duration:** 5-30 seconds
+- **Downtime:** Noticeable
+- **Safe to run:** Off-peak hours only
+
+**Note:** VACUUM locks the database exclusively during operation.
+
+## Safety
+
+### Built-in Protections
+✅ **Integrity check first** - Aborts if database is corrupted  
+✅ **Non-destructive** - Only reorganizes, never deletes data  
+✅ **Atomic operation** - Either completes fully or rolls back  
+
+### Best Practices
+1. **Backup first** - Run `./backup-database.sh` before vacuum
+2. **Off-peak hours** - Schedule during low usage
+3. **Monitor first run** - Watch the first automated run
+4. **Check logs** - Review cron logs after automated runs
 
 ## Troubleshooting
 
-### "Integrity check FAILED"
-**Problem:** Database has corruption or issues
+### "Database integrity check FAILED"
+**Do NOT run VACUUM.** Database is corrupted.
 
 **Solution:**
-1. Restore from most recent backup
-2. Run integrity check manually:
-   ```bash
-   sqlite3 trailcamp.db "PRAGMA integrity_check;"
-   ```
-3. If issues persist, restore from older backup
+1. Restore from latest backup
+2. Investigate cause of corruption
+3. Fix underlying issue before vacuuming
 
-### Script Takes Too Long
-**Problem:** Large database or slow disk
+### VACUUM Takes Too Long
+**Normal for large databases.** Let it complete.
 
-**Normal:** For 10 MB database, should complete in < 5 seconds
+**If it hangs:**
+1. Check disk space (needs ~2x current DB size)
+2. Check for locks: `lsof trailcamp.db`
+3. Kill if necessary, database will be fine
 
-**If slower:**
-- Check disk space (needs 2x database size free)
-- Check disk I/O (other processes using disk)
-- Consider running during off-hours
+### Database Size Increased
+**Normal on first run after:**
+- Adding indexes
+- Adding triggers
+- Schema migrations
 
-### No Space Saved
-**Problem:** Shows "0 KB" or minimal savings
+The increase is **overhead for performance**, not a problem.
 
-**This is normal if:**
-- Database is already optimized
-- Recently created or vacuumed
-- No deletions or large imports recently
+### No Space Reclaimed
+**Database is already optimized.** This is good!
 
-### Permission Denied
-**Problem:** Cannot write to database or create backup
+**Reasons:**
+- Recent vacuum ran
+- No deleted records
+- Database already compact
 
-**Solution:**
+## Automation Examples
+
+### Simple Cron
 ```bash
-# Check permissions
-ls -l trailcamp.db
-
-# Fix if needed
-chmod 644 trailcamp.db
+# Run monthly
+0 3 1 * * /Users/nicosstrnad/Projects/trailcamp/server/vacuum-database.sh
 ```
 
-## Integration
+### With Logging
+```bash
+# Run weekly with rotating logs
+0 3 * * 0 /Users/nicosstrnad/Projects/trailcamp/server/vacuum-database.sh >> /var/log/trailcamp-vacuum.log 2>&1
+```
 
-### Pre-Deployment
-Include in deployment checklist:
+### With Slack Notification
 ```bash
 #!/bin/bash
-# deploy.sh
-./vacuum-database.sh
-./backup-database.sh
-# ... deploy
+cd /Users/nicosstrnad/Projects/trailcamp/server
+./vacuum-database.sh > /tmp/vacuum-output.txt 2>&1
+
+if [ $? -eq 0 ]; then
+    # Success
+    grep "Space reclaimed" /tmp/vacuum-output.txt | curl -X POST -H 'Content-type: application/json' --data '{"text":"'"$(cat)"'"}' YOUR_SLACK_WEBHOOK
+else
+    # Failure
+    curl -X POST -H 'Content-type: application/json' --data '{"text":"❌ Database vacuum failed!"}' YOUR_SLACK_WEBHOOK
+fi
 ```
 
-### Monitoring
-Track vacuum metrics over time:
+## Manual VACUUM (Advanced)
+
+If you need to run VACUUM manually:
+
 ```bash
-# Log vacuum results
-./vacuum-database.sh >> vacuum-history.log
+sqlite3 trailcamp.db "VACUUM;"
+sqlite3 trailcamp.db "ANALYZE;"
 ```
 
-Parse log for trends:
+**Or interactive:**
+```sql
+sqlite> PRAGMA integrity_check;
+ok
+sqlite> VACUUM;
+sqlite> ANALYZE;
+```
+
+## Related Commands
+
+### Check Database Size
 ```bash
-grep "Space saved" vacuum-history.log
+du -h trailcamp.db
 ```
 
-### CI/CD Pipeline
-Add as pre-backup step:
-```yaml
-# .github/workflows/backup.yml
-steps:
-  - name: Optimize database
-    run: |
-      cd server
-      ./vacuum-database.sh
-  - name: Backup database
-    run: |
-      cd server
-      ./backup-database.sh
+### Check Page Statistics
+```sql
+PRAGMA page_count;
+PRAGMA page_size;
+PRAGMA freelist_count;
 ```
 
-## Best Practices
-
-### ✅ Do
-- Run monthly on a schedule
-- Run after bulk deletions
-- Run before creating backups
-- Monitor space savings over time
-- Keep a backup before vacuuming
-
-### ❌ Don't
-- Run during peak usage
-- Run if database is corrupted
-- Run with insufficient disk space
-- Interrupt the vacuum process
-- Skip integrity checks
-
-## Technical Details
-
-### VACUUM
-SQLite VACUUM command:
-- Copies data to temporary database
-- Rebuilds in optimal layout
-- Replaces original with optimized version
-- Requires free space = database size
-
-### ANALYZE
-SQLite ANALYZE command:
-- Scans table and index statistics
-- Updates `sqlite_stat` tables
-- Helps query planner make better decisions
-- Very fast (< 1 second typically)
-
-### File Size
-Database file size is affected by:
-- Number of records
-- Deleted records (not immediately removed)
-- Index overhead
-- Fragmentation
-- Page size (default 4KB)
-
-## See Also
-- **backup-database.sh** - Create database backups
-- **check-data-quality.sh** - Validate database integrity
-- **DATABASE-SCHEMA.md** - Database structure documentation
+### Check Fragmentation
+```sql
+SELECT 
+    (page_count - freelist_count) as used_pages,
+    page_count,
+    freelist_count,
+    ROUND((freelist_count * 100.0) / page_count, 2) as fragmentation_pct
+FROM pragma_page_count(), pragma_freelist_count();
+```
 
 ---
 
