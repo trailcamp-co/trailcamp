@@ -50,9 +50,9 @@ const CATEGORY_LUCIDE_ICONS: Record<string, React.ReactNode> = {
 
 function DetailBadge({ label, value, darkMode }: { label: string; value: string | number; darkMode: boolean }) {
   return (
-    <div className={`rounded-lg px-3 py-2 ${darkMode ? 'bg-dark-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
-      <div className={`text-xs font-medium mb-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{label}</div>
-      <div className={`text-sm font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>{value}</div>
+    <div className={`rounded-xl px-3 py-2.5 ${darkMode ? 'bg-dark-800 border border-dark-700/50' : 'bg-gray-50 border border-gray-200'} [.light_&]:bg-gray-50 [.light_&]:border-gray-200`}>
+      <div className={`text-xs font-medium mb-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'} [.light_&]:text-gray-500`}>{label}</div>
+      <div className={`text-sm font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-900'} [.light_&]:text-gray-900`}>{value}</div>
     </div>
   );
 }
@@ -69,8 +69,10 @@ export default function RightPanel({
   const [nearbyRiding, setNearbyRiding] = useState<(Location & { distance_from: number })[]>([]);
   const [nearbyRadius, setNearbyRadius] = useState(20);
   const [loadingNearby, setLoadingNearby] = useState(false);
+  const [heartKey, setHeartKey] = useState(0);
 
   const isCampsite = location.category === 'campsite';
+  const categoryColor = CATEGORY_COLORS[location.category] || '#6b7280';
 
   useEffect(() => {
     if (!isCampsite) return;
@@ -93,6 +95,7 @@ export default function RightPanel({
   }, [location.id, location.user_rating, onUpdate]);
 
   const handleToggleFavorite = useCallback(async () => {
+    setHeartKey((k) => k + 1);
     await toggleFavorite(location.id);
     await onUpdate(location.id, { favorited: location.favorited ? 0 : 1 });
   }, [location.id, location.favorited, onUpdate]);
@@ -143,6 +146,10 @@ export default function RightPanel({
     } catch { return [{ label: 'Link', url: location.external_links }]; }
   };
 
+  const sectionBorder = darkMode ? 'border-dark-700/50' : 'border-gray-100';
+  const sectionDivider = `border-b ${sectionBorder} [.light_&]:border-gray-100`;
+  const labelStyle = `text-xs font-medium uppercase tracking-wider ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`;
+
   const renderCampsiteDetails = () => (
     <div className="grid grid-cols-2 gap-2">
       {location.cell_signal && <DetailBadge label="Cell Signal" value={location.cell_signal} darkMode={darkMode} />}
@@ -163,12 +170,12 @@ export default function RightPanel({
       <div className="space-y-3">
         <div className="flex items-center gap-2 flex-wrap">
           {location.difficulty && <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ backgroundColor: diffColor + '22', color: diffColor }}>{location.difficulty}</span>}
-          {location.distance_miles != null && <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${darkMode ? 'bg-dark-800 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>📏 {location.distance_miles} mi</span>}
-          {location.elevation_gain_ft != null && <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${darkMode ? 'bg-dark-800 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>⛰️ {location.elevation_gain_ft.toLocaleString()} ft</span>}
+          {location.distance_miles != null && <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${darkMode ? 'bg-dark-800 text-gray-300' : 'bg-gray-100 text-gray-600'} [.light_&]:bg-gray-100 [.light_&]:text-gray-600`}>📏 {location.distance_miles} mi</span>}
+          {location.elevation_gain_ft != null && <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${darkMode ? 'bg-dark-800 text-gray-300' : 'bg-gray-100 text-gray-600'} [.light_&]:bg-gray-100 [.light_&]:text-gray-600`}>⛰️ {location.elevation_gain_ft.toLocaleString()} ft</span>}
         </div>
         {location.trail_types && (
           <div>
-            <div className={`text-xs font-medium mb-1.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Trail Types</div>
+            <div className={`text-xs font-medium mb-1.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`}>Trail Types</div>
             <div className="flex flex-wrap gap-1.5">
               {parseTrailTypes(location.trail_types).map((tt) => {
                 const colors = TRAIL_TYPE_COLORS[tt] || { bg: 'rgba(107,114,128,0.15)', text: '#9ca3af' };
@@ -208,20 +215,21 @@ export default function RightPanel({
   };
 
   const externalLinks = parseExternalLinks();
+  const hasPhotos = location.photos && location.photos.length > 0;
 
   return (
-    <div className={`w-[400px] h-full flex flex-col shadow-xl ${darkMode ? 'bg-dark-900 border-l border-gray-700 text-gray-100' : 'bg-white border-l border-gray-200 text-gray-900'}`}>
+    <div className={`w-[400px] h-full flex flex-col shadow-2xl animate-slide-in-right bg-dark-950 border-l border-dark-700/50 text-gray-100 [.light_&]:bg-white [.light_&]:border-gray-200 [.light_&]:text-gray-900`}>
       {/* Header */}
-      <div className={`flex-shrink-0 p-5 pb-4 ${darkMode ? 'border-b border-gray-700/50' : 'border-b border-gray-100'}`}>
+      <div className={`flex-shrink-0 p-5 pb-4 ${sectionDivider}`}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
               <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border badge-${location.category}`}>
                 {CATEGORY_LUCIDE_ICONS[location.category]}{CATEGORY_LABELS[location.category]}
               </span>
-              {location.source && <span className={`text-xs px-2 py-0.5 rounded-full ${darkMode ? 'bg-dark-700 text-gray-400' : 'bg-gray-100 text-gray-500'}`}>{location.source}</span>}
+              {location.source && <span className={`text-xs px-2 py-0.5 rounded-full ${darkMode ? 'bg-dark-800 text-gray-400' : 'bg-gray-100 text-gray-500'} [.light_&]:bg-gray-100 [.light_&]:text-gray-500`}>{location.source}</span>}
             </div>
-            <h2 className={`text-xl font-bold leading-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>{location.name}</h2>
+            <h2 className={`text-xl font-bold leading-tight ${darkMode ? 'text-white' : 'text-gray-900'} [.light_&]:text-gray-900`}>{location.name}</h2>
             {location.seasonal_status && (
               <div className="mt-2">
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
@@ -234,44 +242,49 @@ export default function RightPanel({
               </div>
             )}
           </div>
-          <button onClick={onClose} className={`flex-shrink-0 p-1.5 rounded-lg transition-colors ${darkMode ? 'hover:bg-dark-700 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-400 hover:text-gray-600'}`}>
+          <button onClick={onClose} className={`flex-shrink-0 p-1.5 rounded-lg transition-colors press-scale ${darkMode ? 'hover:bg-dark-800 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-400 hover:text-gray-600'} [.light_&]:hover:bg-gray-100 [.light_&]:text-gray-400 [.light_&]:hover:text-gray-600`}>
             <X className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto scroll-smooth">
+        {/* Hero gradient when no photos */}
+        {!hasPhotos && (
+          <div className="h-24 w-full" style={{ background: `linear-gradient(135deg, ${categoryColor}15, ${categoryColor}05)` }} />
+        )}
+
         {/* Quick Actions */}
-        <div className={`p-5 ${darkMode ? 'border-b border-gray-700/50' : 'border-b border-gray-100'}`}>
-          <button onClick={handleNavigate} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-colors shadow-lg shadow-orange-500/20 mb-3">
+        <div className={`p-5 ${sectionDivider}`}>
+          <button onClick={handleNavigate} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-colors shadow-lg shadow-orange-500/20 mb-3 press-scale">
             <Navigation className="w-4 h-4" />Navigate Here
           </button>
           <div className="flex items-center gap-2">
             {hasActiveTrip && (
               <button onClick={handleAddToTrip} disabled={addingToTrip}
-                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${darkMode ? 'bg-dark-700 hover:bg-dark-600 text-gray-200 border border-gray-600' : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200'} disabled:opacity-50`}>
+                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-200 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200'} [.light_&]:bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-700 [.light_&]:border-gray-200 disabled:opacity-50`}>
                 <Plus className="w-3.5 h-3.5" />{addingToTrip ? 'Adding...' : 'Add to Trip'}
               </button>
             )}
             <button onClick={handleToggleFavorite} title={location.favorited ? 'Remove from favorites' : 'Add to favorites'}
-              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${location.favorited ? 'bg-red-500/20 text-red-400 border border-red-500/30' : darkMode ? 'bg-dark-700 hover:bg-dark-600 text-gray-400 border border-gray-600' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'}`}>
-              <Heart className={`w-4 h-4 ${location.favorited ? 'fill-red-400' : ''}`} />
+              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${location.favorited ? 'bg-red-500/20 text-red-400 border border-red-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${location.favorited ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
+              <Heart key={heartKey} className={`w-4 h-4 ${location.favorited ? 'fill-red-400 animate-heart-bounce' : ''}`} />
             </button>
             <button onClick={handleToggleWantToVisit} title={location.want_to_visit ? 'Remove from wishlist' : 'Want to visit'}
-              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${location.want_to_visit ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : darkMode ? 'bg-dark-700 hover:bg-dark-600 text-gray-400 border border-gray-600' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'}`}>
+              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${location.want_to_visit ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${location.want_to_visit ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
               {location.want_to_visit ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
             </button>
             <button onClick={handleToggleVisited} title={location.visited ? 'Mark as not visited' : 'Mark as visited'}
-              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${location.visited ? 'bg-green-500/20 text-green-400 border border-green-500/30' : darkMode ? 'bg-dark-700 hover:bg-dark-600 text-gray-400 border border-gray-600' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'}`}>
+              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${location.visited ? 'bg-green-500/20 text-green-400 border border-green-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${location.visited ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
               <Check className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {/* Star Rating */}
-        <div className={`p-5 ${darkMode ? 'border-b border-gray-700/50' : 'border-b border-gray-100'}`}>
-          <div className={`text-xs font-medium uppercase tracking-wider mb-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Your Rating</div>
-          <div className="flex items-center gap-1 star-rating">
+        <div className={`p-5 ${sectionDivider}`}>
+          <div className={labelStyle}>Your Rating</div>
+          <div className="flex items-center gap-1 star-rating mt-2">
             {[1, 2, 3, 4, 5].map((star) => {
               const filled = hoverRating > 0 ? star <= hoverRating : star <= (location.user_rating ?? 0);
               return (
@@ -280,30 +293,30 @@ export default function RightPanel({
                 </button>
               );
             })}
-            {location.user_rating && <span className={`ml-2 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{location.user_rating}/5</span>}
+            {location.user_rating && <span className={`ml-2 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'} [.light_&]:text-gray-500`}>{location.user_rating}/5</span>}
           </div>
         </div>
 
         {/* Details Grid */}
         {hasDetails() && (
-          <div className={`p-5 ${darkMode ? 'border-b border-gray-700/50' : 'border-b border-gray-100'}`}>
-            <div className={`text-xs font-medium uppercase tracking-wider mb-3 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Details</div>
+          <div className={`p-5 ${sectionDivider}`}>
+            <div className={`${labelStyle} mb-3`}>Details</div>
             {renderDetailsGrid()}
           </div>
         )}
 
         {/* Nearby Riding (for campsites) */}
         {isCampsite && (
-          <div className={`p-5 ${darkMode ? 'border-b border-gray-700/50' : 'border-b border-gray-100'}`}>
+          <div className={`p-5 ${sectionDivider}`}>
             <div className="flex items-center justify-between mb-3">
-              <div className={`text-xs font-medium uppercase tracking-wider ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <div className={labelStyle}>
                 <Bike className="w-3.5 h-3.5 inline mr-1" />Nearby Riding ({nearbyRiding.length})
               </div>
               <div className="flex items-center gap-2">
                 <input type="number" value={nearbyRadius}
                   onChange={(e) => setNearbyRadius(Math.max(1, Number(e.target.value) || 20))}
-                  className={`w-12 text-xs text-center rounded px-1 py-0.5 ${darkMode ? 'bg-dark-800 border border-gray-700 text-gray-300' : 'bg-gray-50 border border-gray-200 text-gray-700'}`} />
-                <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>mi</span>
+                  className={`w-12 text-xs text-center rounded px-1 py-0.5 ${darkMode ? 'bg-dark-800 border border-dark-700/50 text-gray-300' : 'bg-gray-50 border border-gray-200 text-gray-700'} [.light_&]:bg-gray-50 [.light_&]:border-gray-200 [.light_&]:text-gray-700`} />
+                <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`}>mi</span>
               </div>
             </div>
             {loadingNearby ? (
@@ -311,16 +324,16 @@ export default function RightPanel({
             ) : nearbyRiding.length === 0 ? (
               <div className="text-xs text-gray-500 text-center py-2">No riding areas within {nearbyRadius} mi</div>
             ) : (
-              <div className="space-y-1.5 max-h-48 overflow-y-auto">
+              <div className="space-y-1.5 max-h-48 overflow-y-auto scroll-smooth">
                 {nearbyRiding.slice(0, 15).map((r) => {
                   const diffColor = DIFFICULTY_COLORS[r.difficulty ?? ''] ?? '#6b7280';
                   return (
                     <button key={r.id} onClick={() => { onFlyTo?.(r.longitude, r.latitude); onLocationClick?.(r); }}
-                      className={`w-full text-left flex items-center gap-2 px-2 py-1.5 rounded text-sm transition-colors ${darkMode ? 'hover:bg-dark-700 text-gray-300' : 'hover:bg-gray-100 text-gray-700'}`}>
+                      className={`w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition-colors ${darkMode ? 'hover:bg-dark-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700'} [.light_&]:hover:bg-gray-100 [.light_&]:text-gray-700`}>
                       <span className="text-xs">🏍️</span>
                       <span className="flex-1 truncate text-xs">{r.name}</span>
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold" style={{ backgroundColor: diffColor + '22', color: diffColor }}>{r.difficulty || '?'}</span>
-                      <span className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{r.distance_from?.toFixed(1)} mi</span>
+                      <span className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`}>{r.distance_from?.toFixed(1)} mi</span>
                     </button>
                   );
                 })}
@@ -331,67 +344,67 @@ export default function RightPanel({
 
         {/* Description */}
         {location.description && (
-          <div className={`p-5 ${darkMode ? 'border-b border-gray-700/50' : 'border-b border-gray-100'}`}>
-            <div className={`text-xs font-medium uppercase tracking-wider mb-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Description</div>
-            <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{location.description}</p>
+          <div className={`p-5 ${sectionDivider}`}>
+            <div className={`${labelStyle} mb-2`}>Description</div>
+            <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'} [.light_&]:text-gray-600`}>{location.description}</p>
           </div>
         )}
 
         {/* Notes */}
-        <div className={`p-5 ${darkMode ? 'border-b border-gray-700/50' : 'border-b border-gray-100'}`}>
+        <div className={`p-5 ${sectionDivider}`}>
           {location.notes && (
             <div className="mb-4">
-              <div className={`text-xs font-medium uppercase tracking-wider mb-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Location Notes</div>
-              <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{location.notes}</p>
+              <div className={`${labelStyle} mb-2`}>Location Notes</div>
+              <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'} [.light_&]:text-gray-600`}>{location.notes}</p>
             </div>
           )}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <div className={`text-xs font-medium uppercase tracking-wider ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Your Notes</div>
-              {!editingNotes && <button onClick={() => setEditingNotes(true)} className={`p-1 rounded transition-colors ${darkMode ? 'hover:bg-dark-700 text-gray-500 hover:text-gray-300' : 'hover:bg-gray-100 text-gray-400 hover:text-gray-600'}`}><Edit3 className="w-3.5 h-3.5" /></button>}
+              <div className={labelStyle}>Your Notes</div>
+              {!editingNotes && <button onClick={() => setEditingNotes(true)} className={`p-1 rounded-lg transition-colors press-scale ${darkMode ? 'hover:bg-dark-800 text-gray-500 hover:text-gray-300' : 'hover:bg-gray-100 text-gray-400 hover:text-gray-600'} [.light_&]:hover:bg-gray-100 [.light_&]:text-gray-400 [.light_&]:hover:text-gray-600`}><Edit3 className="w-3.5 h-3.5" /></button>}
             </div>
             {editingNotes ? (
               <div>
                 <textarea value={userNotes} onChange={(e) => setUserNotes(e.target.value)} rows={4} placeholder="Add your personal notes..." autoFocus
-                  className={`w-full text-sm rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-orange-500/50 ${darkMode ? 'bg-dark-800 border border-gray-600 text-gray-200 placeholder-gray-500' : 'bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400'}`} />
+                  className={`w-full text-sm rounded-xl px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-orange-500/50 ${darkMode ? 'bg-dark-800 border border-dark-700/50 text-gray-200 placeholder-gray-500' : 'bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400'} [.light_&]:bg-gray-50 [.light_&]:border-gray-200 [.light_&]:text-gray-800 [.light_&]:placeholder-gray-400`} />
                 <div className="flex gap-2 mt-2">
-                  <button onClick={handleSaveNotes} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-500 hover:bg-orange-600 text-white transition-colors">Save</button>
-                  <button onClick={() => { setUserNotes(location.user_notes ?? ''); setEditingNotes(false); }} className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${darkMode ? 'bg-dark-700 hover:bg-dark-600 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}`}>Cancel</button>
+                  <button onClick={handleSaveNotes} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-500 hover:bg-orange-600 text-white transition-colors press-scale">Save</button>
+                  <button onClick={() => { setUserNotes(location.user_notes ?? ''); setEditingNotes(false); }} className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors press-scale ${darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'} [.light_&]:bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-600`}>Cancel</button>
                 </div>
               </div>
             ) : (
-              <p className={`text-sm leading-relaxed cursor-pointer ${userNotes ? (darkMode ? 'text-gray-300' : 'text-gray-600') : (darkMode ? 'text-gray-600 italic' : 'text-gray-400 italic')}`} onClick={() => setEditingNotes(true)}>
+              <p className={`text-sm leading-relaxed cursor-pointer ${userNotes ? (darkMode ? 'text-gray-300' : 'text-gray-600') : (darkMode ? 'text-gray-600 italic' : 'text-gray-400 italic')} [.light_&]:${userNotes ? 'text-gray-600' : 'text-gray-400'}`} onClick={() => setEditingNotes(true)}>
                 {userNotes || 'Click to add notes...'}
               </p>
             )}
           </div>
           {location.visited && location.visited_date && (
             <div className="mt-3 flex items-center gap-2">
-              <Clock className={`w-3.5 h-3.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-              <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Visited {location.visited_date}</span>
+              <Clock className={`w-3.5 h-3.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`} />
+              <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`}>Visited {location.visited_date}</span>
             </div>
           )}
         </div>
 
         {/* Scenery Rating */}
         {location.scenery_rating != null && (
-          <div className={`p-5 ${darkMode ? 'border-b border-gray-700/50' : 'border-b border-gray-100'}`}>
-            <div className={`text-xs font-medium uppercase tracking-wider mb-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Scenery Rating</div>
+          <div className={`p-5 ${sectionDivider}`}>
+            <div className={`${labelStyle} mb-2`}>Scenery Rating</div>
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((level) => <Mountain key={level} className={`w-5 h-5 ${level <= location.scenery_rating! ? 'text-green-400' : darkMode ? 'text-gray-700' : 'text-gray-200'}`} />)}
-              <span className={`ml-2 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{location.scenery_rating}/5</span>
+              <span className={`ml-2 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'} [.light_&]:text-gray-500`}>{location.scenery_rating}/5</span>
             </div>
           </div>
         )}
 
         {/* External Links */}
         {externalLinks.length > 0 && (
-          <div className={`p-5 ${darkMode ? 'border-b border-gray-700/50' : 'border-b border-gray-100'}`}>
-            <div className={`text-xs font-medium uppercase tracking-wider mb-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Links</div>
+          <div className={`p-5 ${sectionDivider}`}>
+            <div className={`${labelStyle} mb-2`}>Links</div>
             <div className="flex flex-col gap-2">
               {externalLinks.map((link, i) => (
                 <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
-                  className={`flex items-center gap-2 text-sm font-medium transition-colors ${darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'}`}>
+                  className={`flex items-center gap-2 text-sm font-medium transition-colors ${darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'} [.light_&]:text-blue-600 [.light_&]:hover:text-blue-500`}>
                   <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />{link.label}
                 </a>
               ))}
@@ -400,28 +413,28 @@ export default function RightPanel({
         )}
 
         {/* GPS Coordinates */}
-        <div className={`p-5 ${darkMode ? 'border-b border-gray-700/50' : 'border-b border-gray-100'}`}>
-          <div className={`text-xs font-medium uppercase tracking-wider mb-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>GPS Coordinates</div>
-          <button onClick={handleCopyCoords} className={`flex items-center gap-2 text-sm font-mono transition-colors group ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
+        <div className={`p-5 ${sectionDivider}`}>
+          <div className={`${labelStyle} mb-2`}>GPS Coordinates</div>
+          <button onClick={handleCopyCoords} className={`flex items-center gap-2 text-sm font-mono transition-colors group ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'} [.light_&]:text-gray-600 [.light_&]:hover:text-gray-900`}>
             <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
             <span>{location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}</span>
             {copiedCoords ? <span className="text-xs text-green-400 font-sans">Copied!</span>
-              : <span className={`text-xs font-sans opacity-0 group-hover:opacity-100 transition-opacity ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Click to copy</span>}
+              : <span className={`text-xs font-sans opacity-0 group-hover:opacity-100 transition-opacity ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`}>Click to copy</span>}
           </button>
         </div>
 
         {/* Delete */}
         <div className="p-5">
           {confirmDelete ? (
-            <div className={`rounded-lg p-4 ${darkMode ? 'bg-red-900/20 border border-red-800/40' : 'bg-red-50 border border-red-200'}`}>
-              <p className={`text-sm mb-3 ${darkMode ? 'text-red-300' : 'text-red-700'}`}>Are you sure? This cannot be undone.</p>
+            <div className={`rounded-xl p-4 ${darkMode ? 'bg-red-900/20 border border-red-800/40' : 'bg-red-50 border border-red-200'} [.light_&]:bg-red-50 [.light_&]:border-red-200`}>
+              <p className={`text-sm mb-3 ${darkMode ? 'text-red-300' : 'text-red-700'} [.light_&]:text-red-700`}>Are you sure? This cannot be undone.</p>
               <div className="flex gap-2">
-                <button onClick={handleDelete} className="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors">Delete Permanently</button>
-                <button onClick={() => setConfirmDelete(false)} className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${darkMode ? 'bg-dark-700 hover:bg-dark-600 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}`}>Cancel</button>
+                <button onClick={handleDelete} className="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors press-scale">Delete Permanently</button>
+                <button onClick={() => setConfirmDelete(false)} className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors press-scale ${darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'} [.light_&]:bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-600`}>Cancel</button>
               </div>
             </div>
           ) : (
-            <button onClick={handleDelete} className={`flex items-center gap-2 text-sm font-medium transition-colors ${darkMode ? 'text-gray-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500'}`}>
+            <button onClick={handleDelete} className={`flex items-center gap-2 text-sm font-medium transition-colors ${darkMode ? 'text-gray-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500'} [.light_&]:text-gray-400 [.light_&]:hover:text-red-500`}>
               <Trash2 className="w-4 h-4" />Delete Location
             </button>
           )}

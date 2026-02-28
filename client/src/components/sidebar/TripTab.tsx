@@ -155,7 +155,6 @@ export default function TripTab({
   const [expandedStopId, setExpandedStopId] = useState<number | null>(null);
   const [journalOpen, setJournalOpen] = useState(false);
   const [journalValue, setJournalValue] = useState('');
-  const [showTripSelector, setShowTripSelector] = useState(false);
   const [showAddStop, setShowAddStop] = useState(false);
   const [addStopSearch, setAddStopSearch] = useState('');
   const [activeDragId, setActiveDragId] = useState<number | null>(null);
@@ -328,38 +327,7 @@ export default function TripTab({
   return (
     <>
       {/* Trip Header */}
-      <div className="flex-shrink-0 p-4 border-b border-gray-700/50 [.light_&]:border-gray-200">
-        {/* Trip selector toggle */}
-        <button
-          onClick={() => setShowTripSelector(!showTripSelector)}
-          className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-300 [.light_&]:hover:text-gray-700 mb-2 transition-colors"
-        >
-          {showTripSelector ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-          <span>Switch Trip</span>
-        </button>
-
-        {/* Trip selector dropdown */}
-        {showTripSelector && (
-          <div className="mb-3 bg-dark-800 [.light_&]:bg-white rounded-lg border border-gray-700 [.light_&]:border-gray-200 overflow-hidden">
-            {trips.map((trip) => (
-              <button
-                key={trip.id}
-                onClick={() => {
-                  onSelectTrip(trip);
-                  setShowTripSelector(false);
-                }}
-                className={`w-full text-left px-3 py-2 text-sm transition-colors hover:bg-dark-700 [.light_&]:hover:bg-gray-100 ${
-                  selectedTrip?.id === trip.id
-                    ? 'text-orange-400 bg-dark-700/50 [.light_&]:bg-orange-50 [.light_&]:text-orange-600'
-                    : 'text-gray-300 [.light_&]:text-gray-700'
-                }`}
-              >
-                {trip.name}
-              </button>
-            ))}
-          </div>
-        )}
-
+      <div className="flex-shrink-0 p-4 border-b border-dark-700/50 [.light_&]:border-gray-200">
         {selectedTrip ? (
           <>
             {/* Trip name */}
@@ -404,16 +372,16 @@ export default function TripTab({
 
             {/* Status badge + dates */}
             <div className="flex items-center gap-2 mb-2">
-              <span className={`text-xs px-2 py-0.5 rounded-full capitalize ${STATUS_STYLES[selectedTrip.status]} [.light_&]:hidden`}>
+              <span className={`text-xs px-2.5 py-0.5 rounded-full capitalize font-medium ${STATUS_STYLES[selectedTrip.status]} [.light_&]:hidden`}>
                 {selectedTrip.status}
               </span>
-              <span className={`text-xs px-2 py-0.5 rounded-full capitalize hidden [.light_&]:inline ${STATUS_STYLES_LIGHT[selectedTrip.status]}`}>
+              <span className={`text-xs px-2.5 py-0.5 rounded-full capitalize font-medium hidden [.light_&]:inline ${STATUS_STYLES_LIGHT[selectedTrip.status]}`}>
                 {selectedTrip.status}
               </span>
               {(selectedTrip.start_date || selectedTrip.end_date) && (
                 <span className="text-xs text-gray-500">
                   {formatDate(selectedTrip.start_date)}
-                  {selectedTrip.start_date && selectedTrip.end_date && ' - '}
+                  {selectedTrip.start_date && selectedTrip.end_date && ' — '}
                   {formatDate(selectedTrip.end_date)}
                 </span>
               )}
@@ -449,21 +417,35 @@ export default function TripTab({
               )}
             </div>
 
-            {/* Trip stats */}
-            <div className="flex items-center gap-4 text-xs text-gray-400 [.light_&]:text-gray-500">
-              <div className="flex items-center gap-1" title="Total stops">
-                <MapPin size={12} className="text-orange-400" />
-                <span>{sortedStops.length} stops</span>
+            {/* Trip stats pills */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-gray-300" title="Total stops">
+                <MapPin size={11} className="text-orange-400" />
+                <span className="font-medium">{sortedStops.length}</span> stops
               </div>
-              <div className="flex items-center gap-1" title="Total nights">
-                <Clock size={12} className="text-orange-400" />
-                <span>{totalNights} nights</span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-gray-300" title="Total nights">
+                <Clock size={11} className="text-orange-400" />
+                <span className="font-medium">{totalNights}</span> nights
               </div>
-              <div className="flex items-center gap-1" title="Total distance">
-                <Route size={12} className="text-orange-400" />
-                <span>{formatDistance(totalDistance) || '0 mi'}</span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-gray-300" title="Total distance">
+                <Route size={11} className="text-orange-400" />
+                <span className="font-medium">{formatDistance(totalDistance) || '0 mi'}</span>
               </div>
+              {sortedStops.length >= 3 && (
+                <button
+                  onClick={handleOptimize}
+                  disabled={optimizing}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-blue-400 hover:bg-blue-500/10 hover:border-blue-500/20 transition-all disabled:opacity-50"
+                  title="Optimize route"
+                >
+                  <Shuffle size={11} />
+                  {optimizing ? '...' : 'Optimize'}
+                </button>
+              )}
             </div>
+            {savedMiles !== null && savedMiles > 0 && (
+              <div className="text-xs text-emerald-400 mt-1.5 animate-fade-in">Saved {savedMiles} miles!</div>
+            )}
           </>
         ) : (
           <p className="text-gray-500 text-sm">No trip selected</p>
@@ -472,13 +454,13 @@ export default function TripTab({
         {/* Create new trip */}
         <button
           onClick={handleCreateTrip}
-          className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
-            bg-orange-500/10 text-orange-400 border border-orange-500/20
-            hover:bg-orange-500/20 hover:border-orange-500/30 transition-all
-            [.light_&]:bg-orange-50 [.light_&]:text-orange-600 [.light_&]:border-orange-200 [.light_&]:hover:bg-orange-100"
+          className="mt-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+            text-gray-400 hover:text-orange-400 border border-dark-700/50 hover:border-orange-500/30
+            hover:bg-orange-500/10 transition-all press-scale
+            [.light_&]:text-gray-500 [.light_&]:border-gray-200 [.light_&]:hover:text-orange-500"
         >
-          <Plus size={16} />
-          Create New Trip
+          <Plus size={14} />
+          New Trip
         </button>
       </div>
 
@@ -550,30 +532,7 @@ export default function TripTab({
           </DndContext>
         )}
 
-        {/* Optimize + Add Stop */}
-        {selectedTrip && (
-          <div className="p-3">
-            {sortedStops.length >= 3 && (
-              <div className="mb-2">
-                <button
-                  onClick={handleOptimize}
-                  disabled={optimizing}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
-                    bg-blue-500/10 text-blue-400 border border-blue-500/20
-                    hover:bg-blue-500/20 hover:border-blue-500/30 transition-all
-                    [.light_&]:bg-blue-50 [.light_&]:text-blue-600 [.light_&]:border-blue-200 [.light_&]:hover:bg-blue-100
-                    disabled:opacity-50"
-                >
-                  <Shuffle size={14} />
-                  {optimizing ? 'Optimizing...' : 'Optimize Route'}
-                </button>
-                {savedMiles !== null && savedMiles > 0 && (
-                  <div className="text-xs text-green-400 text-center mt-1">Saved {savedMiles} miles!</div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+        {/* Add Stop */}
         {selectedTrip && (
           <div className="px-3 pb-3">
             {showAddStop ? (
@@ -621,13 +580,13 @@ export default function TripTab({
             ) : (
               <button
                 onClick={() => setShowAddStop(true)}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm
-                  border border-dashed border-gray-700 [.light_&]:border-gray-300
+                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs
+                  border border-dashed border-dark-700/50 [.light_&]:border-gray-300
                   text-gray-500 hover:text-orange-400 hover:border-orange-500/40
-                  [.light_&]:text-gray-400 [.light_&]:hover:text-orange-500 [.light_&]:hover:border-orange-300
-                  transition-all"
+                  [.light_&]:text-gray-400 [.light_&]:hover:text-orange-500
+                  transition-all press-scale"
               >
-                <Plus size={16} />
+                <Plus size={14} />
                 Add Stop
               </button>
             )}
@@ -637,7 +596,7 @@ export default function TripTab({
 
       {/* ===== Trip Journal ===== */}
       {selectedTrip && (
-        <div className="flex-shrink-0 border-t border-gray-700/50 [.light_&]:border-gray-200">
+        <div className="flex-shrink-0 border-t border-dark-700/50 [.light_&]:border-gray-200">
           <button
             onClick={() => {
               if (!journalOpen) handleJournalOpen();
@@ -650,16 +609,21 @@ export default function TripTab({
           </button>
 
           {journalOpen && (
-            <div className="px-4 pb-4">
+            <div className="px-4 pb-4 animate-fade-in">
+              {!journalValue && !editingName ? (
+                <p className="text-xs text-gray-600 italic cursor-pointer hover:text-gray-400 transition-colors py-2" onClick={() => { setJournalValue(''); }}>
+                  No entries yet — add your first note
+                </p>
+              ) : null}
               <textarea
                 value={journalValue}
                 onChange={(e) => setJournalValue(e.target.value)}
                 onBlur={handleJournalBlur}
                 placeholder="Write your trip notes, memories, and journal entries here..."
-                rows={6}
-                className="w-full bg-dark-800 [.light_&]:bg-white border border-gray-700 [.light_&]:border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-300 [.light_&]:text-gray-700 placeholder-gray-600 [.light_&]:placeholder-gray-400 resize-none focus:outline-none focus:border-orange-500 transition-colors"
+                rows={5}
+                className="w-full bg-dark-800 [.light_&]:bg-white border border-dark-700/50 [.light_&]:border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-300 [.light_&]:text-gray-700 placeholder-gray-600 [.light_&]:placeholder-gray-400 resize-none focus:outline-none focus:border-orange-500 transition-colors"
               />
-              <p className="text-[10px] text-gray-600 mt-1">Auto-saves on blur</p>
+              <p className="text-[9px] text-gray-600 mt-1">Auto-saves on blur</p>
             </div>
           )}
         </div>

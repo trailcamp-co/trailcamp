@@ -15,6 +15,7 @@ import {
   CAMPSITE_SUBTYPE_COLORS,
   CAMPSITE_SUBTYPE_LABELS,
   DEFAULT_FILTERS,
+  DIFFICULTY_COLORS,
 } from '../../types';
 
 const ALL_CATEGORIES: LocationCategory[] = [
@@ -25,13 +26,23 @@ const ALL_CAMPSITE_SUBTYPES: CampsiteSubType[] = ['boondocking', 'campground', '
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+const FILTER_OPTIONS = [
+  { value: 'all' as const, label: 'All' },
+  { value: 'favorites' as const, label: '\u2764\uFE0F Favs' },
+  { value: 'visited' as const, label: 'Visited' },
+  { value: 'want_to_visit' as const, label: 'Want to Visit' },
+  { value: 'highly_rated' as const, label: '\u2B50 Top Rated' },
+];
+
 interface FiltersTabProps {
   filters: Filters;
   setFilters: React.Dispatch<React.SetStateAction<Filters>>;
   routeGeoJSON: GeoJSON.GeoJsonObject | null;
+  filterMode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites';
+  onFilterMode: (mode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites') => void;
 }
 
-export default function FiltersTab({ filters, setFilters, routeGeoJSON }: FiltersTabProps) {
+export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMode, onFilterMode }: FiltersTabProps) {
   const toggleCategory = (cat: LocationCategory) => {
     setFilters((prev) => {
       const next = new Set(prev.categories);
@@ -62,55 +73,89 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON }: Filter
 
   return (
     <div className="p-3 space-y-4">
+      {/* Filter Mode Buttons */}
+      <div>
+        <div className="flex flex-wrap gap-1.5">
+          {FILTER_OPTIONS.map(({ value, label }) => (
+            <button
+              key={value}
+              onClick={() => onFilterMode(value)}
+              className={`text-xs font-medium px-3 py-1.5 rounded-full transition-all ${
+                filterMode === value
+                  ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                  : 'bg-dark-800 text-gray-400 border border-dark-700/50 hover:text-gray-300 hover:border-dark-600'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="border-t border-dark-700/50" />
+
       {/* Category filters */}
       <div>
-        <h4 className="text-xs font-medium text-gray-400 [.light_&]:text-gray-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+        <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
           <Filter size={12} className="text-orange-400" />
           Categories
         </h4>
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           {ALL_CATEGORIES.map((cat) => (
             <div key={cat}>
-              <label
-                className="flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-dark-700 [.light_&]:hover:bg-gray-100 transition-colors"
+              <div
+                className="flex items-center justify-between rounded-lg bg-dark-800 p-2.5 cursor-pointer hover:bg-dark-700 transition-colors"
+                onClick={() => toggleCategory(cat)}
               >
-                <input
-                  type="checkbox"
-                  checked={filters.categories.has(cat)}
-                  onChange={() => toggleCategory(cat)}
-                  className="rounded border-gray-600 text-orange-500 focus:ring-orange-500 focus:ring-offset-0 bg-dark-900 [.light_&]:bg-white"
-                />
-                <span className="text-sm" style={{ color: CATEGORY_COLORS[cat] }}>
-                  {CATEGORY_ICONS[cat]}
-                </span>
-                <span className="text-sm text-gray-300 [.light_&]:text-gray-700">
-                  {CATEGORY_LABELS[cat]}
-                </span>
-              </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm" style={{ color: CATEGORY_COLORS[cat] }}>
+                    {CATEGORY_ICONS[cat]}
+                  </span>
+                  <span className="text-sm text-gray-100">
+                    {CATEGORY_LABELS[cat]}
+                  </span>
+                </div>
+                <div
+                  className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${
+                    filters.categories.has(cat) ? 'bg-orange-500' : 'bg-dark-700'
+                  }`}
+                >
+                  <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                    filters.categories.has(cat) ? 'translate-x-4' : ''
+                  }`} />
+                </div>
+              </div>
 
               {/* Campsite sub-types */}
               {cat === 'campsite' && filters.categories.has('campsite') && (
-                <div className="ml-6 space-y-0.5 mt-0.5">
+                <div className="ml-4 mt-1.5 space-y-1">
                   {ALL_CAMPSITE_SUBTYPES.map((st) => (
-                    <label
+                    <div
                       key={st}
-                      className="flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer hover:bg-dark-700 [.light_&]:hover:bg-gray-100 transition-colors"
+                      className="flex items-center justify-between rounded-lg bg-dark-800/60 p-2 cursor-pointer hover:bg-dark-700/60 transition-colors"
+                      onClick={() => toggleCampsiteSubType(st)}
                     >
-                      <input
-                        type="checkbox"
-                        checked={filters.campsiteSubTypes.has(st)}
-                        onChange={() => toggleCampsiteSubType(st)}
-                        className="rounded border-gray-600 text-orange-500 focus:ring-orange-500 focus:ring-offset-0 bg-dark-900 [.light_&]:bg-white"
-                      />
-                      <span className="text-xs">{CAMPSITE_SUBTYPE_ICONS[st]}</span>
-                      <span
-                        className="w-2 h-2 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: CAMPSITE_SUBTYPE_COLORS[st] }}
-                      />
-                      <span className="text-xs text-gray-400 [.light_&]:text-gray-600">
-                        {CAMPSITE_SUBTYPE_LABELS[st]}
-                      </span>
-                    </label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs">{CAMPSITE_SUBTYPE_ICONS[st]}</span>
+                        <span
+                          className="w-2 h-2 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: CAMPSITE_SUBTYPE_COLORS[st] }}
+                        />
+                        <span className="text-xs text-gray-400">
+                          {CAMPSITE_SUBTYPE_LABELS[st]}
+                        </span>
+                      </div>
+                      <div
+                        className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${
+                          filters.campsiteSubTypes.has(st) ? 'bg-orange-500' : 'bg-dark-700'
+                        }`}
+                      >
+                        <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                          filters.campsiteSubTypes.has(st) ? 'translate-x-4' : ''
+                        }`} />
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
@@ -119,63 +164,78 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON }: Filter
         </div>
       </div>
 
+      {/* Divider */}
+      <div className="border-t border-dark-700/50" />
+
       {/* Amenity toggles */}
       <div>
-        <h4 className="text-xs font-medium text-gray-400 [.light_&]:text-gray-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+        <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
           <Sliders size={12} className="text-orange-400" />
           Amenities
         </h4>
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           {[
-            { key: 'waterNearby' as const, label: 'Water Nearby', icon: '💧' },
-            { key: 'dumpNearby' as const, label: 'Dump Nearby', icon: '🚽' },
-            { key: 'shade' as const, label: 'Shade', icon: '🌲' },
-            { key: 'levelGround' as const, label: 'Level Ground', icon: '📐' },
+            { key: 'waterNearby' as const, label: 'Water Nearby', icon: '\uD83D\uDCA7' },
+            { key: 'dumpNearby' as const, label: 'Dump Nearby', icon: '\uD83D\uDEBD' },
+            { key: 'shade' as const, label: 'Shade', icon: '\uD83C\uDF32' },
+            { key: 'levelGround' as const, label: 'Level Ground', icon: '\uD83D\uDCD0' },
           ].map(({ key, label, icon }) => (
-            <label
+            <div
               key={key}
-              className="flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-dark-700 [.light_&]:hover:bg-gray-100 transition-colors"
+              className="flex items-center justify-between rounded-lg bg-dark-800 p-2.5 cursor-pointer hover:bg-dark-700 transition-colors"
+              onClick={() => toggleBoolean(key)}
             >
-              <input
-                type="checkbox"
-                checked={filters[key]}
-                onChange={() => toggleBoolean(key)}
-                className="rounded border-gray-600 text-orange-500 focus:ring-orange-500 focus:ring-offset-0 bg-dark-900 [.light_&]:bg-white"
-              />
-              <span className="text-sm">{icon}</span>
-              <span className="text-sm text-gray-300 [.light_&]:text-gray-700">{label}</span>
-            </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm">{icon}</span>
+                <span className="text-sm text-gray-100">{label}</span>
+              </div>
+              <div
+                className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${
+                  filters[key] ? 'bg-orange-500' : 'bg-dark-700'
+                }`}
+              >
+                <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                  filters[key] ? 'translate-x-4' : ''
+                }`} />
+              </div>
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Difficulty dropdown */}
+      {/* Divider */}
+      <div className="border-t border-dark-700/50" />
+
+      {/* Difficulty chips */}
       <div>
-        <h4 className="text-xs font-medium text-gray-400 [.light_&]:text-gray-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+        <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
           <Mountain size={12} className="text-orange-400" />
           Difficulty
         </h4>
-        <select
-          value={filters.difficulty ?? 'all'}
-          onChange={(e) =>
-            setFilters((prev) => ({
-              ...prev,
-              difficulty: e.target.value === 'all' ? null : e.target.value,
-            }))
-          }
-          className="w-full bg-dark-800 [.light_&]:bg-white border border-gray-700 [.light_&]:border-gray-200 rounded-md px-2 py-1.5 text-sm text-gray-300 [.light_&]:text-gray-700 focus:outline-none focus:border-orange-500 transition-colors"
-        >
-          <option value="all">All Difficulties</option>
-          <option value="Easy">Easy</option>
-          <option value="Moderate">Moderate</option>
-          <option value="Hard">Hard</option>
-          <option value="Expert">Expert</option>
-        </select>
+        <div className="flex flex-wrap gap-1.5">
+          {['Easy', 'Moderate', 'Hard', 'Expert'].map((diff) => {
+            const isActive = filters.difficulty === diff;
+            const color = DIFFICULTY_COLORS[diff];
+            return (
+              <button
+                key={diff}
+                onClick={() => setFilters(prev => ({ ...prev, difficulty: isActive ? null : diff }))}
+                className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${isActive ? '' : 'opacity-50 hover:opacity-80'}`}
+                style={{ backgroundColor: color + (isActive ? '33' : '15'), color }}
+              >
+                {diff}
+              </button>
+            );
+          })}
+        </div>
       </div>
+
+      {/* Divider */}
+      <div className="border-t border-dark-700/50" />
 
       {/* Min scenery rating */}
       <div>
-        <h4 className="text-xs font-medium text-gray-400 [.light_&]:text-gray-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+        <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
           <Star size={12} className="text-orange-400" />
           Min Scenery Rating
         </h4>
@@ -196,7 +256,7 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON }: Filter
                 className={
                   val <= filters.minScenery
                     ? 'text-yellow-400 fill-yellow-400'
-                    : 'text-gray-600 [.light_&]:text-gray-400 hover:text-yellow-400/50'
+                    : 'text-gray-600 hover:text-yellow-400/50'
                 }
               />
             </button>
@@ -207,9 +267,12 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON }: Filter
         </div>
       </div>
 
+      {/* Divider */}
+      <div className="border-t border-dark-700/50" />
+
       {/* Seasonal filter */}
       <div>
-        <h4 className="text-xs font-medium text-gray-400 [.light_&]:text-gray-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+        <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
           <Thermometer size={12} className="text-orange-400" />
           Season
         </h4>
@@ -217,7 +280,7 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON }: Filter
           <label className="flex items-center gap-2 cursor-pointer">
             <div
               className={`relative w-9 h-5 rounded-full transition-colors ${
-                filters.hideOutOfSeason ? 'bg-orange-500' : 'bg-gray-700 [.light_&]:bg-gray-300'
+                filters.hideOutOfSeason ? 'bg-orange-500' : 'bg-dark-700'
               }`}
               onClick={() =>
                 setFilters((prev) => ({ ...prev, hideOutOfSeason: !prev.hideOutOfSeason }))
@@ -229,7 +292,7 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON }: Filter
                 }`}
               />
             </div>
-            <span className="text-sm text-gray-300 [.light_&]:text-gray-700">
+            <span className="text-sm text-gray-100">
               Hide out-of-season
             </span>
           </label>
@@ -239,7 +302,7 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON }: Filter
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, seasonMonth: Number(e.target.value) }))
               }
-              className="w-full bg-dark-800 [.light_&]:bg-white border border-gray-700 [.light_&]:border-gray-200 rounded px-2 py-1 text-xs text-gray-300 [.light_&]:text-gray-700 focus:outline-none focus:border-orange-500 transition-colors"
+              className="w-full bg-dark-800 border border-dark-700/50 rounded px-2 py-1 text-xs text-gray-400 focus:outline-none focus:border-orange-500 transition-colors"
             >
               {MONTH_NAMES.map((name, i) => (
                 <option key={i} value={i + 1}>{name}</option>
@@ -251,59 +314,67 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON }: Filter
 
       {/* Near Route */}
       {routeGeoJSON && (
-        <div>
-          <h4 className="text-xs font-medium text-gray-400 [.light_&]:text-gray-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <Route size={12} className="text-orange-400" />
-            Near Route
-          </h4>
-          <div className="space-y-2 px-2">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <div
-                className={`relative w-9 h-5 rounded-full transition-colors ${
-                  filters.nearRoute ? 'bg-orange-500' : 'bg-gray-700 [.light_&]:bg-gray-300'
-                }`}
-                onClick={() =>
-                  setFilters((prev) => ({ ...prev, nearRoute: !prev.nearRoute }))
-                }
-              >
+        <>
+          {/* Divider */}
+          <div className="border-t border-dark-700/50" />
+
+          <div>
+            <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+              <Route size={12} className="text-orange-400" />
+              Near Route
+            </h4>
+            <div className="space-y-2 px-2">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <div
-                  className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
-                    filters.nearRoute ? 'translate-x-4' : ''
+                  className={`relative w-9 h-5 rounded-full transition-colors ${
+                    filters.nearRoute ? 'bg-orange-500' : 'bg-dark-700'
                   }`}
-                />
-              </div>
-              <span className="text-sm text-gray-300 [.light_&]:text-gray-700">
-                Show only near route
-              </span>
-            </label>
-            {filters.nearRoute && (
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span>Distance: {filters.nearRouteDistance} mi</span>
-                </div>
-                <input
-                  type="range"
-                  min={5}
-                  max={50}
-                  step={5}
-                  value={filters.nearRouteDistance}
-                  onChange={(e) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      nearRouteDistance: parseInt(e.target.value),
-                    }))
+                  onClick={() =>
+                    setFilters((prev) => ({ ...prev, nearRoute: !prev.nearRoute }))
                   }
-                  className="w-full accent-orange-500"
-                />
-                <div className="flex justify-between text-[10px] text-gray-600">
-                  <span>5 mi</span>
-                  <span>50 mi</span>
+                >
+                  <div
+                    className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                      filters.nearRoute ? 'translate-x-4' : ''
+                    }`}
+                  />
                 </div>
-              </div>
-            )}
+                <span className="text-sm text-gray-100">
+                  Show only near route
+                </span>
+              </label>
+              {filters.nearRoute && (
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>Distance: {filters.nearRouteDistance} mi</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={5}
+                    max={50}
+                    step={5}
+                    value={filters.nearRouteDistance}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        nearRouteDistance: parseInt(e.target.value),
+                      }))
+                    }
+                    className="w-full accent-orange-500"
+                  />
+                  <div className="flex justify-between text-[10px] text-gray-600">
+                    <span>5 mi</span>
+                    <span>50 mi</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
+
+      {/* Divider */}
+      <div className="border-t border-dark-700/50" />
 
       {/* Reset filters */}
       <button

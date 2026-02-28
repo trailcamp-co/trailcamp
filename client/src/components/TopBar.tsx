@@ -3,22 +3,18 @@ import {
   Search,
   Sun,
   Moon,
-  Map,
   BarChart3,
   PanelLeftOpen,
-  Filter,
   ChevronDown,
   MapPin,
   X,
 } from 'lucide-react';
-import type { Trip, Location, MapStyle, Filters } from '../types';
-import { MAP_STYLES, CATEGORY_ICONS, CATEGORY_COLORS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
+import type { Trip, Location } from '../types';
+import { CATEGORY_ICONS, CATEGORY_COLORS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
 
 interface TopBarProps {
   darkMode: boolean;
   onToggleDarkMode: () => void;
-  mapStyle: { id: string; name: string; url: string };
-  onChangeMapStyle: (style: MapStyle) => void;
   searchQuery: string;
   onSearch: (query: string) => void;
   searchResults: Location[] | null;
@@ -28,25 +24,12 @@ interface TopBarProps {
   onSelectTrip: (trip: Trip | null) => void;
   onToggleStats: () => void;
   onToggleSidebar: () => void;
-  filters: Filters;
-  setFilters: React.Dispatch<React.SetStateAction<Filters>>;
-  filterMode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites';
-  onFilterMode: (mode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites') => void;
+  locationCount: number;
 }
-
-const FILTER_OPTIONS: { value: TopBarProps['filterMode']; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'favorites', label: '❤️ Favs' },
-  { value: 'visited', label: 'Visited' },
-  { value: 'want_to_visit', label: 'Want to Visit' },
-  { value: 'highly_rated', label: 'Highly Rated' },
-];
 
 export default function TopBar({
   darkMode,
   onToggleDarkMode,
-  mapStyle,
-  onChangeMapStyle,
   searchQuery,
   onSearch,
   searchResults,
@@ -56,15 +39,13 @@ export default function TopBar({
   onSelectTrip,
   onToggleStats,
   onToggleSidebar,
-  filters,
-  setFilters,
-  filterMode,
-  onFilterMode,
+  locationCount,
 }: TopBarProps) {
   const [tripDropdownOpen, setTripDropdownOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const tripDropdownRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -80,55 +61,66 @@ export default function TopBar({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Cmd+K keyboard shortcut to focus search
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        setSearchFocused(true);
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const showSearchDropdown = searchFocused && searchQuery.length > 0 && searchResults !== null;
+
+  // Group search results by category
+  const grouped = (searchResults || []).reduce((acc, loc) => {
+    if (!acc[loc.category]) acc[loc.category] = [];
+    acc[loc.category].push(loc);
+    return acc;
+  }, {} as Record<string, Location[]>);
+
+  // Extract state from description (e.g. "Located in Colorado" or "State: CA")
+  const extractState = (description: string | null): string | null => {
+    if (!description) return null;
+    const match = description.match(/\b([A-Z]{2})\b/) || description.match(/(?:in|near)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/);
+    return match ? match[1] : null;
+  };
 
   return (
     <div
-      className={`h-14 flex items-center px-3 gap-2 border-b flex-shrink-0 z-30 transition-colors duration-200 ${
-        darkMode
-          ? 'bg-dark-800 border-gray-700'
-          : 'bg-white border-gray-200'
-      }`}
+      className="h-[52px] flex items-center px-3 gap-2 border-b flex-shrink-0 z-30 transition-colors duration-200 bg-dark-900 border-dark-700/50 [.light_&]:bg-white [.light_&]:border-gray-200"
     >
-      {/* ---- Left: Sidebar toggle + Logo ---- */}
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <button
-          onClick={onToggleSidebar}
-          className={`p-1.5 rounded-lg transition-colors duration-150 ${
-            darkMode
-              ? 'hover:bg-dark-700 text-gray-400 hover:text-gray-200'
-              : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
-          }`}
-          title="Toggle sidebar"
-        >
-          <PanelLeftOpen size={18} />
-        </button>
+      {/* ---- Left: Sidebar toggle ---- */}
+      <button
+        onClick={onToggleSidebar}
+        className="p-1.5 rounded-lg transition-colors duration-150 hover:bg-dark-700 text-gray-400 hover:text-gray-200 [.light_&]:hover:bg-gray-100 [.light_&]:text-gray-500 [.light_&]:hover:text-gray-700"
+        title="Toggle sidebar"
+      >
+        <PanelLeftOpen size={18} />
+      </button>
 
-        <div className="flex items-center gap-1.5 select-none">
-          <span className="text-lg">⛺</span>
-          <span
-            className="font-bold text-base tracking-tight"
-            style={{ color: '#f97316' }}
-          >
-            TrailCamp
-          </span>
-        </div>
+      {/* ---- Logo ---- */}
+      <div className="flex items-center gap-1.5 select-none flex-shrink-0">
+        <span className="text-lg">&#9978;</span>
+        <span className="font-bold text-base tracking-tight text-orange-500">
+          TrailCamp
+        </span>
       </div>
 
       {/* ---- Divider ---- */}
-      <div className={`w-px h-6 mx-1 ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+      <div className="w-px h-5 mx-1 bg-dark-700/50 [.light_&]:bg-gray-200" />
 
       {/* ---- Trip Selector ---- */}
       <div className="relative flex-shrink-0" ref={tripDropdownRef}>
         <button
           onClick={() => setTripDropdownOpen(!tripDropdownOpen)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-150 ${
-            darkMode
-              ? 'bg-dark-700 hover:bg-dark-600 text-gray-200'
-              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-          }`}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-150 bg-dark-700 hover:bg-dark-600 text-gray-200 [.light_&]:bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-700"
         >
-          <Map size={14} className="opacity-60" />
+          <MapPin size={14} className="opacity-60" />
           <span className="max-w-[140px] truncate">
             {selectedTrip?.name ?? 'Select Trip'}
           </span>
@@ -141,16 +133,8 @@ export default function TopBar({
         </button>
 
         {tripDropdownOpen && (
-          <div
-            className={`absolute top-full left-0 mt-1 w-56 rounded-lg shadow-xl border overflow-hidden z-50 ${
-              darkMode
-                ? 'bg-dark-700 border-gray-600'
-                : 'bg-white border-gray-200'
-            }`}
-          >
-            <div className={`px-3 py-2 text-xs font-semibold uppercase tracking-wider ${
-              darkMode ? 'text-gray-500' : 'text-gray-400'
-            }`}>
+          <div className="absolute top-full left-0 mt-1 w-56 rounded-lg shadow-xl overflow-hidden z-50 glass animate-slide-down [.light_&]:bg-white [.light_&]:border [.light_&]:border-gray-200">
+            <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
               Trips
             </div>
             {/* No trip / deselect option */}
@@ -161,18 +145,14 @@ export default function TopBar({
               }}
               className={`w-full text-left px-3 py-2 text-sm transition-colors duration-100 flex items-center gap-2 ${
                 !selectedTrip
-                  ? darkMode
-                    ? 'bg-gray-500/15 text-gray-300'
-                    : 'bg-gray-100 text-gray-600'
-                  : darkMode
-                    ? 'text-gray-400 hover:bg-dark-600'
-                    : 'text-gray-500 hover:bg-gray-50'
+                  ? 'bg-gray-500/15 text-gray-300 [.light_&]:bg-gray-100 [.light_&]:text-gray-600'
+                  : 'text-gray-400 hover:bg-dark-600 [.light_&]:text-gray-500 [.light_&]:hover:bg-gray-50'
               }`}
             >
               <X size={13} className="opacity-40" />
               <span>No Trip</span>
             </button>
-            <div className={`border-t my-1 ${darkMode ? 'border-gray-600' : 'border-gray-200'}`} />
+            <div className="border-t my-1 border-dark-700/50 [.light_&]:border-gray-200" />
             {trips.map((trip) => (
               <button
                 key={trip.id}
@@ -182,12 +162,8 @@ export default function TopBar({
                 }}
                 className={`w-full text-left px-3 py-2 text-sm transition-colors duration-100 flex items-center gap-2 ${
                   selectedTrip?.id === trip.id
-                    ? darkMode
-                      ? 'bg-orange-500/15 text-orange-400'
-                      : 'bg-orange-50 text-orange-600'
-                    : darkMode
-                      ? 'text-gray-300 hover:bg-dark-600'
-                      : 'text-gray-700 hover:bg-gray-50'
+                    ? 'bg-orange-500/15 text-orange-400 [.light_&]:bg-orange-50 [.light_&]:text-orange-600'
+                    : 'text-gray-300 hover:bg-dark-600 [.light_&]:text-gray-700 [.light_&]:hover:bg-gray-50'
                 }`}
               >
                 <MapPin
@@ -211,9 +187,7 @@ export default function TopBar({
               </button>
             ))}
             {trips.length === 0 && (
-              <div className={`px-3 py-4 text-sm text-center ${
-                darkMode ? 'text-gray-500' : 'text-gray-400'
-              }`}>
+              <div className="px-3 py-4 text-sm text-center text-gray-500">
                 No trips yet
               </div>
             )}
@@ -221,82 +195,13 @@ export default function TopBar({
         )}
       </div>
 
-      {/* ---- Divider ---- */}
-      <div className={`w-px h-6 mx-1 ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
-
-      {/* ---- Map Style Buttons ---- */}
-      <div
-        className={`flex items-center rounded-lg p-0.5 flex-shrink-0 ${
-          darkMode ? 'bg-dark-900/50' : 'bg-gray-100'
-        }`}
-      >
-        {MAP_STYLES.map((style) => (
-          <button
-            key={style.id}
-            onClick={() => onChangeMapStyle(style)}
-            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all duration-150 ${
-              mapStyle.id === style.id
-                ? darkMode
-                  ? 'bg-orange-500/20 text-orange-400 shadow-sm'
-                  : 'bg-white text-orange-600 shadow-sm'
-                : darkMode
-                  ? 'text-gray-400 hover:text-gray-200'
-                  : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            {style.name}
-          </button>
-        ))}
-      </div>
-
-      {/* ---- Divider ---- */}
-      <div className={`w-px h-6 mx-1 ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
-
-      {/* ---- Filter Mode Buttons ---- */}
-      <div
-        className={`flex items-center rounded-lg p-0.5 flex-shrink-0 ${
-          darkMode ? 'bg-dark-900/50' : 'bg-gray-100'
-        }`}
-      >
-        <Filter
-          size={13}
-          className={`mx-1.5 flex-shrink-0 ${
-            darkMode ? 'text-gray-500' : 'text-gray-400'
-          }`}
-        />
-        {FILTER_OPTIONS.map((opt) => (
-          <button
-            key={opt.value}
-            onClick={() => onFilterMode(opt.value)}
-            className={`px-2 py-1 text-[11px] font-medium rounded-md transition-all duration-150 whitespace-nowrap ${
-              filterMode === opt.value
-                ? darkMode
-                  ? 'bg-orange-500/20 text-orange-400'
-                  : 'bg-white text-orange-600 shadow-sm'
-                : darkMode
-                  ? 'text-gray-400 hover:text-gray-200'
-                  : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
-
-      {/* ---- Spacer ---- */}
-      <div className="flex-1" />
-
-      {/* ---- Search Bar with Location Count ---- */}
-      <div className="relative flex-shrink-0 w-64" ref={searchRef}>
+      {/* ---- Search Bar (centered, flex-1) ---- */}
+      <div className="relative flex-1 max-w-xl mx-auto" ref={searchRef}>
         <div
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors duration-150 ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border transition-colors duration-150 ${
             searchFocused
-              ? darkMode
-                ? 'border-orange-500/50 bg-dark-700'
-                : 'border-orange-400 bg-white'
-              : darkMode
-                ? 'border-gray-700 bg-dark-700/50'
-                : 'border-gray-200 bg-gray-50'
+              ? 'border-orange-500/50 bg-dark-700 [.light_&]:border-orange-400 [.light_&]:bg-white'
+              : 'border-dark-700/50 bg-dark-700/50 [.light_&]:border-gray-200 [.light_&]:bg-gray-50'
           }`}
         >
           <Search
@@ -304,141 +209,134 @@ export default function TopBar({
             className={`flex-shrink-0 ${
               searchFocused
                 ? 'text-orange-400'
-                : darkMode
-                  ? 'text-gray-500'
-                  : 'text-gray-400'
+                : 'text-gray-500 [.light_&]:text-gray-400'
             }`}
           />
           <input
+            ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => onSearch(e.target.value)}
             onFocus={() => setSearchFocused(true)}
             onKeyDown={(e) => { if (e.key === 'Escape') setSearchFocused(false); }}
-            placeholder="Search locations..."
-            className={`w-full bg-transparent text-sm outline-none placeholder-gray-500 ${
-              darkMode ? 'text-gray-200' : 'text-gray-800'
-            }`}
+            placeholder={`Search ${locationCount.toLocaleString()} locations...`}
+            className="w-full bg-transparent text-sm outline-none text-gray-100 placeholder-gray-500 [.light_&]:text-gray-800 [.light_&]:placeholder-gray-400"
           />
+          {!searchFocused && !searchQuery && (
+            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium text-gray-500 bg-dark-700/80 border border-dark-700/50 [.light_&]:bg-gray-100 [.light_&]:border-gray-200 [.light_&]:text-gray-400">
+              <span className="text-[11px]">&#8984;</span>K
+            </kbd>
+          )}
           {searchResults && searchResults.length > 0 && searchQuery.length > 0 && (
-            <span
-              className={`flex-shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
-                darkMode
-                  ? 'bg-orange-500/15 text-orange-400'
-                  : 'bg-orange-50 text-orange-600'
-              }`}
-            >
+            <span className="flex-shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-orange-500/15 text-orange-400 [.light_&]:bg-orange-50 [.light_&]:text-orange-600">
               {searchResults.length}
             </span>
+          )}
+          {searchQuery && (
+            <button
+              onClick={() => onSearch('')}
+              className="flex-shrink-0 text-gray-500 hover:text-gray-300 [.light_&]:hover:text-gray-600"
+            >
+              <X size={14} />
+            </button>
           )}
         </div>
 
         {/* Search Results Dropdown */}
         {showSearchDropdown && (
-          <div
-            className={`absolute top-full left-0 right-0 mt-1.5 rounded-lg shadow-xl border overflow-hidden z-50 max-h-80 overflow-y-auto ${
-              darkMode
-                ? 'bg-dark-700 border-gray-600'
-                : 'bg-white border-gray-200'
-            }`}
-          >
+          <div className="absolute top-full left-0 right-0 mt-1.5 rounded-xl shadow-xl overflow-hidden z-50 max-h-96 overflow-y-auto glass animate-slide-down [.light_&]:bg-white [.light_&]:border [.light_&]:border-gray-200">
             {searchResults && searchResults.length === 0 && (
-              <div className={`px-3 py-4 text-sm text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <div className="px-3 py-4 text-sm text-center text-gray-500">
                 No results found
               </div>
             )}
-            {(searchResults || []).map((location) => {
-              const diffColor = location.difficulty ? DIFFICULTY_COLORS[location.difficulty] : null;
-              const trailTypes = location.category === 'riding' ? parseTrailTypes(location.trail_types) : [];
-              return (
-                <button
-                  key={location.id}
-                  onClick={() => {
-                    onSelectSearchResult(location);
-                    setSearchFocused(false);
-                  }}
-                  className={`w-full text-left px-3 py-2.5 flex items-start gap-2.5 transition-colors duration-100 ${
-                    darkMode
-                      ? 'hover:bg-dark-600'
-                      : 'hover:bg-gray-50'
-                  }`}
-                >
-                  <span
-                    className="text-xs flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center mt-0.5"
-                    style={{
-                      backgroundColor: `${CATEGORY_COLORS[location.category]}20`,
-                    }}
-                  >
-                    {CATEGORY_ICONS[location.category]}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div
-                      className={`text-sm font-medium truncate ${
-                        darkMode ? 'text-gray-200' : 'text-gray-800'
-                      }`}
+            {Object.entries(grouped).map(([category, locations]) => (
+              <div key={category}>
+                {/* Category section header */}
+                <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-500 bg-dark-800/50 border-b border-dark-700/30 flex items-center gap-1.5 [.light_&]:bg-gray-50 [.light_&]:border-gray-100 [.light_&]:text-gray-400">
+                  <span>{CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS]}</span>
+                  <span>{category}</span>
+                  <span className="ml-auto text-gray-600 [.light_&]:text-gray-300">{locations.length}</span>
+                </div>
+                {locations.map((location) => {
+                  const diffColor = location.difficulty ? DIFFICULTY_COLORS[location.difficulty] : null;
+                  const trailTypes = location.category === 'riding' ? parseTrailTypes(location.trail_types) : [];
+                  const stateInfo = extractState(location.description);
+                  return (
+                    <button
+                      key={location.id}
+                      onClick={() => {
+                        onSelectSearchResult(location);
+                        setSearchFocused(false);
+                      }}
+                      className="w-full text-left px-3 py-2.5 flex items-start gap-2.5 transition-colors duration-100 hover:bg-dark-600 [.light_&]:hover:bg-gray-50"
                     >
-                      {location.name}
-                    </div>
-                    <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                      {location.sub_type && (
-                        <span className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                          {location.sub_type}
-                        </span>
-                      )}
-                      {diffColor && (
-                        <span
-                          className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
-                          style={{ backgroundColor: diffColor + '22', color: diffColor }}
-                        >
-                          {location.difficulty}
-                        </span>
-                      )}
-                      {trailTypes.slice(0, 2).map((tt) => {
-                        const colors = TRAIL_TYPE_COLORS[tt] || { bg: 'rgba(107,114,128,0.15)', text: '#9ca3af' };
-                        return (
-                          <span
-                            key={tt}
-                            className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
-                            style={{ backgroundColor: colors.bg, color: colors.text }}
-                          >
-                            {tt}
-                          </span>
-                        );
-                      })}
-                      {trailTypes.length > 2 && (
-                        <span className={`text-[9px] ${darkMode ? 'text-gray-600' : 'text-gray-400'}`}>
-                          +{trailTypes.length - 2}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <span
-                    className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full flex-shrink-0"
-                    style={{
-                      backgroundColor: `${CATEGORY_COLORS[location.category]}20`,
-                      color: CATEGORY_COLORS[location.category],
-                    }}
-                  >
-                    {location.category}
-                  </span>
-                </button>
-              );
-            })}
+                      <span
+                        className="text-xs flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center mt-0.5"
+                        style={{
+                          backgroundColor: `${CATEGORY_COLORS[location.category]}20`,
+                        }}
+                      >
+                        {CATEGORY_ICONS[location.category]}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium truncate text-gray-100 [.light_&]:text-gray-800">
+                          {location.name}
+                        </div>
+                        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                          {location.sub_type && (
+                            <span className="text-[10px] text-gray-500 [.light_&]:text-gray-400">
+                              {location.sub_type}
+                            </span>
+                          )}
+                          {stateInfo && (
+                            <span className="text-[10px] text-gray-400 [.light_&]:text-gray-500">
+                              {stateInfo}
+                            </span>
+                          )}
+                          {diffColor && (
+                            <span
+                              className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
+                              style={{ backgroundColor: diffColor + '22', color: diffColor }}
+                            >
+                              {location.difficulty}
+                            </span>
+                          )}
+                          {trailTypes.slice(0, 2).map((tt) => {
+                            const colors = TRAIL_TYPE_COLORS[tt] || { bg: 'rgba(107,114,128,0.15)', text: '#9ca3af' };
+                            return (
+                              <span
+                                key={tt}
+                                className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
+                                style={{ backgroundColor: colors.bg, color: colors.text }}
+                              >
+                                {tt}
+                              </span>
+                            );
+                          })}
+                          {trailTypes.length > 2 && (
+                            <span className="text-[9px] text-gray-600 [.light_&]:text-gray-400">
+                              +{trailTypes.length - 2}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
           </div>
         )}
       </div>
 
       {/* ---- Divider ---- */}
-      <div className={`w-px h-6 mx-1 ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+      <div className="w-px h-5 mx-1 bg-dark-700/50 [.light_&]:bg-gray-200" />
 
       {/* ---- Stats Button ---- */}
       <button
         onClick={onToggleStats}
-        className={`p-2 rounded-lg transition-colors duration-150 ${
-          darkMode
-            ? 'hover:bg-dark-700 text-gray-400 hover:text-orange-400'
-            : 'hover:bg-gray-100 text-gray-500 hover:text-orange-500'
-        }`}
+        className="p-2 rounded-lg transition-colors duration-150 hover:bg-dark-700 text-gray-400 hover:text-orange-400 [.light_&]:hover:bg-gray-100 [.light_&]:text-gray-500 [.light_&]:hover:text-orange-500"
         title="Trip Statistics"
       >
         <BarChart3 size={18} />
@@ -447,11 +345,7 @@ export default function TopBar({
       {/* ---- Dark/Light Mode Toggle ---- */}
       <button
         onClick={onToggleDarkMode}
-        className={`p-2 rounded-lg transition-colors duration-150 ${
-          darkMode
-            ? 'hover:bg-dark-700 text-gray-400 hover:text-yellow-400'
-            : 'hover:bg-gray-100 text-gray-500 hover:text-yellow-500'
-        }`}
+        className="p-2 rounded-lg transition-colors duration-150 hover:bg-dark-700 text-gray-400 hover:text-yellow-400 [.light_&]:hover:bg-gray-100 [.light_&]:text-gray-500 [.light_&]:hover:text-yellow-500"
         title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
       >
         {darkMode ? <Sun size={18} /> : <Moon size={18} />}

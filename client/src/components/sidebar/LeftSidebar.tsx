@@ -29,6 +29,8 @@ interface LeftSidebarProps {
   mapBounds: { north: number; south: number; east: number; west: number } | null;
   onLocationClick?: (location: Location) => void;
   onToggleFavorite?: (id: number) => void;
+  filterMode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites';
+  onFilterMode: (mode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites') => void;
 }
 
 export default function LeftSidebar({
@@ -53,68 +55,80 @@ export default function LeftSidebar({
   mapBounds,
   onLocationClick,
   onToggleFavorite,
+  filterMode,
+  onFilterMode,
 }: LeftSidebarProps) {
   const [activeTab, setActiveTab] = useState<SidebarTab>('trip');
 
+  const ridingCount = locations.filter((l) => l.category === 'riding').length;
+  const stopCount = stops.length;
+
   return (
-    <div className="w-80 h-full flex flex-col bg-dark-900 dark:bg-dark-900 border-r border-gray-700 dark:border-gray-700 light:bg-gray-50 light:border-gray-200 overflow-hidden [.light_&]:bg-gray-50 [.light_&]:border-gray-200">
+    <div className="w-80 h-full flex flex-col bg-dark-950 border-r border-dark-700/50 overflow-hidden">
       {/* Tab Bar */}
-      <div className="flex-shrink-0 flex border-b border-gray-700/50 [.light_&]:border-gray-200">
+      <div className="flex-shrink-0 flex border-b border-dark-700/50">
         {(
           [
-            { id: 'trip' as SidebarTab, label: 'Trip', icon: MapPin },
-            { id: 'riding' as SidebarTab, label: 'Riding', icon: Bike },
-            { id: 'filters' as SidebarTab, label: 'Filters', icon: Sliders },
+            { id: 'trip' as SidebarTab, label: 'Trip', icon: MapPin, count: stopCount },
+            { id: 'riding' as SidebarTab, label: 'Riding', icon: Bike, count: ridingCount },
+            { id: 'filters' as SidebarTab, label: 'Filters', icon: Sliders, count: undefined },
           ] as const
-        ).map(({ id, label, icon: Icon }) => (
+        ).map(({ id, label, icon: Icon, count }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2.5 text-xs font-medium transition-all ${
+            className={`flex-1 flex items-center justify-center gap-1.5 px-2 h-10 text-xs font-medium transition-all ${
               activeTab === id
-                ? 'text-orange-400 border-b-2 border-orange-400 bg-dark-800/50 [.light_&]:bg-orange-50/50'
-                : 'text-gray-500 hover:text-gray-300 [.light_&]:hover:text-gray-700 border-b-2 border-transparent'
+                ? 'text-orange-400 border-b-[3px] border-orange-400 bg-dark-800/70 font-semibold'
+                : 'text-gray-500 hover:text-gray-300 border-b-[3px] border-transparent'
             }`}
           >
-            <Icon size={14} />
+            <Icon size={16} />
             {label}
+            {count !== undefined && count > 0 && (
+              <span className="ml-0.5 text-[10px] font-semibold bg-dark-700 text-gray-400 rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                {count}
+              </span>
+            )}
           </button>
         ))}
       </div>
 
       {/* Riding Tab */}
       {activeTab === 'riding' && (
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden animate-fade-in">
           <RidingTab locations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} />
         </div>
       )}
 
       {/* Filters Tab */}
       {activeTab === 'filters' && (
-        <div className="flex-1 overflow-y-auto">
-          <FiltersTab filters={filters} setFilters={setFilters} routeGeoJSON={routeGeoJSON} />
+        <div className="flex-1 overflow-y-auto animate-fade-in">
+          <FiltersTab filters={filters} setFilters={setFilters} routeGeoJSON={routeGeoJSON} filterMode={filterMode} onFilterMode={onFilterMode} />
         </div>
       )}
 
       {/* Trip Tab */}
       {activeTab === 'trip' && (
-        <TripTab
-          selectedTrip={selectedTrip}
-          trips={trips}
-          stops={stops}
-          onSelectTrip={onSelectTrip}
-          onCreateTrip={onCreateTrip}
-          onUpdateTrip={onUpdateTrip}
-          onDeleteTrip={onDeleteTrip}
-          onAddStop={onAddStop}
-          onUpdateStop={onUpdateStop}
-          onDeleteStop={onDeleteStop}
-          onReorderStops={onReorderStops}
-          onFlyTo={onFlyTo}
-          locations={locations}
-          weatherCache={weatherCache}
-          fetchWeather={fetchWeather}
-        />
+        <div className="animate-fade-in flex-1 overflow-hidden flex flex-col">
+          <TripTab
+            selectedTrip={selectedTrip}
+            trips={trips}
+            stops={stops}
+            onSelectTrip={onSelectTrip}
+            onCreateTrip={onCreateTrip}
+            onUpdateTrip={onUpdateTrip}
+            onDeleteTrip={onDeleteTrip}
+            onAddStop={onAddStop}
+            onUpdateStop={onUpdateStop}
+            onDeleteStop={onDeleteStop}
+            onReorderStops={onReorderStops}
+            onFlyTo={onFlyTo}
+            locations={locations}
+            weatherCache={weatherCache}
+            fetchWeather={fetchWeather}
+          />
+        </div>
       )}
     </div>
   );

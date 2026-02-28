@@ -40,20 +40,25 @@ export default function RidingCard({ location: loc, onFlyTo, distanceFrom, onLoc
         onFlyTo(loc.longitude, loc.latitude);
         onLocationClick?.(loc);
       }}
-      className="w-full text-left px-3 py-2.5 border-b border-gray-700/30 [.light_&]:border-gray-100
-        hover:bg-dark-700 [.light_&]:hover:bg-gray-50 transition-colors group flex gap-0"
+      className="w-full text-left px-3 py-2 border-b border-dark-700/30
+        hover:bg-dark-800 hover:translate-x-0.5 transition-all duration-150 group flex gap-0 active:scale-[0.99]"
     >
       <div
-        className="w-1 rounded-full flex-shrink-0 mr-2.5 self-stretch"
+        className="w-0.5 rounded-full flex-shrink-0 mr-2.5 self-stretch"
         style={{ backgroundColor: diffColor }}
       />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-1 gap-1">
-          <span className="text-sm font-medium text-gray-200 [.light_&]:text-gray-800 truncate">
+          <span className="text-sm font-medium text-gray-200 truncate">
             {loc.name}
           </span>
           <div className="flex items-center gap-1.5 flex-shrink-0">
             {seasonDot}
+            {distanceFrom != null && (
+              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-sky-500/15 text-sky-400 font-medium whitespace-nowrap">
+                {distanceFrom.toFixed(1)} mi
+              </span>
+            )}
             <span
               onClick={(e) => { e.stopPropagation(); onToggleFavorite?.(loc.id); }}
               className="cursor-pointer hover:scale-125 transition-transform"
@@ -63,28 +68,23 @@ export default function RidingCard({ location: loc, onFlyTo, distanceFrom, onLoc
             </span>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 flex-wrap">
+        <div className="flex items-center gap-1 flex-wrap">
           {loc.difficulty && (
             <span
-              className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
+              className="text-[9px] px-1.5 py-0.5 rounded-full font-semibold"
               style={{ backgroundColor: diffColor + '22', color: diffColor }}
             >
               {loc.difficulty}
             </span>
           )}
           {loc.distance_miles != null && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-dark-700 text-gray-400 [.light_&]:bg-gray-100 [.light_&]:text-gray-500 flex items-center gap-0.5">
-              📏 {Math.round(loc.distance_miles)} mi
+            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-dark-700 text-gray-400 flex items-center gap-0.5">
+              {Math.round(loc.distance_miles)} mi
             </span>
           )}
           {loc.elevation_gain_ft != null && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-dark-700 text-gray-400 [.light_&]:bg-gray-100 [.light_&]:text-gray-500 flex items-center gap-0.5">
-              ⛰️ {loc.elevation_gain_ft.toLocaleString()} ft
-            </span>
-          )}
-          {distanceFrom != null && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium">
-              📍 {distanceFrom.toFixed(1)} mi away
+            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-dark-700 text-gray-400 flex items-center gap-0.5">
+              {loc.elevation_gain_ft.toLocaleString()} ft
             </span>
           )}
           {loc.scenery_rating != null && loc.scenery_rating > 0 && (
@@ -92,7 +92,7 @@ export default function RidingCard({ location: loc, onFlyTo, distanceFrom, onLoc
           )}
         </div>
         {loc.trail_types && (
-          <div className="flex items-center gap-1 mt-1.5 flex-wrap">
+          <div className="flex items-center gap-1 mt-1 flex-wrap">
             {parseTrailTypes(loc.trail_types).map((tt) => {
               const colors = TRAIL_TYPE_COLORS[tt] || { bg: 'rgba(107,114,128,0.15)', text: '#9ca3af' };
               return (

@@ -88,15 +88,15 @@ export function SortableStopCard({
     <div ref={setNodeRef} style={style}>
       {/* Drive time connector (between stops) */}
       {showDriveConnector && (driveTimeMins || driveDistanceMiles) && (
-        <div className="flex items-center gap-2 px-4 py-1.5">
+        <div className="flex items-center gap-2 px-4 py-1">
           <div className="w-6 flex justify-center">
-            <div className="w-px h-4 bg-gray-700 [.light_&]:bg-gray-300" />
+            <div className="w-px h-5 bg-dark-700 [.light_&]:bg-gray-300" />
           </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
-            <Navigation size={10} className="text-orange-400/60" />
+          <div className="flex items-center gap-1.5 text-[10px] text-gray-500 bg-dark-800/50 px-2 py-0.5 rounded-full">
+            <Navigation size={9} className="text-orange-400/50" />
             <span>
               {formatDriveTime(driveTimeMins)}
-              {driveTimeMins && driveDistanceMiles && ' | '}
+              {driveTimeMins && driveDistanceMiles && ' · '}
               {formatDistance(driveDistanceMiles)}
             </span>
           </div>
@@ -105,11 +105,11 @@ export function SortableStopCard({
 
       {/* Stop card */}
       <div
-        className={`group mx-2 mb-1 rounded-lg transition-all duration-150 cursor-pointer
+        className={`group mx-2 mb-1 rounded-xl transition-all duration-150 cursor-pointer
           bg-dark-800 [.light_&]:bg-white
-          border border-transparent
-          hover:border-gray-600 [.light_&]:hover:border-gray-300
-          ${isDragging ? 'border-orange-500 bg-orange-500/5 shadow-lg' : ''}
+          border border-dark-700/30 [.light_&]:border-gray-200
+          hover:border-dark-700 hover:bg-dark-800/80 [.light_&]:hover:border-gray-300
+          ${isDragging ? 'border-orange-500 bg-orange-500/5 shadow-lg shadow-orange-500/10' : ''}
         `}
       >
         <div
@@ -126,7 +126,7 @@ export function SortableStopCard({
           </div>
 
           {/* Stop number */}
-          <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center text-xs font-bold">
+          <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold shadow-sm shadow-orange-500/30">
             {index + 1}
           </div>
 
@@ -202,7 +202,7 @@ export function SortableStopCard({
 
         {/* Expanded section */}
         {isExpanded && (
-          <div className="px-3 pb-3 pt-0 border-t border-gray-700/50 [.light_&]:border-gray-200 mx-3 mt-0">
+          <div className="px-3 pb-3 pt-0 border-t border-dark-700/50 [.light_&]:border-gray-200 mx-3 mt-0">
             <div className="pt-2">
               <label className="text-[11px] uppercase tracking-wider text-gray-500 mb-1 block">
                 Notes
@@ -246,12 +246,12 @@ export interface OverlayStopCardProps {
 export function OverlayStopCard({ stop, index }: OverlayStopCardProps) {
   const stopName = stop.name || stop.location_name || 'Unnamed Stop';
   return (
-    <div className="mx-2 mb-1 rounded-lg bg-dark-800 [.light_&]:bg-white border border-orange-500 shadow-2xl shadow-orange-500/20">
+    <div className="mx-2 mb-1 rounded-xl bg-dark-800 [.light_&]:bg-white border border-orange-500 shadow-2xl shadow-orange-500/20">
       <div className="flex items-start gap-2 p-3">
         <div className="mt-0.5 text-gray-400">
           <GripVertical size={16} />
         </div>
-        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center text-xs font-bold">
+        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold shadow-sm shadow-orange-500/30">
           {index + 1}
         </div>
         <div className="flex-1 min-w-0">

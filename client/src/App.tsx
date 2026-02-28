@@ -81,7 +81,7 @@ export default function App() {
 
   if (!mapboxToken) {
     return (
-      <div className="h-screen flex items-center justify-center bg-dark-900">
+      <div className="h-screen flex items-center justify-center bg-dark-950">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
           <p className="text-gray-400">Loading TrailCamp...</p>
@@ -95,8 +95,6 @@ export default function App() {
       <TopBar
         darkMode={darkMode}
         onToggleDarkMode={() => setDarkMode(!darkMode)}
-        mapStyle={mapStyle}
-        onChangeMapStyle={setMapStyle}
         searchQuery={searchQuery}
         onSearch={handleSearch}
         searchResults={searchResults}
@@ -110,12 +108,7 @@ export default function App() {
         onSelectTrip={setSelectedTrip}
         onToggleStats={handleToggleStats}
         onToggleSidebar={() => setLeftSidebarOpen(!leftSidebarOpen)}
-        filters={filters}
-        setFilters={setFilters}
-        filterMode={filters.visitedStatus}
-        onFilterMode={(mode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites') =>
-          setFilters(prev => ({ ...prev, visitedStatus: mode }))
-        }
+        locationCount={locations.length}
       />
 
       <div className="flex-1 flex overflow-hidden relative">
@@ -143,6 +136,10 @@ export default function App() {
             mapBounds={mapBounds}
             onLocationClick={handleLocationClick}
             onToggleFavorite={toggleFavorite}
+            filterMode={filters.visitedStatus}
+            onFilterMode={(mode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites') =>
+              setFilters(prev => ({ ...prev, visitedStatus: mode }))
+            }
           />
         </div>
 
@@ -163,6 +160,8 @@ export default function App() {
             onBoundsChange={setMapBounds}
             campsiteSubTypes={filters.campsiteSubTypes}
             onToggleCampsiteSubType={handleToggleCampsiteSubType}
+            mapStyle={mapStyle}
+            onChangeMapStyle={setMapStyle}
           />
         </div>
 

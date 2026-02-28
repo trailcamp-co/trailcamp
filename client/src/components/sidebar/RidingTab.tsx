@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Bike, X, Heart } from 'lucide-react';
+import { Bike, X, Heart, MapPin } from 'lucide-react';
 import type { Location } from '../../types';
 import { DIFFICULTY_COLORS } from '../../types';
 import RidingCard from './RidingCard';
@@ -126,24 +126,28 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-shrink-0 p-3 border-b border-gray-700/50 [.light_&]:border-gray-200 space-y-2">
+      <div className="flex-shrink-0 px-2.5 py-2 border-b border-dark-700/50 space-y-1.5">
+        {/* Sort from location input */}
         <div className="flex items-center gap-1">
-          <input
-            type="text" value={distanceFromQuery}
-            onChange={(e) => setDistanceFromQuery(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') handleGeocode(); }}
-            placeholder="Sort from location (zip, city, coords)..."
-            className="flex-1 bg-dark-800 [.light_&]:bg-white border border-gray-700 [.light_&]:border-gray-200 rounded px-1.5 py-1 text-xs text-gray-300 [.light_&]:text-gray-700 placeholder-gray-600 [.light_&]:placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors"
-          />
+          <div className="flex-1 flex items-center bg-dark-800 border border-dark-700/50 rounded-lg overflow-hidden focus-within:border-orange-500 transition-colors">
+            <MapPin size={14} className="text-orange-400 ml-2 flex-shrink-0" />
+            <input
+              type="text" value={distanceFromQuery}
+              onChange={(e) => setDistanceFromQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleGeocode(); }}
+              placeholder="Sort from location (zip, city, coords)..."
+              className="flex-1 bg-transparent px-1.5 py-1 text-xs text-gray-300 placeholder-gray-600 focus:outline-none"
+            />
+          </div>
           {distanceFromCoords && (
             <button onClick={clearDistanceSort} className="p-1 text-gray-500 hover:text-gray-300 transition-colors"><X size={12} /></button>
           )}
         </div>
-        {distanceFromLabel && <div className="text-[10px] text-orange-400 px-1">📍 Sorting from: {distanceFromLabel}</div>}
+        {distanceFromLabel && <div className="text-[10px] text-orange-400 px-1">Sorting from: {distanceFromLabel}</div>}
         {geocoding && <div className="text-[10px] text-gray-500 px-1">Geocoding...</div>}
 
-        <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-[10px] uppercase tracking-wider text-gray-500 mr-1">Sort:</span>
+        {/* Sort buttons - pill toggle group */}
+        <div className="rounded-lg bg-dark-800/50 p-1 flex items-center gap-0.5 flex-wrap">
           {([
             { field: 'name' as RidingSortField, label: 'Name' },
             { field: 'distance_miles' as RidingSortField, label: 'Miles' },
@@ -152,40 +156,40 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
             ...(distanceFromCoords ? [{ field: 'distance_from' as RidingSortField, label: 'Distance' }] : []),
           ]).map(({ field, label }) => (
             <button key={field} onClick={() => handleSortChange(field)}
-              className={`text-[11px] px-1.5 py-0.5 rounded transition-colors ${
-                sortField === field ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                  : 'text-gray-500 hover:text-gray-300 [.light_&]:hover:text-gray-700 border border-transparent'
+              className={`text-[10px] px-2 py-0.5 rounded-md transition-colors ${
+                sortField === field ? 'bg-orange-500/20 text-orange-400'
+                  : 'text-gray-500 hover:text-gray-300 hover:bg-dark-700/50'
               }`}>
-              {label}{sortField === field && (sortAsc ? ' ↑' : ' ↓')}
+              {label}{sortField === field && (sortAsc ? ' \u2191' : ' \u2193')}
             </button>
           ))}
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Difficulty + trail type in one row */}
+        <div className="flex items-center gap-1.5">
           <select value={filterDifficulty ?? 'all'} onChange={(e) => setFilterDifficulty(e.target.value === 'all' ? null : e.target.value)}
-            className="flex-1 bg-dark-800 [.light_&]:bg-white border border-gray-700 [.light_&]:border-gray-200 rounded px-1.5 py-1 text-xs text-gray-300 [.light_&]:text-gray-700 focus:outline-none focus:border-orange-500 transition-colors">
+            className="flex-1 bg-dark-800 border border-dark-700/50 rounded-lg px-1.5 py-1 text-[11px] text-gray-300 focus:outline-none focus:border-orange-500 transition-colors">
             <option value="all">All Difficulty</option>
             <option value="Easy">Easy</option><option value="Moderate">Moderate</option>
             <option value="Hard">Hard</option><option value="Expert">Expert</option>
           </select>
           <input type="text" value={filterTrailType} onChange={(e) => setFilterTrailType(e.target.value)}
             placeholder="Trail type..."
-            className="flex-1 bg-dark-800 [.light_&]:bg-white border border-gray-700 [.light_&]:border-gray-200 rounded px-1.5 py-1 text-xs text-gray-300 [.light_&]:text-gray-700 placeholder-gray-600 [.light_&]:placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors" />
+            className="flex-1 bg-dark-800 border border-dark-700/50 rounded-lg px-1.5 py-1 text-[11px] text-gray-300 placeholder-gray-600 focus:outline-none focus:border-orange-500 transition-colors" />
         </div>
+
+        {/* Favorites + viewport pills */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="text-[10px] text-gray-600">{ridingLocations.length} riding area{ridingLocations.length !== 1 ? 's' : ''}</div>
-            <button onClick={() => setFavoritesOnly(!favoritesOnly)} title="Favorites only"
-              className={`text-[10px] px-1.5 py-0.5 rounded-full transition-colors ${favoritesOnly ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-gray-500 hover:text-gray-300 border border-transparent'}`}>
-              <Heart size={10} className={`inline ${favoritesOnly ? 'fill-red-400' : ''}`} /> Favs
-            </button>
-          </div>
+          <button onClick={() => setFavoritesOnly(!favoritesOnly)} title="Favorites only"
+            className={`text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors ${favoritesOnly ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-gray-500 hover:text-gray-300 border border-dark-700/50'}`}>
+            <Heart size={10} className={favoritesOnly ? 'fill-red-400' : ''} /> Favs
+          </button>
           <button onClick={() => setViewportFilter(!viewportFilter)}
             className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
               viewportFilter ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                : 'text-gray-500 hover:text-gray-300 [.light_&]:hover:text-gray-700 border border-transparent hover:border-gray-600 [.light_&]:hover:border-gray-300'
+                : 'text-gray-500 hover:text-gray-300 border border-dark-700/50'
             }`}>
-            {viewportFilter ? '📍 In view' : 'Show all'}
+            {viewportFilter ? 'In view' : 'Show all'}
           </button>
         </div>
       </div>

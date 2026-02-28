@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
-import type { Location, TripStop, LocationCategory, CampsiteSubType } from '../../types';
+import type { Location, TripStop, LocationCategory, CampsiteSubType, MapStyle } from '../../types';
 import { addCustomLayers, addOverlayLayers, buildLocationsGeoJSON, buildRouteGeoJSON } from './layers';
 import { updateEmojiMarkers, createStopMarkers } from './markers';
 import { setupHoverTooltip, setupClickPopup, setupClusterClick } from './popups';
@@ -29,6 +29,8 @@ interface MapContainerProps {
   onBoundsChange?: (bounds: MapBounds) => void;
   campsiteSubTypes?: Set<CampsiteSubType>;
   onToggleCampsiteSubType?: (subType: CampsiteSubType) => void;
+  mapStyle?: { id: string; name: string; url: string };
+  onChangeMapStyle?: (style: MapStyle) => void;
 }
 
 export default function MapContainer({
@@ -46,6 +48,8 @@ export default function MapContainer({
   onBoundsChange,
   campsiteSubTypes,
   onToggleCampsiteSubType,
+  mapStyle,
+  onChangeMapStyle,
 }: MapContainerProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
@@ -202,6 +206,8 @@ export default function MapContainer({
         onToggleUsfs={handleToggleUsfs}
         campsiteSubTypes={campsiteSubTypes}
         onToggleCampsiteSubType={onToggleCampsiteSubType}
+        mapStyle={mapStyle || style}
+        onChangeMapStyle={onChangeMapStyle || (() => {})}
       />
     </div>
   );
