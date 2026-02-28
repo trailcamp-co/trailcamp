@@ -19,7 +19,10 @@ import type { Location, MapStyle } from './types';
 import { MAP_STYLES } from './types';
 
 export default function App() {
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    try { return localStorage.getItem('trailcamp_dark_mode') !== 'false'; }
+    catch { return true; }
+  });
   const [mapStyle, setMapStyle] = useState<MapStyle>(MAP_STYLES[0]);
   const [mapboxToken, setMapboxToken] = useState('');
   const [selectedTrip, setSelectedTrip] = useState<ReturnType<typeof useTrips>['trips'][number] | null>(null);
@@ -72,6 +75,7 @@ export default function App() {
   // Dark mode class
   useEffect(() => {
     document.documentElement.className = darkMode ? 'dark' : 'light';
+    localStorage.setItem('trailcamp_dark_mode', String(darkMode));
   }, [darkMode]);
 
   const handleAddStopFromLocation = useCallback(async (location: Location) => {
