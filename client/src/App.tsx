@@ -150,8 +150,7 @@ export default function App() {
         {/* Left Sidebar */}
         <div className={`
           transition-all duration-300 flex-shrink-0 overflow-hidden
-          lg:relative lg:w-80 lg:block
-          ${leftSidebarOpen ? 'fixed inset-y-0 left-0 w-80 z-30 lg:relative' : 'w-0 -left-80 lg:w-0'}
+          ${leftSidebarOpen ? 'w-80' : 'w-0'}
         `}>
           <ErrorBoundary fallbackLabel="Sidebar error">
           <LeftSidebar

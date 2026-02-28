@@ -107,7 +107,7 @@ export default function TopBar({
 
   return (
     <div
-      className="h-[52px] flex items-center px-3 gap-2 border-b flex-shrink-0 z-30 transition-colors duration-200 bg-dark-900 border-dark-700/50 [.light_&]:bg-white [.light_&]:border-gray-200"
+      className="h-[52px] flex items-center px-3 gap-2 border-b flex-shrink-0 relative z-[60] transition-colors duration-200 bg-dark-900 border-dark-700/50 [.light_&]:bg-white [.light_&]:border-gray-200"
     >
       {/* ---- Left: Sidebar toggle ---- */}
       <button
@@ -136,7 +136,7 @@ export default function TopBar({
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-150 bg-dark-700 hover:bg-dark-600 text-gray-200 [.light_&]:bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-700"
         >
           <MapPin size={14} className="opacity-60" />
-          <span className="max-w-[140px] truncate">
+          <span className="max-w-[300px] truncate">
             {selectedTrip?.name ?? 'Select Trip'}
           </span>
           <ChevronDown
@@ -148,7 +148,7 @@ export default function TopBar({
         </button>
 
         {tripDropdownOpen && (
-          <div className="absolute top-full left-0 mt-1 w-56 rounded-lg shadow-xl overflow-hidden z-50 glass animate-slide-down [.light_&]:bg-white [.light_&]:border [.light_&]:border-gray-200">
+          <div className="absolute top-full left-0 mt-1 w-72 rounded-lg shadow-xl overflow-hidden z-[100] glass animate-slide-down [.light_&]:bg-white [.light_&]:border [.light_&]:border-gray-200">
             <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
               Trips
             </div>
@@ -219,6 +219,30 @@ export default function TopBar({
                 No trips yet
               </div>
             )}
+            <div className="border-t border-dark-700/50 [.light_&]:border-gray-200" />
+            <button
+              onClick={() => {
+                // Create a new trip via the existing handler
+                const name = prompt('Trip name:');
+                if (name?.trim()) {
+                  fetch('/api/trips', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name.trim() }),
+                  })
+                    .then(r => r.json())
+                    .then(trip => {
+                      onSelectTrip(trip);
+                      window.location.reload();
+                    });
+                }
+                setTripDropdownOpen(false);
+              }}
+              className="w-full text-left px-3 py-2 text-sm text-orange-400 hover:bg-dark-600 transition-colors flex items-center gap-2 [.light_&]:hover:bg-gray-50"
+            >
+              <span className="text-base">+</span>
+              <span>New Trip</span>
+            </button>
           </div>
         )}
       </div>
