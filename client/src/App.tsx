@@ -6,6 +6,7 @@ import { useRoute } from './hooks/useRoute';
 import { useWeather } from './hooks/useWeather';
 import { useMapInteraction } from './hooks/useMapInteraction';
 import { useToast } from './hooks/useToast';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import Map from './components/map';
 import TopBar from './components/TopBar';
 import LeftSidebar from './components/sidebar';
