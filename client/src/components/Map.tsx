@@ -157,7 +157,8 @@ export default function Map({
   const stopMarkersRef = useRef<any[]>([]);
   const emojiMarkersRef = useRef<{ [id: number]: any }>({});
   const [layerPanelOpen, setLayerPanelOpen] = useState(false);
-  const [publicLandVisible, setPublicLandVisible] = useState(false);
+  const [blmVisible, setBlmVisible] = useState(false);
+  const [allPublicVisible, setAllPublicVisible] = useState(false);
   const locationsRef = useRef<Location[]>(locations);
   const routeRef = useRef<any>(routeGeoJSON);
   const styleUrlRef = useRef(style.url);
@@ -186,21 +187,56 @@ export default function Map({
     map.on('style.load', () => {
       addCustomLayers(map, locationsRef.current, routeRef.current);
 
-      // BLM / Public Land overlay
-      if (!map.getSource('public-land')) {
-        map.addSource('public-land', {
-          type: 'raster',
-          tiles: [
-            'https://gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Landscape_poly/MapServer/export?bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=256,256&format=png32&transparent=true&f=image'
-          ],
-          tileSize: 256,
-        });
+      // BLM land ownership (vector polygons from PAD-US)
+      if (!map.getSource('blm-land')) {
+        map.addSource('blm-land', { type: 'geojson', data: '/blm-land-v3.geojson' });
         map.addLayer({
-          id: 'public-land-layer',
-          type: 'raster',
-          source: 'public-land',
-          paint: { 'raster-opacity': 0 },
+          id: 'blm-land-fill',
+          type: 'fill',
+          source: 'blm-land',
+          paint: { 'fill-color': '#F59E0B', 'fill-opacity': 0 },
         }, 'clusters');
+        map.addLayer({
+          id: 'blm-land-border',
+          type: 'line',
+          source: 'blm-land',
+          paint: { 'line-color': '#D97706', 'line-width': 0.8, 'line-opacity': 0 },
+        }, 'clusters');
+      }
+
+      // USFS National Forest boundaries (vector — clean bordered areas with labels)
+      if (!map.getSource('usfs-land')) {
+        map.addSource('usfs-land', { type: 'geojson', data: '/usfs-boundaries.geojson' });
+        map.addLayer({
+          id: 'usfs-land-fill',
+          type: 'fill',
+          source: 'usfs-land',
+          paint: { 'fill-color': '#22C55E', 'fill-opacity': 0 },
+        }, 'clusters');
+        map.addLayer({
+          id: 'usfs-land-border',
+          type: 'line',
+          source: 'usfs-land',
+          paint: { 'line-color': '#22C55E', 'line-width': 1.5, 'line-opacity': 0 },
+        }, 'clusters');
+        map.addLayer({
+          id: 'usfs-land-label',
+          type: 'symbol',
+          source: 'usfs-land',
+          layout: {
+            'text-field': ['get', 'FORESTNAME'],
+            'text-size': 11,
+            'text-transform': 'uppercase',
+            'text-letter-spacing': 0.05,
+            'text-max-width': 8,
+            visibility: 'none',
+          },
+          paint: {
+            'text-color': '#86EFAC',
+            'text-halo-color': 'rgba(0,0,0,0.8)',
+            'text-halo-width': 1.5,
+          },
+        });
       }
 
       setMapReady(true);
@@ -485,25 +521,50 @@ export default function Map({
               Overlays
             </div>
             <div className="py-1">
-              {/* Public Land Toggle */}
+              {/* BLM Land Toggle */}
               <button
                 onClick={() => {
                   const map = mapRef.current;
                   if (!map) return;
-                  const newVal = !publicLandVisible;
-                  setPublicLandVisible(newVal);
-                  if (map.getLayer('public-land-layer')) {
-                    map.setPaintProperty('public-land-layer', 'raster-opacity', newVal ? 0.45 : 0);
+                  const newVal = !blmVisible;
+                  setBlmVisible(newVal);
+                  if (map.getLayer('blm-land-fill')) {
+                    map.setPaintProperty('blm-land-fill', 'fill-opacity', newVal ? 0.2 : 0);
+                    map.setPaintProperty('blm-land-border', 'line-opacity', newVal ? 0.6 : 0);
                   }
                 }}
                 className={`w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors ${
                   darkMode ? 'hover:bg-dark-700 text-gray-200' : 'hover:bg-gray-50 text-gray-700'
-                } ${!publicLandVisible ? 'opacity-50' : ''}`}
+                } ${!blmVisible ? 'opacity-50' : ''}`}
               >
-                <span className="text-base">🏛️</span>
-                <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: '#d4a017' }} />
-                <span className="flex-1 text-left">Public Land (BLM/USFS)</span>
-                {publicLandVisible ? <Eye size={14} className="text-green-400 flex-shrink-0" />
+                <span className="text-base">🏜️</span>
+                <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: '#F59E0B' }} />
+                <span className="flex-1 text-left">BLM Land</span>
+                {blmVisible ? <Eye size={14} className="text-green-400 flex-shrink-0" />
+                  : <EyeOff size={14} className="text-gray-500 flex-shrink-0" />}
+              </button>
+
+              {/* USFS National Forest Toggle */}
+              <button
+                onClick={() => {
+                  const map = mapRef.current;
+                  if (!map) return;
+                  const newVal = !allPublicVisible;
+                  setAllPublicVisible(newVal);
+                  if (map.getLayer('usfs-land-fill')) {
+                    map.setPaintProperty('usfs-land-fill', 'fill-opacity', newVal ? 0.12 : 0);
+                    map.setPaintProperty('usfs-land-border', 'line-opacity', newVal ? 0.7 : 0);
+                    map.setLayoutProperty('usfs-land-label', 'visibility', newVal ? 'visible' : 'none');
+                  }
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors ${
+                  darkMode ? 'hover:bg-dark-700 text-gray-200' : 'hover:bg-gray-50 text-gray-700'
+                } ${!allPublicVisible ? 'opacity-50' : ''}`}
+              >
+                <span className="text-base">🌲</span>
+                <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: '#22C55E' }} />
+                <span className="flex-1 text-left">National Forests</span>
+                {allPublicVisible ? <Eye size={14} className="text-green-400 flex-shrink-0" />
                   : <EyeOff size={14} className="text-gray-500 flex-shrink-0" />}
               </button>
 
