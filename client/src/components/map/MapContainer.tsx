@@ -5,6 +5,7 @@ import { addCustomLayers, addOverlayLayers, buildLocationsGeoJSON, buildRouteGeo
 import { createStopMarkers } from './markers';
 import { setupHoverTooltip, setupClickPopup, setupClusterClick } from './popups';
 import LayerPanel from './LayerPanel';
+import MapStylePicker from './MapStylePicker';
 import MapLegend from './MapLegend';
 import MapStats from './MapStats';
 import RegionQuickJump from './RegionQuickJump';
@@ -243,6 +244,10 @@ export default function MapContainer({
         onToggleUsfs={handleToggleUsfs}
         campsiteSubTypes={campsiteSubTypes}
         onToggleCampsiteSubType={onToggleCampsiteSubType}
+        mapStyle={mapStyle || style}
+        onChangeMapStyle={onChangeMapStyle || (() => {})}
+      />
+      <MapStylePicker
         mapStyle={mapStyle || style}
         onChangeMapStyle={onChangeMapStyle || (() => {})}
       />

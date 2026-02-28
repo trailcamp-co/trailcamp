@@ -1,27 +1,23 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { CATEGORY_COLORS, CATEGORY_ICONS, CAMPSITE_SUBTYPE_COLORS, CAMPSITE_SUBTYPE_ICONS } from '../../types';
 
 const LEGEND_ITEMS = [
-  { emoji: '🏍️', label: 'Riding', color: '#f97316' },
-  { emoji: '🏕️', label: 'Campground', color: '#22c55e' },
-  { emoji: '⛺', label: 'Boondocking', color: '#a855f7' },
-  { emoji: '🅿️', label: 'Parking', color: '#6b7280' },
-];
-
-const DIFFICULTY_ITEMS = [
-  { label: 'Easy', color: '#22c55e' },
-  { label: 'Mod', color: '#f59e0b' },
-  { label: 'Hard', color: '#ef4444' },
-  { label: 'Expert', color: '#7c3aed' },
+  { emoji: CATEGORY_ICONS.riding, label: 'Riding', color: CATEGORY_COLORS.riding },
+  { emoji: CAMPSITE_SUBTYPE_ICONS.campground, label: 'Campgrounds', color: CAMPSITE_SUBTYPE_COLORS.campground },
+  { emoji: CAMPSITE_SUBTYPE_ICONS.boondocking, label: 'Boondocking', color: CAMPSITE_SUBTYPE_COLORS.boondocking },
+  { emoji: CAMPSITE_SUBTYPE_ICONS.other, label: 'Other Camps', color: CAMPSITE_SUBTYPE_COLORS.other },
+  { emoji: CAMPSITE_SUBTYPE_ICONS.parking, label: 'Parking', color: CAMPSITE_SUBTYPE_COLORS.parking },
+  { emoji: CATEGORY_ICONS.scenic, label: 'Scenic', color: CATEGORY_COLORS.scenic },
 ];
 
 export default function MapLegend() {
   const [open, setOpen] = useState(true);
 
   return (
-    <div className="absolute bottom-14 left-3 z-10">
+    <div className="absolute bottom-16 left-3 z-10">
       {open ? (
-        <div className="rounded-xl bg-dark-900/90 backdrop-blur-sm border border-dark-700/50 shadow-lg p-2.5 min-w-[150px]">
+        <div className="rounded-xl bg-dark-900/90 backdrop-blur-sm border border-dark-700/50 shadow-lg p-2.5 min-w-[145px]">
           <button
             onClick={() => setOpen(false)}
             className="flex items-center justify-between w-full text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
