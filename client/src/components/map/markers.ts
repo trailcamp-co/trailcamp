@@ -43,8 +43,10 @@ export function updateEmojiMarkers(
       // Update position of existing marker (fixes drift during zoom)
       emojiMarkersRef.current[id].setLngLat([lng, lat]);
     } else {
-      const icon = f.properties?.icon || '📍';
-      const groupCount = f.properties?.group_count || 1;
+      const rawIcon = f.properties?.icon;
+      const icon = (typeof rawIcon === 'string' && rawIcon.length > 0) ? rawIcon : '📍';
+      const rawGC = Number(f.properties?.group_count);
+      const groupCount = (Number.isFinite(rawGC) && rawGC > 0) ? rawGC : 1;
       const el = document.createElement('div');
       el.className = 'emoji-pin';
       el.style.cssText = 'font-size:14px;line-height:1;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;width:24px;height:24px;position:relative;';
