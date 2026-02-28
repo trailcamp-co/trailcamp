@@ -261,6 +261,23 @@ export default function RightPanel({
           </div>
         )}
 
+        {/* Distance from home */}
+        {(() => {
+          const HOME_LAT = 41.6031, HOME_LNG = -81.3612;
+          const R = 3959;
+          const dLat = (location.latitude - HOME_LAT) * Math.PI / 180;
+          const dLng = (location.longitude - HOME_LNG) * Math.PI / 180;
+          const a = Math.sin(dLat/2)**2 + Math.cos(HOME_LAT*Math.PI/180)*Math.cos(location.latitude*Math.PI/180)*Math.sin(dLng/2)**2;
+          const dist = Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+          const hours = Math.round(dist / 55); // rough estimate at 55mph avg
+          return (
+            <div className="px-5 pt-4 flex items-center gap-2 text-xs text-gray-500 [.light_&]:text-gray-400">
+              <MapPin size={12} className="text-orange-400 flex-shrink-0" />
+              <span>{dist.toLocaleString()} mi from home (~{hours}h drive)</span>
+            </div>
+          );
+        })()}
+
         {/* Quick Actions */}
         <div className={`p-5 ${sectionDivider}`}>
           <button onClick={handleNavigate} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-colors shadow-lg shadow-orange-500/20 mb-3 press-scale">
