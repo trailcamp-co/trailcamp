@@ -47,6 +47,7 @@ export interface Location {
   shade: number | null;
   level_ground: number | null;
   water_nearby: number | null;
+  water_available: number | null;
   dump_nearby: number | null;
   max_vehicle_length: number | null;
   stay_limit_days: number | null;

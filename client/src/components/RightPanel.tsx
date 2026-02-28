@@ -155,6 +155,7 @@ export default function RightPanel({
       {location.cell_signal && <DetailBadge label="Cell Signal" value={location.cell_signal} darkMode={darkMode} />}
       {location.shade !== null && location.shade !== undefined && <DetailBadge label="Shade" value={location.shade ? 'Yes' : 'No'} darkMode={darkMode} />}
       {location.level_ground !== null && location.level_ground !== undefined && <DetailBadge label="Level Ground" value={location.level_ground ? 'Yes' : 'No'} darkMode={darkMode} />}
+      {location.water_available !== null && location.water_available !== undefined && <DetailBadge label="💧 Water" value={location.water_available ? 'Available' : 'None'} darkMode={darkMode} />}
       {location.water_nearby !== null && location.water_nearby !== undefined && <DetailBadge label="Water Nearby" value={location.water_nearby ? 'Yes' : 'No'} darkMode={darkMode} />}
       {location.dump_nearby !== null && location.dump_nearby !== undefined && <DetailBadge label="Dump Nearby" value={location.dump_nearby ? 'Yes' : 'No'} darkMode={darkMode} />}
       {location.max_vehicle_length !== null && location.max_vehicle_length !== undefined && <DetailBadge label="Max Vehicle Length" value={`${location.max_vehicle_length} ft`} darkMode={darkMode} />}
