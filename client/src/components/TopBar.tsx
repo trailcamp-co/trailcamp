@@ -185,10 +185,23 @@ export default function TopBar({
                   size={13}
                   className={selectedTrip?.id === trip.id ? 'text-orange-400' : 'opacity-40'}
                 />
-                <span className="truncate">{trip.name}</span>
+                <div className="flex-1 min-w-0">
+                  <span className="truncate block">{trip.name}</span>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    {trip.start_date && (
+                      <span className="text-[10px] text-gray-500 [.light_&]:text-gray-400">{new Date(trip.start_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                    )}
+                    {trip.stop_count != null && (
+                      <span className="text-[10px] text-gray-500 [.light_&]:text-gray-400">{trip.stop_count} stops</span>
+                    )}
+                    {trip.total_nights != null && trip.total_nights > 0 && (
+                      <span className="text-[10px] text-gray-500 [.light_&]:text-gray-400">{trip.total_nights}n</span>
+                    )}
+                  </div>
+                </div>
                 {trip.status && (
                   <span
-                    className={`ml-auto text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
+                    className={`flex-shrink-0 text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
                       trip.status === 'active'
                         ? 'bg-green-500/20 text-green-400'
                         : trip.status === 'completed'
