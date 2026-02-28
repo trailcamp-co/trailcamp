@@ -96,17 +96,17 @@ export function addCustomLayers(
     paint: {
       'circle-color': [
         'step', ['get', 'point_count'],
-        'rgba(249, 115, 22, 0.85)',  // orange for small clusters
-        50, 'rgba(234, 88, 12, 0.85)',  // darker orange for medium
-        200, 'rgba(220, 38, 38, 0.85)',  // red for large
-        1000, 'rgba(185, 28, 28, 0.85)', // deep red for huge
+        'rgba(100, 116, 139, 0.8)',   // slate-500 for small
+        50, 'rgba(71, 85, 105, 0.85)',  // slate-600 for medium
+        200, 'rgba(51, 65, 85, 0.9)',   // slate-700 for large
+        1000, 'rgba(30, 41, 59, 0.92)', // slate-800 for huge
       ],
       'circle-radius': ['step', ['get', 'point_count'],
         12, 10, 14, 50, 17, 100, 20, 500, 24,
       ],
       'circle-stroke-width': 2,
-      'circle-stroke-color': 'rgba(255,255,255,0.3)',
-      'circle-blur': 0.15,
+      'circle-stroke-color': 'rgba(255,255,255,0.5)',
+      'circle-blur': 0,
     },
   });
 
@@ -157,7 +157,7 @@ export function addCustomLayers(
     type: 'line',
     source: 'route',
     layout: { 'line-join': 'round', 'line-cap': 'round' },
-    paint: { 'line-color': '#f97316', 'line-width': 8, 'line-opacity': 0.15, 'line-blur': 3 },
+    paint: { 'line-color': '#06b6d4', 'line-width': 8, 'line-opacity': 0.2, 'line-blur': 3 },
   });
 
   // Route main line
@@ -167,7 +167,7 @@ export function addCustomLayers(
     source: 'route',
     layout: { 'line-join': 'round', 'line-cap': 'round' },
     paint: {
-      'line-color': '#f97316',
+      'line-color': '#06b6d4',
       'line-width': 3.5,
       'line-opacity': 0.9,
     },
