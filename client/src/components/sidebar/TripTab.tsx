@@ -657,15 +657,15 @@ export default function TripTab({
             <div className="grid grid-cols-3 gap-2">
               <div className="rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 p-2 text-center">
                 <div className="text-lg">🏍️</div>
-                <div className="text-[10px] text-gray-500 mt-0.5">1,300+ Rides</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">1,500+ Rides</div>
               </div>
               <div className="rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 p-2 text-center">
                 <div className="text-lg">🏕️</div>
-                <div className="text-[10px] text-gray-500 mt-0.5">550+ Free Camps</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">700+ Free Camps</div>
               </div>
               <div className="rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 p-2 text-center">
                 <div className="text-lg">📍</div>
-                <div className="text-[10px] text-gray-500 mt-0.5">5,740+ Spots</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">6,000+ Spots</div>
               </div>
             </div>
           </div>
