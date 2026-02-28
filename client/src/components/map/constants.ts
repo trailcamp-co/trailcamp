@@ -14,11 +14,11 @@ export const DEFAULT_ZOOM = 4;
 /** Minimum zoom to show emoji markers */
 export const EMOJI_MIN_ZOOM = 4;
 
-/** Cluster max zoom level */
-export const CLUSTER_MAX_ZOOM = 12;
+/** Cluster max zoom level — clusters break apart above this zoom */
+export const CLUSTER_MAX_ZOOM = 8;
 
-/** Cluster radius in pixels */
-export const CLUSTER_RADIUS = 50;
+/** Cluster radius in pixels — smaller = less aggressive clustering */
+export const CLUSTER_RADIUS = 25;
 
 /** Fly-to animation zoom level */
 export const FLY_TO_ZOOM = 13;

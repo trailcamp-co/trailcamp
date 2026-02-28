@@ -121,7 +121,7 @@ export function addCustomLayers(
     paint: {
       'circle-color': ['get', 'color'],
       'circle-radius': ['interpolate', ['linear'], ['zoom'],
-        5, 4, 8, 7, 10, 10, 12, 14, 14, 18, 16, 22,
+        4, 4, 6, 6, 8, 9, 10, 12, 12, 16, 14, 20, 16, 24,
       ],
       'circle-stroke-width': ['interpolate', ['linear'], ['zoom'],
         5, 1, 10, 1.5, 14, 2.5,
