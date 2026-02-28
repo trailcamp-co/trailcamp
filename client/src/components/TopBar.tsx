@@ -121,13 +121,13 @@ export default function TopBar({
       {/* ---- Logo ---- */}
       <div className="flex items-center gap-1.5 select-none flex-shrink-0">
         <span className="text-lg">&#9978;</span>
-        <span className="font-bold text-base tracking-tight text-orange-500">
+        <span className="font-bold text-base tracking-tight text-orange-500 hidden sm:inline">
           TrailCamp
         </span>
       </div>
 
       {/* ---- Divider ---- */}
-      <div className="w-px h-5 mx-1 bg-dark-700/50 [.light_&]:bg-gray-200" />
+      <div className="w-px h-5 mx-1 bg-dark-700/50 [.light_&]:bg-gray-200 hidden sm:block" />
 
       {/* ---- Trip Selector ---- */}
       <div className="relative flex-shrink-0" ref={tripDropdownRef}>
@@ -387,7 +387,7 @@ export default function TopBar({
       {/* ---- Stats Button ---- */}
       <button
         onClick={onToggleStats}
-        className="p-2 rounded-lg transition-colors duration-150 hover:bg-dark-700 text-gray-400 hover:text-orange-400 [.light_&]:hover:bg-gray-100 [.light_&]:text-gray-500 [.light_&]:hover:text-orange-500"
+        className="p-2 rounded-lg transition-colors duration-150 hover:bg-dark-700 text-gray-400 hover:text-orange-400 [.light_&]:hover:bg-gray-100 [.light_&]:text-gray-500 [.light_&]:hover:text-orange-500 hidden sm:block"
         title="Trip Statistics"
       >
         <BarChart3 size={18} />
@@ -396,7 +396,7 @@ export default function TopBar({
       {/* ---- Dark/Light Mode Toggle ---- */}
       <button
         onClick={onToggleDarkMode}
-        className="p-2 rounded-lg transition-colors duration-150 hover:bg-dark-700 text-gray-400 hover:text-yellow-400 [.light_&]:hover:bg-gray-100 [.light_&]:text-gray-500 [.light_&]:hover:text-yellow-500"
+        className="p-2 rounded-lg transition-colors duration-150 hover:bg-dark-700 text-gray-400 hover:text-yellow-400 [.light_&]:hover:bg-gray-100 [.light_&]:text-gray-500 [.light_&]:hover:text-yellow-500 hidden sm:block"
         title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
       >
         {darkMode ? <Sun size={18} /> : <Moon size={18} />}
