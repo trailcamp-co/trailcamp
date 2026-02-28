@@ -4,7 +4,7 @@ import type { Location } from '../../types';
 import { DIFFICULTY_COLORS } from '../../types';
 import RidingCard from './RidingCard';
 
-type RidingSortField = 'name' | 'distance_miles' | 'difficulty' | 'scenery_rating' | 'distance_from';
+type RidingSortField = 'name' | 'distance_miles' | 'difficulty' | 'scenery_rating' | 'distance_from' | 'featured';
 
 const DIFFICULTY_ORDER: Record<string, number> = {
   Easy: 1,
@@ -114,6 +114,7 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
         case 'difficulty': return dir * ((DIFFICULTY_ORDER[a.difficulty ?? ''] ?? 0) - (DIFFICULTY_ORDER[b.difficulty ?? ''] ?? 0));
         case 'scenery_rating': return dir * ((a.scenery_rating ?? 0) - (b.scenery_rating ?? 0));
         case 'distance_from': return dir * ((a.distance_from ?? 999999) - (b.distance_from ?? 999999));
+        case 'featured': return dir * ((b.featured ?? 0) - (a.featured ?? 0));
         default: return 0;
       }
     });
@@ -152,6 +153,7 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
         <div className="rounded-lg bg-dark-800/50 p-1 flex items-center gap-0.5 flex-wrap">
           {([
             { field: 'name' as RidingSortField, label: 'Name' },
+            { field: 'featured' as RidingSortField, label: '⭐ Epic' },
             { field: 'distance_miles' as RidingSortField, label: 'Miles' },
             { field: 'difficulty' as RidingSortField, label: 'Diff' },
             { field: 'scenery_rating' as RidingSortField, label: 'Scenery' },

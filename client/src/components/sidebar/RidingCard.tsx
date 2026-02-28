@@ -39,8 +39,9 @@ export default function RidingCard({ location: loc, onFlyTo, distanceFrom, onLoc
         <div className="flex-1 min-w-0">
           {/* Row 1: Name + actions */}
           <div className="flex items-start justify-between gap-2 mb-1">
-            <h4 className="text-[13px] font-semibold text-gray-200 [.light_&]:text-gray-800 leading-tight group-hover:text-white [.light_&]:group-hover:text-gray-900 transition-colors">
+            <h4 className="text-[13px] font-semibold text-gray-200 [.light_&]:text-gray-800 leading-tight group-hover:text-white [.light_&]:group-hover:text-gray-900 transition-colors flex items-center gap-1.5">
               {loc.name}
+              {loc.featured && <span className="text-[8px] px-1 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-bold uppercase tracking-wider flex-shrink-0">⭐ Epic</span>}
             </h4>
             <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
               {distanceFrom != null && (
