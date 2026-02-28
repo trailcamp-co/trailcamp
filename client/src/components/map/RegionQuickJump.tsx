@@ -18,6 +18,11 @@ const REGIONS = [
   { name: 'Texas', center: [-99.0, 31.5], zoom: 6 },
   { name: 'Florida', center: [-82.5, 28.5], zoom: 7 },
   { name: 'Upper Midwest', center: [-86.0, 44.0], zoom: 6 },
+  { name: 'Death Valley', center: [-117.2, 36.5], zoom: 9 },
+  { name: 'San Juan Mountains', center: [-107.6, 37.9], zoom: 10 },
+  { name: 'Sawtooth Valley', center: [-114.9, 43.9], zoom: 10 },
+  { name: 'Alaska', center: [-150.0, 63.0], zoom: 4 },
+  { name: 'Big Bend TX', center: [-103.9, 29.3], zoom: 9 },
   { name: 'Alaska', center: [-150.0, 63.5], zoom: 5 },
 ];
 
