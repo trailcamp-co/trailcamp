@@ -1,305 +1,299 @@
 # Geocoding Guide
 
 ## Overview
-The geocoding helper script reverse-geocodes location coordinates to add state and county information, improving search and regional organization.
+The geocoding helper adds state and county data to locations by reverse geocoding their coordinates using OpenStreetMap's Nominatim API.
 
 ## Quick Start
 
-### Test Mode (Dry Run)
+### Test with 10 Locations
 ```bash
 node geocode-locations.js --limit 10 --dry-run
 ```
 
-### Live Mode (Updates Database)
+### Geocode 100 Locations
 ```bash
-# Always backup first!
-./backup-database.sh
-
-node geocode-locations.js --limit 50
+node geocode-locations.js --limit 100
 ```
 
-## How It Works
-
-### Reverse Geocoding
-- Takes latitude/longitude coordinates
-- Queries OpenStreetMap Nominatim API
-- Returns: state, county, country information
-- Appends geographic data to location notes field
-
-### Example Output
-```
-Input:  33.8703, -111.9487
-Output: Maricopa County, Arizona
+### Geocode All Missing Data
+```bash
+node geocode-locations.js
 ```
 
-### Data Storage
-Geographic information is added to the `notes` field:
+⚠️ **Warning:** Full geocoding of 6,000+ locations takes ~2 hours due to API rate limits
+
+### View State Coverage Report
+```bash
+node geocode-locations.js --report
 ```
-Original notes: "Best ridden clockwise from north trailhead"
-Updated notes:  "Best ridden clockwise from north trailhead; Location: Maricopa County, Arizona"
-```
+
+## Features
+
+✅ **Reverse Geocoding** - Converts lat/lon to state/county names  
+✅ **US State Codes** - Automatically converts state names to 2-letter codes  
+✅ **Rate Limiting** - Respects Nominatim's 1 request/second limit  
+✅ **Dry Run Mode** - Test without updating database  
+✅ **Progress Tracking** - Shows real-time progress  
+✅ **Error Handling** - Continues on failures, tracks errors  
+✅ **Batch Processing** - Process N locations at a time
 
 ## Usage
 
-### Basic Usage
+### Basic Commands
+
 ```bash
-# Geocode 100 locations (default)
+# Dry run (no database changes)
+node geocode-locations.js --limit 10 --dry-run
+
+# Geocode first 100 locations
+node geocode-locations.js --limit 100
+
+# Geocode all locations missing state data
 node geocode-locations.js
 
-# Geocode specific number
-node geocode-locations.js --limit 50
-
-# Test without updating database
-node geocode-locations.js --limit 10 --dry-run
+# Show current state coverage
+node geocode-locations.js --report
 ```
 
 ### Options
-- `--limit N` - Process up to N locations (default: 100)
-- `--dry-run` - Validate without updating database
-- `--help` - Show help message
 
-## Rate Limiting
+| Option | Description |
+|--------|-------------|
+| `--limit N` | Geocode only N locations |
+| `--dry-run` | Test without updating database |
+| `--report` | Show state coverage report only |
+| `--help` | Show help message |
 
-### Nominatim Usage Policy
-- **Free service** from OpenStreetMap
-- **Rate limit:** 1 request per second
-- **User-Agent required** (automatically set)
-- **Fair use:** Don't abuse the free service
+## Database Schema
 
-### Time Estimates
-| Locations | Time Required |
-|-----------|---------------|
-| 10 | ~12 seconds |
-| 50 | ~1 minute |
-| 100 | ~2 minutes |
-| 500 | ~10 minutes |
-| 1,000 | ~20 minutes |
+### Added Columns
 
-### Large Batches
-For geocoding entire database (6,000+ locations):
-```bash
-# Run multiple batches
-node geocode-locations.js --limit 500
-# Wait for completion
-node geocode-locations.js --limit 500
-# Repeat as needed
-```
-
-## Use Cases
-
-### 1. State/County Filters
-Add geographic metadata for filtering:
-- "Show all Arizona locations"
-- "Find campsites in Maricopa County"
-
-### 2. Regional Analysis
-Improved statistics and reporting:
-- Locations per state
-- County-level coverage
-- Regional gap analysis
-
-### 3. Search Enhancement
-Better search results:
-- "Moab, Utah" matches county/state
-- Regional name variations
-- Local area references
-
-### 4. Data Validation
-Verify coordinate accuracy:
-- Check if location name matches geocoded region
-- Identify coordinate errors
-- Flag misplaced locations
-
-## Best Practices
-
-### Before Geocoding
-
-1. **Backup database:**
-   ```bash
-   ./backup-database.sh
-   ```
-
-2. **Test with dry-run:**
-   ```bash
-   node geocode-locations.js --limit 10 --dry-run
-   ```
-
-3. **Check sample results:**
-   - Verify state/county accuracy
-   - Ensure data format looks correct
-
-### During Geocoding
-
-1. **Start small:**
-   - First run: 50-100 locations
-   - Verify results look good
-   - Then scale up
-
-2. **Monitor output:**
-   - Watch for API errors
-   - Check for "No data found" warnings
-   - Note any failed requests
-
-3. **Be patient:**
-   - Rate limiting means it's slow
-   - Don't interrupt the process
-   - Let it complete fully
-
-### After Geocoding
-
-1. **Verify updates:**
-   ```bash
-   sqlite3 trailcamp.db "SELECT name, notes FROM locations WHERE notes LIKE '%Location:%' LIMIT 10"
-   ```
-
-2. **Check statistics:**
-   ```bash
-   sqlite3 trailcamp.db "SELECT COUNT(*) FROM locations WHERE notes LIKE '%Location:%'"
-   ```
-
-3. **Run quality check:**
-   ```bash
-   ./check-data-quality.sh
-   ```
-
-## Limitations
-
-### Geographic Coverage
-- **US locations:** Excellent coverage
-- **Canada:** Good coverage
-- **International:** Variable quality
-- **Remote areas:** May lack county data
-
-### Data Accuracy
-- **State:** Usually 100% accurate
-- **County:** ~95% accurate
-- **Small territories:** May be misidentified
-- **Border areas:** Can be ambiguous
-
-### API Limitations
-- **Free tier:** 1 request/second
-- **No bulk geocoding:** Must rate-limit
-- **Occasional outages:** OSM infrastructure
-- **Data freshness:** May lag real-world changes
-
-## Troubleshooting
-
-### "No data found" Warnings
-- Location is in remote area
-- Coordinates are in water
-- OSM has no data for that region
-- **Action:** Manual review needed
-
-### API Errors
-- Rate limit exceeded (wait longer between requests)
-- Network timeout (retry failed locations)
-- Invalid coordinates (check data quality)
-
-### Incorrect Results
-- Verify coordinates are correct
-- Check if location is near state/county border
-- Consider updating manually if clearly wrong
-
-## Advanced Usage
-
-### Selective Geocoding
-Geocode only locations missing data:
-```javascript
-// Modify query in geocode-locations.js:
-const locations = db.prepare(`
-  SELECT id, name, latitude, longitude 
-  FROM locations 
-  WHERE notes NOT LIKE '%Location:%'
-  LIMIT ?
-`).all(limit);
-```
-
-### Custom Output Fields
-To store in dedicated columns (requires schema changes):
 ```sql
--- Add columns
-ALTER TABLE locations ADD COLUMN state VARCHAR(2);
-ALTER TABLE locations ADD COLUMN county VARCHAR(100);
-
--- Update script to use columns instead of notes
+state VARCHAR(2)    -- US 2-letter state code (e.g., 'CA', 'TX')
+county VARCHAR(100) -- County name without "County" suffix
 ```
 
-### Batch Processing Script
-```bash
-#!/bin/bash
-# geocode-all.sh - Process entire database in batches
+### Indexes
 
-BATCH_SIZE=500
-TOTAL=6000
-
-for i in $(seq 0 $BATCH_SIZE $TOTAL); do
-  echo "Processing batch starting at $i..."
-  node geocode-locations.js --limit $BATCH_SIZE
-  echo "Batch complete. Waiting 60 seconds..."
-  sleep 60
-done
-
-echo "All batches complete!"
-```
-
-## Alternative Services
-
-### Other Geocoding APIs
-If Nominatim is too slow, consider:
-
-| Service | Rate Limit | Cost | Coverage |
-|---------|-----------|------|----------|
-| Nominatim | 1/sec | Free | Good |
-| Google Maps | 50/sec | Pay per use | Excellent |
-| Mapbox | 100,000/mo | Free tier | Excellent |
-| Here | 250,000/mo | Free tier | Good |
-
-**Note:** Paid APIs require API keys and billing setup.
-
-## Schema Recommendations
-
-### Future Enhancement
-Consider adding dedicated geographic columns:
 ```sql
-ALTER TABLE locations ADD COLUMN state VARCHAR(2);
-ALTER TABLE locations ADD COLUMN county VARCHAR(100);
-ALTER TABLE locations ADD COLUMN country VARCHAR(3);
-
 CREATE INDEX idx_locations_state ON locations(state);
 CREATE INDEX idx_locations_county ON locations(county);
 ```
 
-Benefits:
-- Faster filtering by state
-- Cleaner data structure
-- Better analytics capabilities
-- No parsing required
+## API Details
 
-## Examples
+### Nominatim (OpenStreetMap)
 
-### Sample Success Output
+- **Endpoint:** `https://nominatim.openstreetmap.org/reverse`
+- **Rate Limit:** 1 request per second
+- **Authentication:** None required
+- **Terms:** Must include User-Agent header
+
+### Request Format
+
 ```
-[1/5] Geocoding: Moab OHV Area...
-  ✓ Grand County, Utah
-
-[2/5] Geocoding: Pikes Peak Trail...
-  ✓ El Paso County, Colorado
-
-[3/5] Geocoding: Death Valley Racetrack...
-  ✓ Inyo County, California
+GET https://nominatim.openstreetmap.org/reverse
+  ?format=json
+  &lat=40.7128
+  &lon=-74.0060
+  &addressdetails=1
 ```
 
-### Sample Error Handling
-```
-[4/5] Geocoding: Ocean Coordinates...
-  ⚠ No address data available
+### Response Format
 
-[5/5] Geocoding: Invalid Location...
-  ✗ Error: Invalid response from API
+```json
+{
+  "address": {
+    "state": "New York",
+    "county": "New York County",
+    "country": "United States",
+    ...
+  },
+  ...
+}
 ```
+
+## Performance
+
+### Timing Estimates
+
+| Locations | Time |
+|-----------|------|
+| 10 | ~11 seconds |
+| 100 | ~2 minutes |
+| 1,000 | ~17 minutes |
+| 6,000+ | ~2 hours |
+
+### Rate Limiting
+
+Script enforces 1.1 second delay between requests to comply with Nominatim's usage policy.
+
+**Why so slow?**
+- Free tier limit: 1 request/second
+- No bulk geocoding endpoint available
+- Respectful of free service resources
+
+## State Coverage
+
+### After Geocoding
+
+Run report to see coverage:
+```bash
+node geocode-locations.js --report
+```
+
+Example output:
+```
+STATE COVERAGE REPORT
+============================================================
+
+Total locations:      6236
+With state data:      5892 (94%)
+Missing state data:   344
+
+Locations by state:
+
+  CA   1012  ████████████████████████
+  CO    876  ████████████████████
+  WA    542  ████████████
+  ...
+```
+
+### State Codes
+
+US 2-letter codes automatically assigned:
+- California → CA
+- Colorado → CO
+- Washington → WA
+- etc.
+
+## Filtering by State
+
+Once geocoded, use state data for:
+
+### SQL Queries
+```sql
+SELECT * FROM locations WHERE state = 'CA';
+SELECT state, COUNT(*) FROM locations GROUP BY state;
+```
+
+### API Endpoints (Future)
+```
+GET /api/locations?state=CA
+GET /api/locations?state=CO&category=riding
+```
+
+### Analytics
+- Regional statistics
+- State-level coverage reports
+- Trip planning by state
+
+## International Locations
+
+### Current Behavior
+- Script attempts to geocode all locations
+- International locations get full state/province names (not 2-letter codes)
+- Examples: "British Columbia", "Baja California"
+
+### Recommendations
+- Focus on US locations first
+- International locations can be geocoded separately
+- Consider adding country column for better filtering
+
+## Error Handling
+
+### Common Errors
+
+**"Could not determine state"**
+- Coordinates in remote/ocean areas
+- API couldn't find administrative boundaries
+- Location outside any state/province
+
+**"Rate limit exceeded"**
+- Too many requests too quickly
+- Wait and retry
+- Script should handle automatically
+
+**"Network error"**
+- Internet connection issues
+- Nominatim server down
+- Retry later
+
+### Recovery
+
+If geocoding is interrupted:
+```bash
+# Resume - only processes locations without state data
+node geocode-locations.js
+```
+
+## Best Practices
+
+### 1. Test First
+Always dry-run with small batch:
+```bash
+node geocode-locations.js --limit 10 --dry-run
+```
+
+### 2. Batch Process
+Process in chunks rather than all at once:
+```bash
+node geocode-locations.js --limit 500
+# Wait a bit, then:
+node geocode-locations.js --limit 500
+```
+
+### 3. Monitor Progress
+Watch output for errors:
+- ✓ = Success
+- ✗ = Failed (note the location)
+
+### 4. Verify Results
+Check coverage report after:
+```bash
+node geocode-locations.js --report
+```
+
+### 5. Backup First
+Before mass geocoding:
+```bash
+./backup-database.sh
+```
+
+## Troubleshooting
+
+### No Locations to Geocode
+```
+Found 0 locations to geocode
+✓ All locations already have state data!
+```
+All locations have been geocoded. Use `--report` to view coverage.
+
+### Many Failures
+If >10% fail:
+1. Check internet connection
+2. Verify Nominatim service status
+3. Examine failed coordinates (may be invalid)
+4. Retry failed locations manually
+
+### Slow Performance
+Normal! Free API has strict rate limits. To speed up:
+- Use paid geocoding service (Google, Mapbox)
+- Process overnight
+- Cache results
+
+## Future Enhancements
+
+Potential improvements:
+- [ ] Support multiple geocoding providers
+- [ ] Bulk API option (if available)
+- [ ] Country code detection
+- [ ] City/town names
+- [ ] Elevation data from coordinates
+- [ ] Time zone detection
+- [ ] Manual overrides for corrections
 
 ---
 
 *Last updated: 2026-02-28*
 *Script: geocode-locations.js*
-*API: OpenStreetMap Nominatim*
