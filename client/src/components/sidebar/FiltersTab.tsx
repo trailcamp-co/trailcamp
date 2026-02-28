@@ -71,8 +71,45 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  // Count active filters
+  const activeCount = [
+    filterMode !== 'all',
+    filters.difficulty !== null,
+    filters.minScenery > 0,
+    filters.hideOutOfSeason,
+    filters.nearRoute,
+    filters.waterNearby,
+    filters.dumpNearby,
+    filters.shade,
+    filters.levelGround,
+    filters.categories.size < ALL_CATEGORIES.length,
+    filters.campsiteSubTypes.size < ALL_CAMPSITE_SUBTYPES.length,
+  ].filter(Boolean).length;
+
   return (
     <div className="p-3 space-y-4">
+      {/* Header with active filter count */}
+      {activeCount > 0 && (
+        <div className="flex items-center justify-between px-1">
+          <span className="text-xs text-orange-400 font-medium">
+            {activeCount} filter{activeCount > 1 ? 's' : ''} active
+          </span>
+          <button
+            onClick={() => {
+              setFilters({
+                ...DEFAULT_FILTERS,
+                categories: new Set(DEFAULT_FILTERS.categories),
+                campsiteSubTypes: new Set(DEFAULT_FILTERS.campsiteSubTypes),
+              });
+              onFilterMode('all');
+            }}
+            className="text-[10px] px-2 py-0.5 rounded-md bg-dark-800 text-gray-500 hover:text-orange-400 border border-dark-700/50 transition-colors"
+          >
+            Clear all
+          </button>
+        </div>
+      )}
+
       {/* Filter Mode Buttons */}
       <div>
         <div className="flex flex-wrap gap-1.5">
@@ -378,12 +415,15 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
 
       {/* Reset filters */}
       <button
-        onClick={() => setFilters({
-          ...DEFAULT_FILTERS,
-          categories: new Set(DEFAULT_FILTERS.categories),
-          campsiteSubTypes: new Set(DEFAULT_FILTERS.campsiteSubTypes),
-        })}
-        className="w-full text-center text-xs text-gray-500 hover:text-orange-400 py-2 transition-colors"
+        onClick={() => {
+          setFilters({
+            ...DEFAULT_FILTERS,
+            categories: new Set(DEFAULT_FILTERS.categories),
+            campsiteSubTypes: new Set(DEFAULT_FILTERS.campsiteSubTypes),
+          });
+          onFilterMode('all');
+        }}
+        className="w-full text-center text-xs text-gray-500 hover:text-orange-400 py-2.5 rounded-lg bg-dark-800/50 hover:bg-dark-800 border border-dark-700/30 transition-all"
       >
         Reset All Filters
       </button>
