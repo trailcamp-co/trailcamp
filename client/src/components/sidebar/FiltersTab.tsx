@@ -129,6 +129,38 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
         </div>
       </div>
 
+      {/* Quick Presets */}
+      <div>
+        <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          ⚡ Quick Presets
+        </h4>
+        <div className="flex flex-wrap gap-1.5">
+          {[
+            { label: '🏕️ Free camping', fn: () => {
+              setFilters(prev => ({ ...prev, categories: new Set(['campsite']), campsiteSubTypes: new Set(['boondocking']) }));
+            }},
+            { label: '🏍️ Single track', fn: () => {
+              setFilters(prev => ({ ...prev, categories: new Set(['riding']), difficulty: null }));
+            }},
+            { label: '⭐ Top rated', fn: () => {
+              setFilters(prev => ({ ...prev, minScenery: 4 }));
+            }},
+            { label: '🌿 In season', fn: () => {
+              setFilters(prev => ({ ...prev, hideOutOfSeason: true, seasonMonth: new Date().getMonth() + 1 }));
+            }},
+            { label: '🏔️ Hard rides', fn: () => {
+              setFilters(prev => ({ ...prev, categories: new Set(['riding']), difficulty: 'Hard' }));
+            }},
+          ].map(({ label, fn }) => (
+            <button key={label} onClick={fn}
+              className="text-[10px] font-medium px-2.5 py-1.5 rounded-lg bg-dark-800 text-gray-400 border border-dark-700/50 hover:border-orange-500/30 hover:text-orange-400 hover:bg-orange-500/5 transition-all"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Divider */}
       <div className="border-t border-dark-700/50" />
 
