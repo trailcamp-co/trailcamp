@@ -40,6 +40,11 @@ export function buildLocationsGeoJSON(locations: Location[]): GeoJSON.FeatureCol
           distance_miles: loc.distance_miles ?? '',
           elevation_gain_ft: loc.elevation_gain_ft ?? '',
           trail_types: loc.trail_types ?? '',
+          best_season: loc.best_season ?? '',
+          cost_per_night: loc.cost_per_night ?? '',
+          water_available: loc.water_available ?? 0,
+          description: (loc.description ?? '').slice(0, 200),
+          featured: loc.featured ?? 0,
         },
       };
     }),
