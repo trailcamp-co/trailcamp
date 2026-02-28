@@ -30,12 +30,13 @@ interface TopBarProps {
   onToggleSidebar: () => void;
   filters: Filters;
   setFilters: React.Dispatch<React.SetStateAction<Filters>>;
-  filterMode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated';
-  onFilterMode: (mode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated') => void;
+  filterMode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites';
+  onFilterMode: (mode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites') => void;
 }
 
 const FILTER_OPTIONS: { value: TopBarProps['filterMode']; label: string }[] = [
   { value: 'all', label: 'All' },
+  { value: 'favorites', label: '❤️ Favs' },
   { value: 'visited', label: 'Visited' },
   { value: 'want_to_visit', label: 'Want to Visit' },
   { value: 'highly_rated', label: 'Highly Rated' },
@@ -79,7 +80,7 @@ export default function TopBar({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const showSearchDropdown = searchFocused && searchResults && searchResults.length > 0;
+  const showSearchDropdown = searchFocused && searchQuery.length > 0 && searchResults !== null;
 
   return (
     <div
@@ -313,6 +314,7 @@ export default function TopBar({
             value={searchQuery}
             onChange={(e) => onSearch(e.target.value)}
             onFocus={() => setSearchFocused(true)}
+            onKeyDown={(e) => { if (e.key === 'Escape') setSearchFocused(false); }}
             placeholder="Search locations..."
             className={`w-full bg-transparent text-sm outline-none placeholder-gray-500 ${
               darkMode ? 'text-gray-200' : 'text-gray-800'
@@ -340,7 +342,12 @@ export default function TopBar({
                 : 'bg-white border-gray-200'
             }`}
           >
-            {searchResults.map((location) => {
+            {searchResults && searchResults.length === 0 && (
+              <div className={`px-3 py-4 text-sm text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                No results found
+              </div>
+            )}
+            {(searchResults || []).map((location) => {
               const diffColor = location.difficulty ? DIFFICULTY_COLORS[location.difficulty] : null;
               const trailTypes = location.category === 'riding' ? parseTrailTypes(location.trail_types) : [];
               return (

@@ -27,9 +27,11 @@ import {
   X,
   Check,
   Calendar,
+  Shuffle,
 } from 'lucide-react';
 import type { Location, Trip, TripStop, WeatherData } from '../../types';
 import { SortableStopCard, OverlayStopCard } from './StopCard';
+import { optimizeTrip } from '../../hooks/useApi';
 
 // --------------- Constants ---------------
 
@@ -292,6 +294,24 @@ export default function TripTab({
     [selectedTrip, onUpdateTrip],
   );
 
+  const [optimizing, setOptimizing] = useState(false);
+  const [savedMiles, setSavedMiles] = useState<number | null>(null);
+
+  const handleOptimize = useCallback(async () => {
+    if (!selectedTrip) return;
+    if (!window.confirm('Optimize stop order for minimum driving distance? The first stop will remain fixed.')) return;
+    setOptimizing(true);
+    setSavedMiles(null);
+    try {
+      const result = await optimizeTrip(selectedTrip.id);
+      setSavedMiles(result.saved);
+      // Reload stops
+      await onReorderStops(result.stops.map((s: TripStop) => s.id));
+    } catch { /* optimize failed */ }
+    setOptimizing(false);
+    setTimeout(() => setSavedMiles(null), 5000);
+  }, [selectedTrip, onReorderStops]);
+
   const totalNights = sortedStops.reduce((sum, s) => sum + (s.nights ?? 0), 0);
   const totalDistance = sortedStops.reduce((sum, s) => sum + (s.drive_distance_miles ?? 0), 0);
 
@@ -530,9 +550,32 @@ export default function TripTab({
           </DndContext>
         )}
 
-        {/* Add Stop button */}
+        {/* Optimize + Add Stop */}
         {selectedTrip && (
           <div className="p-3">
+            {sortedStops.length >= 3 && (
+              <div className="mb-2">
+                <button
+                  onClick={handleOptimize}
+                  disabled={optimizing}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+                    bg-blue-500/10 text-blue-400 border border-blue-500/20
+                    hover:bg-blue-500/20 hover:border-blue-500/30 transition-all
+                    [.light_&]:bg-blue-50 [.light_&]:text-blue-600 [.light_&]:border-blue-200 [.light_&]:hover:bg-blue-100
+                    disabled:opacity-50"
+                >
+                  <Shuffle size={14} />
+                  {optimizing ? 'Optimizing...' : 'Optimize Route'}
+                </button>
+                {savedMiles !== null && savedMiles > 0 && (
+                  <div className="text-xs text-green-400 text-center mt-1">Saved {savedMiles} miles!</div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+        {selectedTrip && (
+          <div className="px-3 pb-3">
             {showAddStop ? (
               <div className="bg-dark-800 [.light_&]:bg-white rounded-lg border border-gray-700 [.light_&]:border-gray-200 p-3">
                 <div className="flex items-center justify-between mb-2">

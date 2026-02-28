@@ -1,5 +1,5 @@
-import type { Location } from '../../types';
-import { CATEGORY_COLORS, CATEGORY_ICONS, DIFFICULTY_COLORS } from '../../types';
+import type { Location, CampsiteSubType } from '../../types';
+import { CATEGORY_COLORS, CATEGORY_ICONS, DIFFICULTY_COLORS, CAMPSITE_SUBTYPE_COLORS, CAMPSITE_SUBTYPE_ICONS } from '../../types';
 import {
   CLUSTER_MAX_ZOOM,
   CLUSTER_RADIUS,
@@ -13,9 +13,18 @@ export function buildLocationsGeoJSON(locations: Location[]): GeoJSON.FeatureCol
   return {
     type: 'FeatureCollection',
     features: locations.map((loc) => {
-      const color = loc.category === 'riding' && loc.difficulty
-        ? DIFFICULTY_COLORS[loc.difficulty] ?? '#6b7280'
-        : CATEGORY_COLORS[loc.category] ?? '#6b7280';
+      let color: string;
+      let icon: string;
+      if (loc.category === 'riding' && loc.difficulty) {
+        color = DIFFICULTY_COLORS[loc.difficulty] ?? '#6b7280';
+        icon = CATEGORY_ICONS[loc.category] ?? '📍';
+      } else if (loc.category === 'campsite' && loc.sub_type) {
+        color = CAMPSITE_SUBTYPE_COLORS[loc.sub_type as CampsiteSubType] ?? CATEGORY_COLORS[loc.category] ?? '#6b7280';
+        icon = CAMPSITE_SUBTYPE_ICONS[loc.sub_type as CampsiteSubType] ?? CATEGORY_ICONS[loc.category] ?? '📍';
+      } else {
+        color = CATEGORY_COLORS[loc.category] ?? '#6b7280';
+        icon = CATEGORY_ICONS[loc.category] ?? '📍';
+      }
       return {
         type: 'Feature' as const,
         geometry: { type: 'Point' as const, coordinates: [loc.longitude, loc.latitude] },
@@ -23,9 +32,10 @@ export function buildLocationsGeoJSON(locations: Location[]): GeoJSON.FeatureCol
           locationId: loc.id,
           name: loc.name,
           category: loc.category,
+          sub_type: loc.sub_type ?? '',
           difficulty: loc.difficulty ?? '',
           color,
-          icon: CATEGORY_ICONS[loc.category] ?? '📍',
+          icon,
           scenery_rating: loc.scenery_rating ?? 0,
           distance_miles: loc.distance_miles ?? '',
           elevation_gain_ft: loc.elevation_gain_ft ?? '',

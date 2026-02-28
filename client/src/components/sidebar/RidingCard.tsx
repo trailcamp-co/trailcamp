@@ -1,4 +1,4 @@
-import { Star } from 'lucide-react';
+import { Star, Heart } from 'lucide-react';
 import type { Location } from '../../types';
 import { DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../../types';
 
@@ -19,36 +19,48 @@ function renderStars(count: number, max: number = 5): JSX.Element {
 interface RidingCardProps {
   location: Location;
   onFlyTo: (lng: number, lat: number) => void;
+  distanceFrom?: number;
+  onLocationClick?: (location: Location) => void;
 }
 
-export default function RidingCard({ location: loc, onFlyTo }: RidingCardProps) {
+export default function RidingCard({ location: loc, onFlyTo, distanceFrom, onLocationClick }: RidingCardProps) {
   const diffColor = DIFFICULTY_COLORS[loc.difficulty ?? ''] ?? '#6b7280';
+
+  const seasonDot = loc.seasonal_status ? (
+    <span className={`w-2 h-2 rounded-full inline-block ${
+      loc.seasonal_status === 'great' ? 'bg-green-400' :
+      loc.seasonal_status === 'shoulder' ? 'bg-yellow-400' : 'bg-red-400'
+    }`} title={`${loc.seasonal_status} season`} />
+  ) : null;
 
   return (
     <button
-      onClick={() => onFlyTo(loc.longitude, loc.latitude)}
+      onClick={() => {
+        onFlyTo(loc.longitude, loc.latitude);
+        onLocationClick?.(loc);
+      }}
       className="w-full text-left px-3 py-2.5 border-b border-gray-700/30 [.light_&]:border-gray-100
         hover:bg-dark-700 [.light_&]:hover:bg-gray-50 transition-colors group flex gap-0"
     >
-      {/* Colored left accent bar */}
       <div
         className="w-1 rounded-full flex-shrink-0 mr-2.5 self-stretch"
         style={{ backgroundColor: diffColor }}
       />
       <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between mb-1 gap-1">
           <span className="text-sm font-medium text-gray-200 [.light_&]:text-gray-800 truncate">
             {loc.name}
           </span>
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            {seasonDot}
+            {loc.favorited ? <Heart size={10} className="text-red-400 fill-red-400" /> : null}
+          </div>
         </div>
         <div className="flex items-center gap-1.5 flex-wrap">
           {loc.difficulty && (
             <span
               className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
-              style={{
-                backgroundColor: diffColor + '22',
-                color: diffColor,
-              }}
+              style={{ backgroundColor: diffColor + '22', color: diffColor }}
             >
               {loc.difficulty}
             </span>
@@ -63,6 +75,11 @@ export default function RidingCard({ location: loc, onFlyTo }: RidingCardProps) 
               ⛰️ {loc.elevation_gain_ft.toLocaleString()} ft
             </span>
           )}
+          {distanceFrom != null && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium">
+              📍 {distanceFrom.toFixed(1)} mi away
+            </span>
+          )}
           {loc.scenery_rating != null && loc.scenery_rating > 0 && (
             <span className="flex items-center">{renderStars(loc.scenery_rating)}</span>
           )}
@@ -72,11 +89,8 @@ export default function RidingCard({ location: loc, onFlyTo }: RidingCardProps) 
             {parseTrailTypes(loc.trail_types).map((tt) => {
               const colors = TRAIL_TYPE_COLORS[tt] || { bg: 'rgba(107,114,128,0.15)', text: '#9ca3af' };
               return (
-                <span
-                  key={tt}
-                  className="text-[9px] font-medium px-1.5 py-0.5 rounded-full whitespace-nowrap"
-                  style={{ backgroundColor: colors.bg, color: colors.text }}
-                >
+                <span key={tt} className="text-[9px] font-medium px-1.5 py-0.5 rounded-full whitespace-nowrap"
+                  style={{ backgroundColor: colors.bg, color: colors.text }}>
                   {tt}
                 </span>
               );

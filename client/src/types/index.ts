@@ -69,11 +69,37 @@ export interface Location {
   visited: number;
   visited_date: string | null;
   want_to_visit: number;
+  favorited: number;
   created_at: string;
   updated_at: string;
+  distance_from?: number;
+  seasonal_status?: 'great' | 'shoulder' | 'bad';
 }
 
 export type LocationCategory = 'campsite' | 'riding' | 'water' | 'dump' | 'gas' | 'grocery' | 'scenic' | 'laundromat';
+
+export type CampsiteSubType = 'boondocking' | 'campground' | 'parking' | 'other';
+
+export const CAMPSITE_SUBTYPE_ICONS: Record<CampsiteSubType, string> = {
+  boondocking: '🏜️',
+  campground: '🏕️',
+  parking: '🅿️',
+  other: '⛺',
+};
+
+export const CAMPSITE_SUBTYPE_COLORS: Record<CampsiteSubType, string> = {
+  boondocking: '#D97706',
+  campground: '#22C55E',
+  parking: '#6B7280',
+  other: '#F97316',
+};
+
+export const CAMPSITE_SUBTYPE_LABELS: Record<CampsiteSubType, string> = {
+  boondocking: 'Boondocking',
+  campground: 'Campgrounds',
+  parking: 'Parking',
+  other: 'Other Camps',
+};
 
 export interface MapStyle {
   id: string;
@@ -146,19 +172,23 @@ export interface WeatherData {
 
 export interface Filters {
   categories: Set<LocationCategory>;
+  campsiteSubTypes: Set<CampsiteSubType>;
   waterNearby: boolean;
   dumpNearby: boolean;
   shade: boolean;
   levelGround: boolean;
   difficulty: string | null;
-  visitedStatus: 'all' | 'visited' | 'want_to_visit' | 'highly_rated';
+  visitedStatus: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites';
   minScenery: number;
   nearRoute: boolean;
   nearRouteDistance: number;
+  hideOutOfSeason: boolean;
+  seasonMonth: number | null;
 }
 
 export const DEFAULT_FILTERS: Filters = {
   categories: new Set(['campsite', 'riding', 'water', 'dump', 'scenic'] as LocationCategory[]),
+  campsiteSubTypes: new Set(['boondocking', 'campground', 'parking', 'other'] as CampsiteSubType[]),
   waterNearby: false,
   dumpNearby: false,
   shade: false,
@@ -168,6 +198,8 @@ export const DEFAULT_FILTERS: Filters = {
   minScenery: 0,
   nearRoute: false,
   nearRouteDistance: 25,
+  hideOutOfSeason: false,
+  seasonMonth: null,
 };
 
 export const WEATHER_CODES: Record<number, { icon: string; label: string }> = {

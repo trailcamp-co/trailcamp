@@ -29,7 +29,7 @@ export default function App() {
 
   const { routeGeoJSON } = useRoute(stops, updateStop);
   const { weatherCache, fetchWeather } = useWeather();
-  const { filters, setFilters, filteredLocations, handleToggleLayer } = useFilters(locations, routeGeoJSON);
+  const { filters, setFilters, filteredLocations, handleToggleLayer, handleToggleCampsiteSubType } = useFilters(locations, routeGeoJSON);
   const { searchQuery, searchResults, handleSearch, clearSearch } = useSearch(searchLocations);
   const {
     selectedLocation,
@@ -113,7 +113,7 @@ export default function App() {
         filters={filters}
         setFilters={setFilters}
         filterMode={filters.visitedStatus}
-        onFilterMode={(mode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated') =>
+        onFilterMode={(mode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites') =>
           setFilters(prev => ({ ...prev, visitedStatus: mode }))
         }
       />
@@ -141,6 +141,7 @@ export default function App() {
             fetchWeather={fetchWeather}
             routeGeoJSON={routeGeoJSON}
             mapBounds={mapBounds}
+            onLocationClick={handleLocationClick}
           />
         </div>
 
@@ -159,6 +160,8 @@ export default function App() {
             flyToLocation={flyToLocation}
             darkMode={darkMode}
             onBoundsChange={setMapBounds}
+            campsiteSubTypes={filters.campsiteSubTypes}
+            onToggleCampsiteSubType={handleToggleCampsiteSubType}
           />
         </div>
 
@@ -177,6 +180,8 @@ export default function App() {
               onAddToTrip={handleAddStopFromLocation}
               hasActiveTrip={!!selectedTrip}
               darkMode={darkMode}
+              onFlyTo={handleFlyTo}
+              onLocationClick={handleLocationClick}
             />
           )}
         </div>
@@ -184,7 +189,7 @@ export default function App() {
         {/* Stats Panel */}
         {showStats && (
           <div className="absolute right-0 top-0 bottom-0 z-20">
-            <StatsPanel onClose={() => setShowStats(false)} darkMode={darkMode} />
+            <StatsPanel onClose={() => setShowStats(false)} darkMode={darkMode} selectedTrip={selectedTrip} stops={stops} />
           </div>
         )}
       </div>

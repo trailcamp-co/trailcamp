@@ -172,6 +172,21 @@ export async function importRecreation(params: { state?: string; query?: string;
   return apiFetch<{ imported: number; skipped: number; total: number }>('/import/recreation', { method: 'POST', body: JSON.stringify(params) });
 }
 
+// Toggle favorite
+export async function toggleFavorite(id: number) {
+  return apiFetch<Location>(`/locations/${id}/favorite`, { method: 'PUT' });
+}
+
+// Nearby riding
+export async function fetchNearbyRiding(lat: number, lng: number, radius: number = 20) {
+  return apiFetch<(Location & { distance_from: number })[]>(`/locations/nearby-riding?lat=${lat}&lng=${lng}&radius=${radius}`);
+}
+
+// Optimize trip route
+export async function optimizeTrip(tripId: number) {
+  return apiFetch<{ stops: TripStop[]; saved: number }>(`/trips/${tripId}/optimize`, { method: 'POST' });
+}
+
 // Mapbox token
 export async function getMapboxToken() {
   const data = await apiFetch<{ token: string }>('/mapbox-token');

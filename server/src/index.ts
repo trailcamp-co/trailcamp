@@ -7,6 +7,7 @@ import locationsRouter from './routes/locations';
 import directionsRouter from './routes/directions';
 import importRouter from './routes/import';
 import { seedDatabase } from './seed';
+import { classifyCampsites } from './migrations/classify-campsites';
 
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
@@ -34,6 +35,9 @@ app.get('/api/mapbox-token', (_req, res) => {
 
 // Seed database on startup
 seedDatabase();
+
+// Run migrations
+classifyCampsites();
 
 app.listen(PORT, () => {
   console.log(`TrailCamp server running on port ${PORT}`);

@@ -24,6 +24,10 @@ router.get('/', (req: Request, res: Response) => {
     query += ' AND want_to_visit = 1';
   }
 
+  if (req.query.favorited === '1') {
+    query += ' AND favorited = 1';
+  }
+
   if (req.query.min_rating) {
     query += ' AND user_rating >= ?';
     params.push(Number(req.query.min_rating));
@@ -45,9 +49,31 @@ router.get('/', (req: Request, res: Response) => {
     params.push(Number(req.query.sw_lat), Number(req.query.ne_lat), Number(req.query.sw_lng), Number(req.query.ne_lng));
   }
 
-  query += ' ORDER BY name';
+  // Distance sort using Haversine
+  if (req.query.sort_by === 'distance' && req.query.from_lat && req.query.from_lng) {
+    const fromLat = Number(req.query.from_lat);
+    const fromLng = Number(req.query.from_lng);
+    // Haversine approximation in miles
+    query = query.replace('SELECT * FROM locations', `SELECT *,
+      (3959 * acos(
+        cos(radians(${fromLat})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${fromLng})) +
+        sin(radians(${fromLat})) * sin(radians(latitude))
+      )) AS distance_from FROM locations`);
+    query += ' ORDER BY distance_from';
+  } else {
+    query += ' ORDER BY name';
+  }
 
   const locations = db.prepare(query).all(...params);
+
+  // Add seasonal_status if trip_month is passed
+  if (req.query.trip_month) {
+    const month = Number(req.query.trip_month);
+    (locations as any[]).forEach(loc => {
+      loc.seasonal_status = computeSeasonalStatus(loc, month);
+    });
+  }
+
   res.json(locations);
 });
 
@@ -60,13 +86,76 @@ router.get('/search', (req: Request, res: Response) => {
     return;
   }
 
+  // Relevance scoring: exact match > starts with > contains
   const locations = db.prepare(`
-    SELECT * FROM locations
+    SELECT *,
+      CASE
+        WHEN LOWER(name) = LOWER(?) THEN 3
+        WHEN LOWER(name) LIKE LOWER(? || '%') THEN 2
+        ELSE 1
+      END AS relevance
+    FROM locations
     WHERE name LIKE ? OR description LIKE ? OR notes LIKE ? OR sub_type LIKE ? OR trail_types LIKE ? OR difficulty LIKE ?
-    ORDER BY name LIMIT 50
-  `).all(`%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`);
+    ORDER BY relevance DESC, name LIMIT 20
+  `).all(q, q, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`);
 
   res.json(locations);
+});
+
+// GET /api/locations/nearby-riding
+router.get('/nearby-riding', (req: Request, res: Response) => {
+  const db = getDb();
+  const lat = Number(req.query.lat);
+  const lng = Number(req.query.lng);
+  const radius = Number(req.query.radius) || 20;
+
+  if (!lat || !lng) {
+    res.status(400).json({ error: 'lat and lng are required' });
+    return;
+  }
+
+  const locations = db.prepare(`
+    SELECT *,
+      (3959 * acos(
+        min(1, max(-1,
+          cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) +
+          sin(radians(?)) * sin(radians(latitude))
+        ))
+      )) AS distance_from
+    FROM locations
+    WHERE category = 'riding'
+    HAVING distance_from <= ?
+    ORDER BY distance_from
+  `).all(lat, lng, lat, radius);
+
+  res.json(locations);
+});
+
+// GET /api/locations/seasonal
+router.get('/seasonal', (req: Request, res: Response) => {
+  const db = getDb();
+  const month = Number(req.query.month) || new Date().getMonth() + 1;
+
+  const locations = db.prepare('SELECT * FROM locations').all() as any[];
+  locations.forEach(loc => {
+    loc.seasonal_status = computeSeasonalStatus(loc, month);
+  });
+
+  res.json(locations);
+});
+
+// PUT /api/locations/:id/favorite
+router.put('/:id/favorite', (req: Request, res: Response) => {
+  const db = getDb();
+  const location = db.prepare('SELECT favorited FROM locations WHERE id = ?').get(req.params.id) as { favorited: number } | undefined;
+  if (!location) {
+    res.status(404).json({ error: 'Location not found' });
+    return;
+  }
+  const newVal = location.favorited ? 0 : 1;
+  db.prepare('UPDATE locations SET favorited = ?, updated_at = datetime(\'now\') WHERE id = ?').run(newVal, req.params.id);
+  const updated = db.prepare('SELECT * FROM locations WHERE id = ?').get(req.params.id);
+  res.json(updated);
 });
 
 // POST /api/locations
@@ -118,7 +207,7 @@ router.put('/:id', (req: Request, res: Response) => {
     'stay_limit_days', 'season', 'crowding', 'trail_types', 'difficulty', 'distance_miles',
     'elevation_gain_ft', 'permit_required', 'permit_info', 'scenery_rating', 'best_season',
     'photos', 'external_links', 'notes', 'hours', 'user_rating', 'user_notes', 'visited',
-    'visited_date', 'want_to_visit'
+    'visited_date', 'want_to_visit', 'favorited'
   ];
 
   for (const field of allowedFields) {
@@ -153,7 +242,7 @@ router.delete('/:id', (req: Request, res: Response) => {
 });
 
 // GET /api/locations/stats
-router.get('/stats', (_req: Request, res: Response) => {
+router.get('/stats', (req: Request, res: Response) => {
   const db = getDb();
 
   const totalLocations = (db.prepare('SELECT COUNT(*) as count FROM locations').get() as any).count;
@@ -171,6 +260,76 @@ router.get('/stats', (_req: Request, res: Response) => {
   // States visited - approximate from coordinates
   const visitedLocations = db.prepare('SELECT DISTINCT latitude, longitude FROM locations WHERE visited = 1').all();
 
+  // Trip-specific stats if trip_id provided
+  let tripStats = null;
+  if (req.query.trip_id) {
+    const tripId = Number(req.query.trip_id);
+    const stops = db.prepare(`
+      SELECT ts.*, l.latitude as loc_lat, l.longitude as loc_lng
+      FROM trip_stops ts
+      LEFT JOIN locations l ON ts.location_id = l.id
+      WHERE ts.trip_id = ?
+      ORDER BY ts.sort_order
+    `).all(tripId) as any[];
+
+    const tripDriveMiles = stops.reduce((sum: number, s: any) => sum + (s.drive_distance_miles || 0), 0);
+    const tripDriveTime = stops.reduce((sum: number, s: any) => sum + (s.drive_time_mins || 0), 0);
+
+    // Count nearby riding areas for all stops
+    let nearbyRidingCount = 0;
+    const diffCounts: Record<string, number> = { Easy: 0, Moderate: 0, Hard: 0, Expert: 0 };
+    const trailTypeCounts: Record<string, number> = {};
+
+    for (const stop of stops) {
+      const lat = stop.loc_lat || stop.latitude;
+      const lng = stop.loc_lng || stop.longitude;
+      if (!lat || !lng) continue;
+
+      const nearby = db.prepare(`
+        SELECT difficulty, trail_types FROM locations
+        WHERE category = 'riding'
+        AND (3959 * acos(
+          min(1, max(-1,
+            cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) +
+            sin(radians(?)) * sin(radians(latitude))
+          ))
+        )) <= 20
+      `).all(lat, lng, lat) as any[];
+
+      nearbyRidingCount += nearby.length;
+      for (const r of nearby) {
+        if (r.difficulty && diffCounts[r.difficulty] !== undefined) {
+          diffCounts[r.difficulty]++;
+        }
+        if (r.trail_types) {
+          try {
+            const types = JSON.parse(r.trail_types);
+            if (Array.isArray(types)) {
+              types.forEach((t: string) => {
+                const trimmed = t.trim();
+                if (trimmed) trailTypeCounts[trimmed] = (trailTypeCounts[trimmed] || 0) + 1;
+              });
+            }
+          } catch {
+            r.trail_types.split(',').forEach((t: string) => {
+              const trimmed = t.trim();
+              if (trimmed) trailTypeCounts[trimmed] = (trailTypeCounts[trimmed] || 0) + 1;
+            });
+          }
+        }
+      }
+    }
+
+    tripStats = {
+      totalDriveMiles: Math.round(tripDriveMiles * 10) / 10,
+      totalDriveTimeMins: Math.round(tripDriveTime),
+      nearbyRidingCount,
+      difficultyBreakdown: diffCounts,
+      trailTypeBreakdown: trailTypeCounts,
+      stopCount: stops.length,
+    };
+  }
+
   res.json({
     totalLocations,
     visitedCount,
@@ -182,7 +341,56 @@ router.get('/stats', (_req: Request, res: Response) => {
     totalMiles: Math.round(totalMiles * 10) / 10,
     topRated,
     visitedLocations,
+    tripStats,
   });
 });
+
+// Helper: compute seasonal status
+function computeSeasonalStatus(loc: any, month: number): 'great' | 'shoulder' | 'bad' {
+  // If best_season is set, use it
+  if (loc.best_season) {
+    const bs = loc.best_season.toLowerCase();
+    const monthNames = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    const currentMonthName = monthNames[month - 1];
+
+    if (bs.includes(currentMonthName) || bs.includes('year-round') || bs.includes('all year')) {
+      return 'great';
+    }
+    // Check if within a season range
+    if (bs.includes('spring') && [3, 4, 5].includes(month)) return 'great';
+    if (bs.includes('summer') && [6, 7, 8].includes(month)) return 'great';
+    if (bs.includes('fall') && [9, 10, 11].includes(month)) return 'great';
+    if (bs.includes('winter') && [12, 1, 2].includes(month)) return 'great';
+
+    // Shoulder months (adjacent to best season)
+    if (bs.includes('spring') && [2, 6].includes(month)) return 'shoulder';
+    if (bs.includes('summer') && [5, 9].includes(month)) return 'shoulder';
+    if (bs.includes('fall') && [8, 12].includes(month)) return 'shoulder';
+    if (bs.includes('winter') && [11, 3].includes(month)) return 'shoulder';
+
+    return 'bad';
+  }
+
+  // Heuristic based on latitude and elevation
+  const lat = loc.latitude || 0;
+  const elevation = loc.elevation_gain_ft || 0;
+
+  if (lat > 42 || elevation > 7000) {
+    // High latitude or high elevation: best May-Oct
+    if (month >= 5 && month <= 10) return 'great';
+    if (month === 4 || month === 11) return 'shoulder';
+    return 'bad';
+  }
+
+  if (lat < 33) {
+    // Southern / desert: best Oct-Apr
+    if (month >= 10 || month <= 4) return 'great';
+    if (month === 5 || month === 9) return 'shoulder';
+    return 'bad';
+  }
+
+  // Mid-latitude: year-round generally fine
+  return 'great';
+}
 
 export default router;

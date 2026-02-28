@@ -97,6 +97,13 @@ function initializeDb(db: Database.Database): void {
     CREATE UNIQUE INDEX IF NOT EXISTS idx_locations_source ON locations(source, source_id);
     CREATE INDEX IF NOT EXISTS idx_trip_stops_trip ON trip_stops(trip_id);
   `);
+
+  // Add favorited column if it doesn't exist
+  const cols = db.prepare("PRAGMA table_info(locations)").all() as { name: string }[];
+  const colNames = cols.map(c => c.name);
+  if (!colNames.includes('favorited')) {
+    db.exec('ALTER TABLE locations ADD COLUMN favorited INTEGER DEFAULT 0');
+  }
 }
 
 export function closeDb(): void {

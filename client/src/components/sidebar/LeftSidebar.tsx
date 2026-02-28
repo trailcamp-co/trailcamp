@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MapPin, Bike, Sliders } from 'lucide-react';
-import type { Location, Trip, TripStop, Filters, WeatherData } from '../../types';
+import type { Location, Trip, TripStop, Filters, WeatherData, CampsiteSubType } from '../../types';
 import TripTab from './TripTab';
 import RidingTab from './RidingTab';
 import FiltersTab from './FiltersTab';
@@ -27,6 +27,7 @@ interface LeftSidebarProps {
   fetchWeather: (lat: number, lng: number, date: string) => Promise<WeatherData | null>;
   routeGeoJSON: GeoJSON.GeoJsonObject | null;
   mapBounds: { north: number; south: number; east: number; west: number } | null;
+  onLocationClick?: (location: Location) => void;
 }
 
 export default function LeftSidebar({
@@ -49,6 +50,7 @@ export default function LeftSidebar({
   fetchWeather,
   routeGeoJSON,
   mapBounds,
+  onLocationClick,
 }: LeftSidebarProps) {
   const [activeTab, setActiveTab] = useState<SidebarTab>('trip');
 
@@ -81,7 +83,7 @@ export default function LeftSidebar({
       {/* Riding Tab */}
       {activeTab === 'riding' && (
         <div className="flex-1 overflow-hidden">
-          <RidingTab locations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} />
+          <RidingTab locations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} />
         </div>
       )}
 

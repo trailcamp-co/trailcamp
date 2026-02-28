@@ -137,6 +137,81 @@ router.delete('/:id/stops/:stopId', (req: Request, res: Response) => {
   res.status(204).send();
 });
 
+// POST /api/trips/:id/optimize
+router.post('/:id/optimize', (req: Request, res: Response) => {
+  const db = getDb();
+  const stops = db.prepare('SELECT * FROM trip_stops WHERE trip_id = ? ORDER BY sort_order').all(req.params.id) as any[];
+
+  if (stops.length < 3) {
+    res.json({ stops, saved: 0 });
+    return;
+  }
+
+  // Calculate original total distance
+  const originalDistance = calculateTotalDistance(stops);
+
+  // Nearest-neighbor TSP: keep first stop fixed
+  const optimized: any[] = [stops[0]];
+  const remaining = stops.slice(1);
+
+  while (remaining.length > 0) {
+    const current = optimized[optimized.length - 1];
+    let nearestIdx = 0;
+    let nearestDist = Infinity;
+
+    for (let i = 0; i < remaining.length; i++) {
+      const dist = haversineDistance(
+        current.latitude, current.longitude,
+        remaining[i].latitude, remaining[i].longitude
+      );
+      if (dist < nearestDist) {
+        nearestDist = dist;
+        nearestIdx = i;
+      }
+    }
+
+    optimized.push(remaining[nearestIdx]);
+    remaining.splice(nearestIdx, 1);
+  }
+
+  // Update sort_order for all stops
+  const updateStmt = db.prepare('UPDATE trip_stops SET sort_order = ? WHERE id = ?');
+  const reorder = db.transaction(() => {
+    optimized.forEach((stop, index) => {
+      updateStmt.run(index, stop.id);
+    });
+  });
+  reorder();
+
+  const newDistance = calculateTotalDistance(optimized);
+  const saved = Math.round((originalDistance - newDistance) * 10) / 10;
+
+  const updatedStops = db.prepare('SELECT * FROM trip_stops WHERE trip_id = ? ORDER BY sort_order').all(req.params.id);
+  res.json({ stops: updatedStops, saved: Math.max(0, saved) });
+});
+
+function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 3959; // Earth radius in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function calculateTotalDistance(stops: any[]): number {
+  let total = 0;
+  for (let i = 1; i < stops.length; i++) {
+    total += haversineDistance(
+      stops[i - 1].latitude, stops[i - 1].longitude,
+      stops[i].latitude, stops[i].longitude
+    );
+  }
+  return total;
+}
+
 // GET /api/trips/:id/route
 router.get('/:id/route', async (req: Request, res: Response) => {
   const db = getDb();

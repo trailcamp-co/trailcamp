@@ -4,18 +4,26 @@ import {
   Star,
   Route,
   Sliders,
+  Thermometer,
 } from 'lucide-react';
-import type { LocationCategory, Filters } from '../../types';
+import type { LocationCategory, CampsiteSubType, Filters } from '../../types';
 import {
   CATEGORY_ICONS,
   CATEGORY_COLORS,
   CATEGORY_LABELS,
+  CAMPSITE_SUBTYPE_ICONS,
+  CAMPSITE_SUBTYPE_COLORS,
+  CAMPSITE_SUBTYPE_LABELS,
   DEFAULT_FILTERS,
 } from '../../types';
 
 const ALL_CATEGORIES: LocationCategory[] = [
   'campsite', 'riding', 'water', 'dump', 'gas', 'grocery', 'scenic', 'laundromat',
 ];
+
+const ALL_CAMPSITE_SUBTYPES: CampsiteSubType[] = ['boondocking', 'campground', 'parking', 'other'];
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 interface FiltersTabProps {
   filters: Filters;
@@ -36,6 +44,18 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON }: Filter
     });
   };
 
+  const toggleCampsiteSubType = (st: CampsiteSubType) => {
+    setFilters((prev) => {
+      const next = new Set(prev.campsiteSubTypes);
+      if (next.has(st)) {
+        next.delete(st);
+      } else {
+        next.add(st);
+      }
+      return { ...prev, campsiteSubTypes: next };
+    });
+  };
+
   const toggleBoolean = (key: 'waterNearby' | 'dumpNearby' | 'shade' | 'levelGround') => {
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   };
@@ -50,23 +70,51 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON }: Filter
         </h4>
         <div className="space-y-1">
           {ALL_CATEGORIES.map((cat) => (
-            <label
-              key={cat}
-              className="flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-dark-700 [.light_&]:hover:bg-gray-100 transition-colors"
-            >
-              <input
-                type="checkbox"
-                checked={filters.categories.has(cat)}
-                onChange={() => toggleCategory(cat)}
-                className="rounded border-gray-600 text-orange-500 focus:ring-orange-500 focus:ring-offset-0 bg-dark-900 [.light_&]:bg-white"
-              />
-              <span className="text-sm" style={{ color: CATEGORY_COLORS[cat] }}>
-                {CATEGORY_ICONS[cat]}
-              </span>
-              <span className="text-sm text-gray-300 [.light_&]:text-gray-700">
-                {CATEGORY_LABELS[cat]}
-              </span>
-            </label>
+            <div key={cat}>
+              <label
+                className="flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-dark-700 [.light_&]:hover:bg-gray-100 transition-colors"
+              >
+                <input
+                  type="checkbox"
+                  checked={filters.categories.has(cat)}
+                  onChange={() => toggleCategory(cat)}
+                  className="rounded border-gray-600 text-orange-500 focus:ring-orange-500 focus:ring-offset-0 bg-dark-900 [.light_&]:bg-white"
+                />
+                <span className="text-sm" style={{ color: CATEGORY_COLORS[cat] }}>
+                  {CATEGORY_ICONS[cat]}
+                </span>
+                <span className="text-sm text-gray-300 [.light_&]:text-gray-700">
+                  {CATEGORY_LABELS[cat]}
+                </span>
+              </label>
+
+              {/* Campsite sub-types */}
+              {cat === 'campsite' && filters.categories.has('campsite') && (
+                <div className="ml-6 space-y-0.5 mt-0.5">
+                  {ALL_CAMPSITE_SUBTYPES.map((st) => (
+                    <label
+                      key={st}
+                      className="flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer hover:bg-dark-700 [.light_&]:hover:bg-gray-100 transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={filters.campsiteSubTypes.has(st)}
+                        onChange={() => toggleCampsiteSubType(st)}
+                        className="rounded border-gray-600 text-orange-500 focus:ring-orange-500 focus:ring-offset-0 bg-dark-900 [.light_&]:bg-white"
+                      />
+                      <span className="text-xs">{CAMPSITE_SUBTYPE_ICONS[st]}</span>
+                      <span
+                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: CAMPSITE_SUBTYPE_COLORS[st] }}
+                      />
+                      <span className="text-xs text-gray-400 [.light_&]:text-gray-600">
+                        {CAMPSITE_SUBTYPE_LABELS[st]}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -159,6 +207,48 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON }: Filter
         </div>
       </div>
 
+      {/* Seasonal filter */}
+      <div>
+        <h4 className="text-xs font-medium text-gray-400 [.light_&]:text-gray-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <Thermometer size={12} className="text-orange-400" />
+          Season
+        </h4>
+        <div className="space-y-2 px-2">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <div
+              className={`relative w-9 h-5 rounded-full transition-colors ${
+                filters.hideOutOfSeason ? 'bg-orange-500' : 'bg-gray-700 [.light_&]:bg-gray-300'
+              }`}
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, hideOutOfSeason: !prev.hideOutOfSeason }))
+              }
+            >
+              <div
+                className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                  filters.hideOutOfSeason ? 'translate-x-4' : ''
+                }`}
+              />
+            </div>
+            <span className="text-sm text-gray-300 [.light_&]:text-gray-700">
+              Hide out-of-season
+            </span>
+          </label>
+          {filters.hideOutOfSeason && (
+            <select
+              value={filters.seasonMonth ?? new Date().getMonth() + 1}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, seasonMonth: Number(e.target.value) }))
+              }
+              className="w-full bg-dark-800 [.light_&]:bg-white border border-gray-700 [.light_&]:border-gray-200 rounded px-2 py-1 text-xs text-gray-300 [.light_&]:text-gray-700 focus:outline-none focus:border-orange-500 transition-colors"
+            >
+              {MONTH_NAMES.map((name, i) => (
+                <option key={i} value={i + 1}>{name}</option>
+              ))}
+            </select>
+          )}
+        </div>
+      </div>
+
       {/* Near Route */}
       {routeGeoJSON && (
         <div>
@@ -217,7 +307,11 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON }: Filter
 
       {/* Reset filters */}
       <button
-        onClick={() => setFilters(DEFAULT_FILTERS)}
+        onClick={() => setFilters({
+          ...DEFAULT_FILTERS,
+          categories: new Set(DEFAULT_FILTERS.categories),
+          campsiteSubTypes: new Set(DEFAULT_FILTERS.campsiteSubTypes),
+        })}
         className="w-full text-center text-xs text-gray-500 hover:text-orange-400 py-2 transition-colors"
       >
         Reset All Filters
