@@ -56,6 +56,31 @@ router.put('/:id', (req: Request, res: Response) => {
   res.json(trip);
 });
 
+// POST /api/trips/:id/duplicate
+router.post('/:id/duplicate', (req: Request, res: Response) => {
+  const db = getDb();
+  const original = db.prepare('SELECT * FROM trips WHERE id = ?').get(req.params.id) as any;
+  if (!original) { res.status(404).json({ error: 'Trip not found' }); return; }
+
+  const result = db.prepare(`
+    INSERT INTO trips (name, description, status, start_date, end_date, notes)
+    VALUES (?, ?, 'planning', ?, ?, ?)
+  `).run(`${original.name} (Copy)`, original.description, original.start_date, original.end_date, original.notes);
+
+  const newTripId = result.lastInsertRowid;
+  const stops = db.prepare('SELECT * FROM trip_stops WHERE trip_id = ? ORDER BY sort_order').all(req.params.id) as any[];
+  const insertStop = db.prepare(`
+    INSERT INTO trip_stops (trip_id, location_id, name, latitude, longitude, sort_order, nights, notes, drive_distance_miles, drive_time_minutes)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  for (const s of stops) {
+    insertStop.run(newTripId, s.location_id, s.name, s.latitude, s.longitude, s.sort_order, s.nights, s.notes, s.drive_distance_miles, s.drive_time_minutes);
+  }
+
+  const newTrip = db.prepare('SELECT * FROM trips WHERE id = ?').get(newTripId);
+  res.status(201).json(newTrip);
+});
+
 // DELETE /api/trips/:id
 router.delete('/:id', (req: Request, res: Response) => {
   const db = getDb();

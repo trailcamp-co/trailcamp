@@ -31,10 +31,11 @@ import {
   Download,
   Share2,
   Printer,
+  Copy,
 } from 'lucide-react';
 import type { Location, Trip, TripStop, WeatherData, JournalEntry } from '../../types';
 import { SortableStopCard, OverlayStopCard } from './StopCard';
-import { optimizeTrip, fetchJournal, createJournalEntry, deleteJournalEntry } from '../../hooks/useApi';
+import { optimizeTrip, fetchJournal, createJournalEntry, deleteJournalEntry, duplicateTrip } from '../../hooks/useApi';
 
 // --------------- Constants ---------------
 
@@ -320,6 +321,12 @@ export default function TripTab({
     await onDeleteTrip(selectedTrip.id);
   }, [selectedTrip, onDeleteTrip]);
 
+  const handleDuplicateTrip = useCallback(async () => {
+    if (!selectedTrip) return;
+    const newTrip = await duplicateTrip(selectedTrip.id);
+    onSelectTrip(newTrip);
+  }, [selectedTrip, onSelectTrip]);
+
   const handleStartDateChange = useCallback(
     async (dateStr: string) => {
       if (!selectedTrip) return;
@@ -430,6 +437,9 @@ export default function TripTab({
                   </h2>
                   <button onClick={startEditName} className="p-1 text-gray-500 hover:text-gray-300 [.light_&]:hover:text-gray-600 transition-colors" title="Edit name">
                     <Edit3 size={14} />
+                  </button>
+                  <button onClick={handleDuplicateTrip} className="p-1 text-gray-500 hover:text-blue-400 transition-colors" title="Duplicate trip">
+                    <Copy size={14} />
                   </button>
                   <button onClick={handleDeleteTrip} className="p-1 text-gray-500 hover:text-red-400 transition-colors" title="Delete trip">
                     <Trash2 size={14} />
