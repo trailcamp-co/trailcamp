@@ -184,6 +184,48 @@ export default function PackingList() {
           </span>
         </div>
 
+        {/* Export/Import buttons */}
+        <div className="flex gap-1.5 mt-2">
+          <button
+            onClick={() => {
+              const data = JSON.stringify(items, null, 2);
+              const blob = new Blob([data], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'trailcamp-packing-list.json';
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            className="flex-1 text-[10px] px-2 py-1 rounded-md bg-dark-800 text-gray-400 hover:text-gray-300 border border-dark-700/50 transition-colors"
+          >
+            💾 Export
+          </button>
+          <button
+            onClick={() => {
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.accept = 'application/json';
+              input.onchange = (e: any) => {
+                const file = e.target?.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                  try {
+                    const imported = JSON.parse(evt.target?.result as string);
+                    setItems(imported);
+                  } catch { /* invalid JSON */ }
+                };
+                reader.readAsText(file);
+              };
+              input.click();
+            }}
+            className="flex-1 text-[10px] px-2 py-1 rounded-md bg-dark-800 text-gray-400 hover:text-gray-300 border border-dark-700/50 transition-colors"
+          >
+            📂 Import
+          </button>
+        </div>
+
         {/* Add item */}
         <div className="flex gap-1.5 mt-3">
           <select
