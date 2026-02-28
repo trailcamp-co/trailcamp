@@ -5,8 +5,8 @@ import { addCustomLayers, addOverlayLayers, buildLocationsGeoJSON, buildRouteGeo
 import { createStopMarkers } from './markers';
 import { setupHoverTooltip, setupClickPopup, setupClusterClick } from './popups';
 import LayerPanel from './LayerPanel';
-import MapStylePicker from './MapStylePicker';
-import MapLegend from './MapLegend';
+
+// Legend removed — Layers panel is open by default and serves as the legend
 import MapStats from './MapStats';
 import RegionQuickJump from './RegionQuickJump';
 import { DEFAULT_CENTER, DEFAULT_ZOOM, FLY_TO_ZOOM, FLY_TO_DURATION } from './constants';
@@ -59,7 +59,7 @@ export default function MapContainer({
   const mapRef = useRef<any>(null);
   const stopMarkersRef = useRef<any[]>([]);
   // Emoji markers removed — native Mapbox circle layers handle all location rendering
-  const [layerPanelOpen, setLayerPanelOpen] = useState(false);
+  const [layerPanelOpen, setLayerPanelOpen] = useState(true);
   const [blmVisible, setBlmVisible] = useState(false);
   const [usfsVisible, setUsfsVisible] = useState(false);
   const locationsRef = useRef<Location[]>(locations);
@@ -247,10 +247,7 @@ export default function MapContainer({
         mapStyle={mapStyle || style}
         onChangeMapStyle={onChangeMapStyle || (() => {})}
       />
-      <MapStylePicker
-        mapStyle={mapStyle || style}
-        onChangeMapStyle={onChangeMapStyle || (() => {})}
-      />
+      {/* MapStylePicker moved into LayerPanel top bar */}
       <MapStats
         ridingCount={locations.filter(l => l.category === 'riding').length}
         campsiteCount={locations.filter(l => l.category === 'campsite').length}
@@ -309,8 +306,7 @@ export default function MapContainer({
         </div>
       )}
 
-      {/* Legend box — bottom left */}
-      <MapLegend />
+      {/* Legend removed — Layers panel open by default */}
     </div>
   );
 }
