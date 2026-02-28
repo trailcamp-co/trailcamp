@@ -71,7 +71,7 @@ export default function RightPanel({
   const [nearbyRadius, setNearbyRadius] = useState(20);
   const [loadingNearby, setLoadingNearby] = useState(false);
   const [heartKey, setHeartKey] = useState(0);
-  const [weather, setWeather] = useState<{ temp: number; icon: string; desc: string } | null>(null);
+  const [weather, setWeather] = useState<{ temp: number; icon: string; desc: string; sunrise?: string; sunset?: string } | null>(null);
 
   const isCampsite = location.category === 'campsite';
   const categoryColor = CATEGORY_COLORS[location.category] || '#6b7280';
@@ -111,12 +111,14 @@ export default function RightPanel({
       95: { icon: '⛈️', desc: 'Thunderstorm' }, 96: { icon: '⛈️', desc: 'T-Storm + Hail' },
       99: { icon: '⛈️', desc: 'T-Storm + Heavy Hail' },
     };
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,weather_code&temperature_unit=fahrenheit`)
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,weather_code&daily=sunrise,sunset&temperature_unit=fahrenheit&timezone=auto&forecast_days=1`)
       .then(r => r.json())
       .then(data => {
         if (data.current) {
           const wmo = WMO[data.current.weather_code] || { icon: '🌡️', desc: 'Unknown' };
-          setWeather({ temp: Math.round(data.current.temperature_2m), ...wmo });
+          const sunrise = data.daily?.sunrise?.[0] ? new Date(data.daily.sunrise[0]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : undefined;
+          const sunset = data.daily?.sunset?.[0] ? new Date(data.daily.sunset[0]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : undefined;
+          setWeather({ temp: Math.round(data.current.temperature_2m), ...wmo, sunrise, sunset });
         }
       })
       .catch(() => {});
@@ -276,6 +278,9 @@ export default function RightPanel({
                 <div className="flex-shrink-0 text-right" title={weather.desc}>
                   <div className="text-lg leading-none">{weather.icon}</div>
                   <div className="text-xs text-gray-400 mt-0.5">{weather.temp}°F</div>
+                  {weather.sunrise && weather.sunset && (
+                    <div className="text-[9px] text-gray-500 mt-0.5">🌅 {weather.sunrise} · 🌇 {weather.sunset}</div>
+                  )}
                 </div>
               )}
             </div>
