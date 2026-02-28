@@ -8,6 +8,7 @@ import {
   ChevronDown,
   MapPin,
   X,
+  Clock,
 } from 'lucide-react';
 import type { Trip, Location } from '../types';
 import { CATEGORY_ICONS, CATEGORY_COLORS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
@@ -43,9 +44,22 @@ export default function TopBar({
 }: TopBarProps) {
   const [tripDropdownOpen, setTripDropdownOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('trailcamp_recent_searches') || '[]'); } catch { return []; }
+  });
   const tripDropdownRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const addRecentSearch = (query: string) => {
+    const q = query.trim();
+    if (!q || q.length < 2) return;
+    setRecentSearches(prev => {
+      const next = [q, ...prev.filter(s => s !== q)].slice(0, 5);
+      localStorage.setItem('trailcamp_recent_searches', JSON.stringify(next));
+      return next;
+    });
+  };
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -75,6 +89,7 @@ export default function TopBar({
   }, []);
 
   const showSearchDropdown = searchFocused && searchQuery.length > 0 && searchResults !== null;
+  const showRecentDropdown = searchFocused && searchQuery.length === 0 && recentSearches.length > 0;
 
   // Group search results by category
   const grouped = (searchResults || []).reduce((acc, loc) => {
@@ -267,6 +282,7 @@ export default function TopBar({
                     <button
                       key={location.id}
                       onClick={() => {
+                        addRecentSearch(searchQuery);
                         onSelectSearchResult(location);
                         setSearchFocused(false);
                       }}
@@ -326,6 +342,21 @@ export default function TopBar({
                   );
                 })}
               </div>
+            ))}
+          </div>
+        )}
+        {showRecentDropdown && (
+          <div className="absolute top-full left-0 right-0 mt-1.5 rounded-xl shadow-xl overflow-hidden z-50 glass animate-slide-down [.light_&]:bg-white [.light_&]:border [.light_&]:border-gray-200">
+            <div className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-gray-500 [.light_&]:text-gray-400">Recent Searches</div>
+            {recentSearches.map((q) => (
+              <button
+                key={q}
+                onClick={() => { onSearch(q); setSearchFocused(true); }}
+                className="w-full text-left px-3 py-2 text-sm text-gray-300 [.light_&]:text-gray-600 hover:bg-dark-600 [.light_&]:hover:bg-gray-50 transition-colors flex items-center gap-2"
+              >
+                <Clock size={12} className="text-gray-500 flex-shrink-0" />
+                {q}
+              </button>
             ))}
           </div>
         )}
