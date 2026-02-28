@@ -304,9 +304,14 @@ export default function RightPanel({
 
         {/* Quick Actions */}
         <div className={`p-5 ${sectionDivider}`}>
-          <button onClick={handleNavigate} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-colors shadow-lg shadow-orange-500/20 mb-3 press-scale">
-            <Navigation className="w-4 h-4" />Navigate Here
-          </button>
+          <div className="flex gap-2 mb-3">
+            <button onClick={handleNavigate} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-colors shadow-lg shadow-orange-500/20 press-scale">
+              <Navigation className="w-4 h-4" />Google Maps
+            </button>
+            <button onClick={() => window.open(`https://waze.com/ul?ll=${location.latitude},${location.longitude}&navigate=yes`, '_blank')} className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-sm transition-colors shadow-lg shadow-sky-500/20 press-scale">
+              🚗 Waze
+            </button>
+          </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => {
