@@ -48,6 +48,7 @@ export interface Location {
   level_ground: number | null;
   water_nearby: number | null;
   water_available: number | null;
+  cost_per_night: number | null;
   dump_nearby: number | null;
   max_vehicle_length: number | null;
   stay_limit_days: number | null;
