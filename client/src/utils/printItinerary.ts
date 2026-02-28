@@ -32,7 +32,7 @@ export function printItinerary(trip: Trip, stops: TripStop[]) {
         <div class="stop-name">${stop.name || stop.location_name || 'Stop'}</div>
         <div class="stop-meta">
           ${stop.nights ? `${stop.nights} night${stop.nights > 1 ? 's' : ''}` : 'Day stop'}
-          ${stop.arrival_date ? ` · ${stop.arrival_date}` : ''}
+          ${(stop as any).arrival_date ? ` · ${(stop as any).arrival_date}` : ''}
         </div>
         <div class="stop-coords">${stop.latitude.toFixed(5)}, ${stop.longitude.toFixed(5)}</div>
         ${stop.notes ? `<div class="stop-notes">${stop.notes}</div>` : ''}
