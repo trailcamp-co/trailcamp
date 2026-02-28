@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import * as turf from '@turf/turf';
 import type { Location, LocationCategory, CampsiteSubType, Filters } from '../types';
 import { DEFAULT_FILTERS } from '../types';
 
@@ -18,19 +17,32 @@ function computeSeasonalStatus(loc: Location, month: number): 'great' | 'shoulde
     if (bs.includes('winter') && [11, 3].includes(month)) return 'shoulder';
     return 'bad';
   }
+  // Heuristic based on latitude and elevation
   const lat = loc.latitude || 0;
   const elev = loc.elevation_gain_ft || 0;
-  if (lat > 42 || elev > 7000) {
+
+  // High elevation anywhere: snow risk Nov-Apr
+  if (elev > 7000) {
+    if (month >= 6 && month <= 9) return 'great';
+    if (month === 5 || month === 10) return 'shoulder';
+    return 'bad';
+  }
+  // Northern states (lat > 39 = roughly PA, OH, IN, northern tier)
+  if (lat > 39) {
     if (month >= 5 && month <= 10) return 'great';
     if (month === 4 || month === 11) return 'shoulder';
-    return 'bad';
+    return 'bad'; // Dec, Jan, Feb, Mar = bad
   }
-  if (lat < 33) {
-    if (month >= 10 || month <= 4) return 'great';
-    if (month === 5 || month === 9) return 'shoulder';
-    return 'bad';
+  // Mid-latitude (33-39 = TN, NC, AZ, NM, southern CO)
+  if (lat >= 33) {
+    if (month >= 3 && month <= 11) return 'great';
+    if (month === 2 || month === 12) return 'shoulder';
+    return 'bad'; // only Jan is bad
   }
-  return 'great'; // temperate zone, year-round ok
+  // Southern (< 33 = TX, FL, SoCal, deep south desert)
+  if (month >= 10 || month <= 4) return 'great';
+  if (month === 5 || month === 9) return 'shoulder';
+  return 'bad'; // Jun-Aug too hot in desert
 }
 
 export function useFilters(locations: Location[], routeGeoJSON: GeoJSON.GeoJsonObject | null) {
@@ -58,6 +70,30 @@ export function useFilters(locations: Location[], routeGeoJSON: GeoJSON.GeoJsonO
     });
   }, []);
 
+  // Extract and sample route coordinates once for near-route filter (not per-location)
+  let routeCoords: number[][] | null = null;
+  if (filters.nearRoute && routeGeoJSON) {
+    try {
+      const gj = routeGeoJSON as any;
+      let coords: number[][] | undefined;
+      if (gj.type === 'LineString') coords = gj.coordinates;
+      else if (gj.type === 'Feature' && gj.geometry?.type === 'LineString') coords = gj.geometry.coordinates;
+      else if (gj.type === 'FeatureCollection' && gj.features?.length > 0) {
+        const lineFeature = gj.features.find((f: any) => f.geometry?.type === 'LineString');
+        coords = lineFeature?.geometry?.coordinates;
+      }
+      if (coords && coords.length >= 2) {
+        // Sample every Nth point to keep checks fast (max ~200 points)
+        const step = Math.max(1, Math.floor(coords.length / 200));
+        routeCoords = [];
+        for (let i = 0; i < coords.length; i += step) routeCoords.push(coords[i]);
+        if (routeCoords[routeCoords.length - 1] !== coords[coords.length - 1]) {
+          routeCoords.push(coords[coords.length - 1]);
+        }
+      }
+    } catch { /* invalid route geometry */ }
+  }
+
   const filteredLocations = locations.filter(l => {
     if (!filters.categories.has(l.category)) return false;
 
@@ -84,28 +120,17 @@ export function useFilters(locations: Location[], routeGeoJSON: GeoJSON.GeoJsonO
       if (status === 'bad') return false;
     }
 
-    if (filters.nearRoute && routeGeoJSON) {
-      try {
-        const point = turf.point([l.longitude, l.latitude]);
-        // Extract coordinates from various GeoJSON structures
-        let coords: number[][] | undefined;
-        const gj = routeGeoJSON as any;
-        if (gj.type === 'LineString') {
-          coords = gj.coordinates;
-        } else if (gj.type === 'Feature' && gj.geometry?.type === 'LineString') {
-          coords = gj.geometry.coordinates;
-        } else if (gj.type === 'FeatureCollection' && gj.features?.length > 0) {
-          const lineFeature = gj.features.find((f: any) => f.geometry?.type === 'LineString');
-          coords = lineFeature?.geometry?.coordinates;
-        }
-        if (!coords || coords.length < 2) return true; // can't filter without valid route
-        const line = turf.lineString(coords);
-        const nearest = turf.nearestPointOnLine(line, point);
-        const dist = turf.distance(point, nearest, { units: 'miles' });
-        if (dist > filters.nearRouteDistance) return false;
-      } catch {
-        // If route geometry is invalid, skip this filter
+    if (filters.nearRoute && routeCoords) {
+      // Fast haversine check against sampled route points
+      const maxDist = filters.nearRouteDistance;
+      let withinRange = false;
+      for (let i = 0; i < routeCoords.length; i++) {
+        const dlat = (l.latitude - routeCoords[i][1]) * 69; // ~69 mi per degree lat
+        const dlng = (l.longitude - routeCoords[i][0]) * 69 * Math.cos(l.latitude * Math.PI / 180);
+        const approxDist = Math.sqrt(dlat * dlat + dlng * dlng);
+        if (approxDist <= maxDist) { withinRange = true; break; }
       }
+      if (!withinRange) return false;
     }
 
     return true;
