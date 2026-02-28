@@ -528,7 +528,18 @@ export default function TripTab({
                   title="Export trip as GPX file"
                 >
                   <Download size={11} />
-                  Export GPX
+                  GPX
+                </a>
+              )}
+              {sortedStops.length > 0 && (
+                <a
+                  href={`/api/trips/${selectedTrip.id}/export-markdown`}
+                  download
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/20 transition-all [.light_&]:bg-white [.light_&]:border-gray-200 [.light_&]:text-cyan-600 [.light_&]:hover:bg-cyan-50"
+                  title="Export trip as Markdown document"
+                >
+                  <Download size={11} />
+                  MD
                 </a>
               )}
               {sortedStops.length > 0 && (
