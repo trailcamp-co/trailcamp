@@ -25,7 +25,7 @@ export default function App() {
 
   const { trips, createTrip, updateTrip, deleteTrip } = useTrips();
   const { stops, addStop, updateStop, reorderStops, deleteStop } = useTripStops(selectedTrip?.id ?? null);
-  const { locations, searchLocations, createLocation, updateLocation, deleteLocation } = useLocations();
+  const { locations, searchLocations, createLocation, updateLocation, deleteLocation, toggleFavorite } = useLocations();
 
   const { routeGeoJSON } = useRoute(stops, updateStop);
   const { weatherCache, fetchWeather } = useWeather();
@@ -142,6 +142,7 @@ export default function App() {
             routeGeoJSON={routeGeoJSON}
             mapBounds={mapBounds}
             onLocationClick={handleLocationClick}
+            onToggleFavorite={toggleFavorite}
           />
         </div>
 

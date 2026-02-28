@@ -140,7 +140,13 @@ export function useLocations() {
     setLocations(prev => prev.filter(l => l.id !== id));
   };
 
-  return { locations, loading, fetchLocations, searchLocations, createLocation, updateLocation, deleteLocation };
+  const toggleFavorite = async (id: number) => {
+    const updated = await apiFetch<Location>(`/locations/${id}/favorite`, { method: 'PUT' });
+    setLocations(prev => prev.map(l => l.id === id ? { ...l, ...updated } : l));
+    return updated;
+  };
+
+  return { locations, loading, fetchLocations, searchLocations, createLocation, updateLocation, deleteLocation, toggleFavorite };
 }
 
 // Stats

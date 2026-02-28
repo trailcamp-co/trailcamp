@@ -28,9 +28,10 @@ interface RidingTabProps {
   onFlyTo: (lng: number, lat: number) => void;
   mapBounds: { north: number; south: number; east: number; west: number } | null;
   onLocationClick?: (location: Location) => void;
+  onToggleFavorite?: (id: number) => void;
 }
 
-export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationClick }: RidingTabProps) {
+export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationClick, onToggleFavorite }: RidingTabProps) {
   const [sortField, setSortField] = useState<RidingSortField>('name');
   const [sortAsc, setSortAsc] = useState(true);
   const [filterDifficulty, setFilterDifficulty] = useState<string | null>(null);
@@ -196,7 +197,7 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
           </div>
         )}
         {ridingLocations.map((loc) => (
-          <RidingCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} onLocationClick={onLocationClick} />
+          <RidingCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} />
         ))}
       </div>
     </div>

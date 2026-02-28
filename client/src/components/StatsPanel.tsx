@@ -23,6 +23,7 @@ interface TripStats {
 export default function StatsPanel({ onClose, darkMode, selectedTrip, stops }: StatsPanelProps) {
   const { stats, loading } = useStats();
   const [gasPrice, setGasPrice] = useState(3.50);
+  const [mpg, setMpg] = useState(12);
   const [tripStats, setTripStats] = useState<TripStats | null>(null);
   const [loadingTrip, setLoadingTrip] = useState(false);
 
@@ -55,7 +56,7 @@ export default function StatsPanel({ onClose, darkMode, selectedTrip, stops }: S
     { label: 'Riding Visited', value: stats.ridingVisited, icon: Mountain, color: 'text-red-400' },
   ];
 
-  const fuelCost = tripStats ? (tripStats.totalDriveMiles / 12) * gasPrice : 0;
+  const fuelCost = tripStats ? (tripStats.totalDriveMiles / mpg) * gasPrice : 0;
   const driveHours = tripStats ? Math.floor(tripStats.totalDriveTimeMins / 60) : 0;
   const driveMins = tripStats ? Math.round(tripStats.totalDriveTimeMins % 60) : 0;
 
@@ -105,8 +106,18 @@ export default function StatsPanel({ onClose, darkMode, selectedTrip, stops }: S
                 <DollarSign className="w-4 h-4 text-yellow-400 mb-1" />
                 <div className="text-lg font-bold">${fuelCost.toFixed(0)}</div>
                 <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Est. Fuel</div>
-                <input type="number" step="0.25" value={gasPrice} onChange={(e) => setGasPrice(Number(e.target.value) || 3.50)}
-                  className={`mt-1 w-full text-xs rounded px-1 py-0.5 ${darkMode ? 'bg-dark-700 border border-gray-600 text-gray-300' : 'bg-white border border-gray-200 text-gray-700'}`} />
+                <div className="flex gap-1 mt-1">
+                  <div className="flex-1">
+                    <div className={`text-[9px] ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>$/gal</div>
+                    <input type="number" step="0.25" value={gasPrice} onChange={(e) => setGasPrice(Number(e.target.value) || 3.50)}
+                      className={`w-full text-xs rounded px-1 py-0.5 ${darkMode ? 'bg-dark-700 border border-gray-600 text-gray-300' : 'bg-white border border-gray-200 text-gray-700'}`} />
+                  </div>
+                  <div className="flex-1">
+                    <div className={`text-[9px] ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>MPG</div>
+                    <input type="number" step="0.5" value={mpg} onChange={(e) => setMpg(Number(e.target.value) || 12)}
+                      className={`w-full text-xs rounded px-1 py-0.5 ${darkMode ? 'bg-dark-700 border border-gray-600 text-gray-300' : 'bg-white border border-gray-200 text-gray-700'}`} />
+                  </div>
+                </div>
               </div>
               <div className={`p-3 rounded-xl ${darkMode ? 'bg-dark-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
                 <Bike className="w-4 h-4 text-red-400 mb-1" />

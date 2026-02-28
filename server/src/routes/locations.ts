@@ -115,16 +115,17 @@ router.get('/nearby-riding', (req: Request, res: Response) => {
   }
 
   const locations = db.prepare(`
-    SELECT *,
-      (3959 * acos(
-        min(1, max(-1,
-          cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) +
-          sin(radians(?)) * sin(radians(latitude))
-        ))
-      )) AS distance_from
-    FROM locations
-    WHERE category = 'riding'
-    HAVING distance_from <= ?
+    SELECT * FROM (
+      SELECT *,
+        (3959 * acos(
+          min(1, max(-1,
+            cos(? * 3.14159265359 / 180) * cos(latitude * 3.14159265359 / 180) * cos((longitude - ?) * 3.14159265359 / 180) +
+            sin(? * 3.14159265359 / 180) * sin(latitude * 3.14159265359 / 180)
+          ))
+        )) AS distance_from
+      FROM locations
+      WHERE category = 'riding'
+    ) WHERE distance_from <= ?
     ORDER BY distance_from
   `).all(lat, lng, lat, radius);
 

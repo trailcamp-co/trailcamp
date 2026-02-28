@@ -28,6 +28,7 @@ interface LeftSidebarProps {
   routeGeoJSON: GeoJSON.GeoJsonObject | null;
   mapBounds: { north: number; south: number; east: number; west: number } | null;
   onLocationClick?: (location: Location) => void;
+  onToggleFavorite?: (id: number) => void;
 }
 
 export default function LeftSidebar({
@@ -51,6 +52,7 @@ export default function LeftSidebar({
   routeGeoJSON,
   mapBounds,
   onLocationClick,
+  onToggleFavorite,
 }: LeftSidebarProps) {
   const [activeTab, setActiveTab] = useState<SidebarTab>('trip');
 
@@ -83,7 +85,7 @@ export default function LeftSidebar({
       {/* Riding Tab */}
       {activeTab === 'riding' && (
         <div className="flex-1 overflow-hidden">
-          <RidingTab locations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} />
+          <RidingTab locations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} />
         </div>
       )}
 

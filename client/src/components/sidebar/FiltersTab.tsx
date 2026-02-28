@@ -18,7 +18,7 @@ import {
 } from '../../types';
 
 const ALL_CATEGORIES: LocationCategory[] = [
-  'campsite', 'riding', 'water', 'dump', 'gas', 'grocery', 'scenic', 'laundromat',
+  'campsite', 'riding', 'water', 'dump', 'scenic',
 ];
 
 const ALL_CAMPSITE_SUBTYPES: CampsiteSubType[] = ['boondocking', 'campground', 'parking', 'other'];

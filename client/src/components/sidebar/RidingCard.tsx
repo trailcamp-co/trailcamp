@@ -21,9 +21,10 @@ interface RidingCardProps {
   onFlyTo: (lng: number, lat: number) => void;
   distanceFrom?: number;
   onLocationClick?: (location: Location) => void;
+  onToggleFavorite?: (id: number) => void;
 }
 
-export default function RidingCard({ location: loc, onFlyTo, distanceFrom, onLocationClick }: RidingCardProps) {
+export default function RidingCard({ location: loc, onFlyTo, distanceFrom, onLocationClick, onToggleFavorite }: RidingCardProps) {
   const diffColor = DIFFICULTY_COLORS[loc.difficulty ?? ''] ?? '#6b7280';
 
   const seasonDot = loc.seasonal_status ? (
@@ -53,7 +54,13 @@ export default function RidingCard({ location: loc, onFlyTo, distanceFrom, onLoc
           </span>
           <div className="flex items-center gap-1.5 flex-shrink-0">
             {seasonDot}
-            {loc.favorited ? <Heart size={10} className="text-red-400 fill-red-400" /> : null}
+            <span
+              onClick={(e) => { e.stopPropagation(); onToggleFavorite?.(loc.id); }}
+              className="cursor-pointer hover:scale-125 transition-transform"
+              title={loc.favorited ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              <Heart size={12} className={loc.favorited ? 'text-red-400 fill-red-400' : 'text-gray-600 hover:text-red-400'} />
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-1.5 flex-wrap">

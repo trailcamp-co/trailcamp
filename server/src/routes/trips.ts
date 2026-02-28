@@ -174,6 +174,24 @@ router.post('/:id/optimize', (req: Request, res: Response) => {
     remaining.splice(nearestIdx, 1);
   }
 
+  // 2-opt improvement: swap pairs to eliminate backtracking
+  let improved = true;
+  while (improved) {
+    improved = false;
+    for (let i = 1; i < optimized.length - 1; i++) {
+      for (let j = i + 1; j < optimized.length; j++) {
+        const before = segmentDistance(optimized, i - 1, i) + segmentDistance(optimized, j, (j + 1) % optimized.length);
+        // Reverse the segment between i and j
+        const reversed = [...optimized.slice(0, i), ...optimized.slice(i, j + 1).reverse(), ...optimized.slice(j + 1)];
+        const after = segmentDistance(reversed, i - 1, i) + segmentDistance(reversed, j, (j + 1) % reversed.length);
+        if (after < before - 0.1) {
+          optimized.splice(0, optimized.length, ...reversed);
+          improved = true;
+        }
+      }
+    }
+  }
+
   // Update sort_order for all stops
   const updateStmt = db.prepare('UPDATE trip_stops SET sort_order = ? WHERE id = ?');
   const reorder = db.transaction(() => {
@@ -189,6 +207,11 @@ router.post('/:id/optimize', (req: Request, res: Response) => {
   const updatedStops = db.prepare('SELECT * FROM trip_stops WHERE trip_id = ? ORDER BY sort_order').all(req.params.id);
   res.json({ stops: updatedStops, saved: Math.max(0, saved) });
 });
+
+function segmentDistance(stops: any[], i: number, j: number): number {
+  if (i < 0 || j >= stops.length) return 0;
+  return haversineDistance(stops[i].latitude, stops[i].longitude, stops[j].latitude, stops[j].longitude);
+}
 
 function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 3959; // Earth radius in miles
