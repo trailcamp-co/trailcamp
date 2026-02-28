@@ -1,6 +1,6 @@
 # TrailCamp API Usage Examples
 
-Practical examples for interacting with the TrailCamp API using curl and JavaScript fetch.
+Complete examples for all TrailCamp API endpoints with `curl` and JavaScript `fetch`.
 
 ## Base URL
 
@@ -8,421 +8,590 @@ Practical examples for interacting with the TrailCamp API using curl and JavaScr
 http://localhost:3001/api
 ```
 
-*(Production: update with deployed URL)*
+Production: Replace with your deployed API URL.
 
 ---
 
-## Quick Reference
+## Table of Contents
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/health` | GET | Health check |
-| `/locations` | GET | List all locations (with filters) |
-| `/locations/:id` | GET | Get single location |
-| `/trips` | GET | List all trips |
-| `/trips` | POST | Create new trip |
-| `/trips/:id` | GET | Get single trip |
-| `/trips/:id` | PUT | Update trip |
-| `/trips/:id` | DELETE | Delete trip |
-| `/trips/:id/stops` | GET | Get trip stops |
-| `/trips/:id/stops` | POST | Add stop to trip |
-| `/trips/:id/stops/:stopId` | DELETE | Remove stop from trip |
-| `/directions` | POST | Get driving directions |
+1. [Health Check](#health-check)
+2. [Locations Endpoints](#locations-endpoints)
+3. [Trips Endpoints](#trips-endpoints)
+4. [Filtering & Searching](#filtering--searching)
+5. [Error Handling](#error-handling)
 
 ---
 
 ## Health Check
 
-Check if API is running:
+### GET /api/health
 
+Check if the API is running.
+
+**curl:**
 ```bash
 curl http://localhost:3001/api/health
 ```
 
-**Response:**
-```json
-{
-  "status": "ok",
-  "timestamp": "2026-02-28T19:12:00.000Z"
-}
+**fetch:**
+```javascript
+const response = await fetch('http://localhost:3001/api/health');
+const data = await response.json();
+console.log(data);
+// { "status": "ok", "timestamp": "2026-02-28T19:42:00.000Z" }
 ```
 
 ---
 
-## Locations
+## Locations Endpoints
 
-### Get All Locations
+### GET /api/locations
 
+Get all locations (or filtered subset).
+
+**curl:**
 ```bash
+# Get all locations
 curl http://localhost:3001/api/locations
-```
 
-**JavaScript:**
-```javascript
-const response = await fetch('http://localhost:3001/api/locations');
-const locations = await response.json();
-console.log(`Found ${locations.length} locations`);
-```
-
-### Filter by Category
-
-Get only riding locations:
-
-```bash
-curl "http://localhost:3001/api/locations?category=riding"
-```
-
-**JavaScript:**
-```javascript
-const response = await fetch('http://localhost:3001/api/locations?category=riding');
-const ridingSpots = await response.json();
-```
-
-**Available categories:** `riding`, `campsite`, `dump`, `water`, `scenic`
-
-### Filter by Scenery Rating
-
-Get locations with scenery rating ≥ 8:
-
-```bash
-curl "http://localhost:3001/api/locations?scenery_min=8"
-```
-
-**JavaScript:**
-```javascript
-const response = await fetch('http://localhost:3001/api/locations?scenery_min=8');
-const scenicLocations = await response.json();
-```
-
-### Filter by Sub-Type
-
-Get only boondocking campsites:
-
-```bash
-curl "http://localhost:3001/api/locations?category=campsite&sub_type=boondocking"
-```
-
-### Filter by Difficulty
-
-Get hard riding trails:
-
-```bash
-curl "http://localhost:3001/api/locations?difficulty=Hard"
-```
-
-**Available difficulties:** `Easy`, `Beginner`, `Moderate`, `Intermediate`, `Hard`, `Advanced`, `Expert`
-
-### Filter by Season
-
-Get summer riding spots:
-
-```bash
-curl "http://localhost:3001/api/locations?best_season=Summer"
-```
-
-**Available seasons:** `Summer`, `Winter`, `Spring`, `Fall`, `Year-round`
-
-### Combine Multiple Filters
-
-Get moderate difficulty riding spots with high scenery:
-
-```bash
-curl "http://localhost:3001/api/locations?category=riding&difficulty=Moderate&scenery_min=8"
-```
-
-### Pagination
-
-Get first 50 locations:
-
-```bash
+# Get first 50 locations
 curl "http://localhost:3001/api/locations?limit=50"
+
+# Get locations 51-100 (pagination)
+curl "http://localhost:3001/api/locations?limit=50&offset=50"
 ```
 
-**JavaScript with pagination:**
+**fetch:**
 ```javascript
-async function getAllLocations() {
-  const limit = 100;
-  let offset = 0;
-  let allLocations = [];
-  
-  while (true) {
-    const response = await fetch(
-      `http://localhost:3001/api/locations?limit=${limit}&offset=${offset}`
-    );
-    const locations = await response.json();
-    
-    if (locations.length === 0) break;
-    
-    allLocations = allLocations.concat(locations);
-    offset += limit;
-  }
-  
-  return allLocations;
+// Get all riding locations
+const response = await fetch('http://localhost:3001/api/locations?category=riding');
+const locations = await response.json();
+console.log(`Found ${locations.length} riding locations`);
+
+// Paginated request
+async function getLocationPage(page = 0, pageSize = 50) {
+  const offset = page * pageSize;
+  const response = await fetch(
+    `http://localhost:3001/api/locations?limit=${pageSize}&offset=${offset}`
+  );
+  return response.json();
 }
+
+const firstPage = await getLocationPage(0);
+const secondPage = await getLocationPage(1);
 ```
 
-### Get Single Location
+### GET /api/locations/:id
 
+Get a single location by ID.
+
+**curl:**
 ```bash
 curl http://localhost:3001/api/locations/123
 ```
 
-**JavaScript:**
+**fetch:**
 ```javascript
-const locationId = 123;
-const response = await fetch(`http://localhost:3001/api/locations/${locationId}`);
-const location = await response.json();
-console.log(location.name);
+async function getLocation(id) {
+  const response = await fetch(`http://localhost:3001/api/locations/${id}`);
+  if (!response.ok) {
+    throw new Error(`Location ${id} not found`);
+  }
+  return response.json();
+}
+
+const location = await getLocation(123);
+console.log(location.name, location.category);
 ```
 
-### Get Featured Locations
+### POST /api/locations
 
-Get bucket-list / featured locations:
+Create a new location.
 
+**curl:**
 ```bash
-curl "http://localhost:3001/api/locations/featured"
+curl -X POST http://localhost:3001/api/locations \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Trail",
+    "description": "Amazing single track",
+    "latitude": 40.1234,
+    "longitude": -105.6789,
+    "category": "riding",
+    "trail_types": "Single Track,Enduro",
+    "difficulty": "Moderate",
+    "distance_miles": 15,
+    "scenery_rating": 8
+  }'
 ```
 
-**JavaScript:**
+**fetch:**
 ```javascript
-const response = await fetch('http://localhost:3001/api/locations/featured');
-const featured = await response.json();
+async function createLocation(locationData) {
+  const response = await fetch('http://localhost:3001/api/locations', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(locationData),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to create location');
+  }
+  
+  return response.json();
+}
+
+const newLocation = await createLocation({
+  name: 'Epic Trail',
+  latitude: 39.5,
+  longitude: -106.2,
+  category: 'riding',
+  trail_types: 'Single Track',
+  difficulty: 'Hard',
+  distance_miles: 25,
+  scenery_rating: 9,
+});
+
+console.log('Created location:', newLocation.id);
+```
+
+### PUT /api/locations/:id
+
+Update an existing location.
+
+**curl:**
+```bash
+curl -X PUT http://localhost:3001/api/locations/123 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "scenery_rating": 9,
+    "notes": "Updated with better trail info"
+  }'
+```
+
+**fetch:**
+```javascript
+async function updateLocation(id, updates) {
+  const response = await fetch(`http://localhost:3001/api/locations/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updates),
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to update location');
+  }
+  
+  return response.json();
+}
+
+await updateLocation(123, {
+  scenery_rating: 10,
+  permit_info: 'USFS pass required',
+});
+```
+
+### DELETE /api/locations/:id
+
+Delete a location.
+
+**curl:**
+```bash
+curl -X DELETE http://localhost:3001/api/locations/123
+```
+
+**fetch:**
+```javascript
+async function deleteLocation(id) {
+  const response = await fetch(`http://localhost:3001/api/locations/${id}`, {
+    method: 'DELETE',
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to delete location');
+  }
+  
+  return response.json();
+}
+
+await deleteLocation(123);
 ```
 
 ---
 
-## Trips
+## Trips Endpoints
 
-### Get All Trips
+### GET /api/trips
 
+Get all trips.
+
+**curl:**
 ```bash
 curl http://localhost:3001/api/trips
 ```
 
-**JavaScript:**
+**fetch:**
 ```javascript
 const response = await fetch('http://localhost:3001/api/trips');
 const trips = await response.json();
+console.log(`You have ${trips.length} trips`);
 ```
 
-### Get Single Trip
+### GET /api/trips/:id
 
+Get a single trip with all stops.
+
+**curl:**
 ```bash
 curl http://localhost:3001/api/trips/1
 ```
 
-### Create New Trip
+**fetch:**
+```javascript
+async function getTrip(id) {
+  const response = await fetch(`http://localhost:3001/api/trips/${id}`);
+  return response.json();
+}
 
+const trip = await getTrip(1);
+console.log(`${trip.name}: ${trip.stops.length} stops`);
+```
+
+### POST /api/trips
+
+Create a new trip.
+
+**curl:**
 ```bash
 curl -X POST http://localhost:3001/api/trips \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Southwest Desert Adventure",
-    "notes": "7-day trip exploring Arizona and Utah"
+    "name": "Colorado Adventure",
+    "start_date": "2026-07-01",
+    "end_date": "2026-07-07",
+    "notes": "Week-long riding trip"
   }'
 ```
 
-**JavaScript:**
+**fetch:**
 ```javascript
-const newTrip = {
-  name: "Southwest Desert Adventure",
-  notes: "7-day trip exploring Arizona and Utah"
-};
+async function createTrip(tripData) {
+  const response = await fetch('http://localhost:3001/api/trips', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(tripData),
+  });
+  return response.json();
+}
 
-const response = await fetch('http://localhost:3001/api/trips', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(newTrip)
-});
-
-const trip = await response.json();
-console.log(`Created trip #${trip.id}`);
-```
-
-### Update Trip
-
-```bash
-curl -X PUT http://localhost:3001/api/trips/1 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Updated Trip Name",
-    "notes": "Modified notes"
-  }'
-```
-
-**JavaScript:**
-```javascript
-const tripId = 1;
-const updates = {
-  name: "Updated Trip Name",
-  notes: "Modified notes"
-};
-
-await fetch(`http://localhost:3001/api/trips/${tripId}`, {
-  method: 'PUT',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(updates)
+const trip = await createTrip({
+  name: 'Utah Summer Ride',
+  start_date: '2026-08-15',
+  end_date: '2026-08-22',
 });
 ```
 
-### Delete Trip
+### POST /api/trips/:id/stops
 
-```bash
-curl -X DELETE http://localhost:3001/api/trips/1
-```
+Add a stop to a trip.
 
-**JavaScript:**
-```javascript
-const tripId = 1;
-await fetch(`http://localhost:3001/api/trips/${tripId}`, {
-  method: 'DELETE'
-});
-```
-
----
-
-## Trip Stops
-
-### Get Trip Stops
-
-Get all stops for a trip (with location details):
-
-```bash
-curl http://localhost:3001/api/trips/1/stops
-```
-
-**JavaScript:**
-```javascript
-const tripId = 1;
-const response = await fetch(`http://localhost:3001/api/trips/${tripId}/stops`);
-const stops = await response.json();
-
-stops.forEach((stop, i) => {
-  console.log(`Stop ${i + 1}: ${stop.location.name}`);
-});
-```
-
-### Add Stop to Trip
-
+**curl:**
 ```bash
 curl -X POST http://localhost:3001/api/trips/1/stops \
   -H "Content-Type: application/json" \
   -d '{
     "location_id": 456,
-    "order_index": 0
+    "order_index": 0,
+    "arrival_date": "2026-07-01",
+    "departure_date": "2026-07-02"
   }'
 ```
 
-**JavaScript:**
+**fetch:**
 ```javascript
-const tripId = 1;
-const locationId = 456;
-const orderIndex = 0;  // First stop
+async function addStopToTrip(tripId, stopData) {
+  const response = await fetch(`http://localhost:3001/api/trips/${tripId}/stops`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(stopData),
+  });
+  return response.json();
+}
 
-const response = await fetch(`http://localhost:3001/api/trips/${tripId}/stops`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ location_id: locationId, order_index: orderIndex })
+await addStopToTrip(1, {
+  location_id: 456,
+  order_index: 0,
+  arrival_date: '2026-07-01',
 });
-
-const newStop = await response.json();
 ```
 
-### Remove Stop from Trip
+### DELETE /api/trips/:id
 
+Delete a trip.
+
+**curl:**
 ```bash
-curl -X DELETE http://localhost:3001/api/trips/1/stops/5
+curl -X DELETE http://localhost:3001/api/trips/1
 ```
 
-**JavaScript:**
+**fetch:**
 ```javascript
-const tripId = 1;
-const stopId = 5;
+async function deleteTrip(id) {
+  const response = await fetch(`http://localhost:3001/api/trips/${id}`, {
+    method: 'DELETE',
+  });
+  return response.json();
+}
 
-await fetch(`http://localhost:3001/api/trips/${tripId}/stops/${stopId}`, {
-  method: 'DELETE'
-});
+await deleteTrip(1);
 ```
 
 ---
 
-## Directions
+## Filtering & Searching
 
-### Get Driving Route
+### Filter by Category
 
-Get driving directions between two locations:
-
+**curl:**
 ```bash
-curl -X POST http://localhost:3001/api/directions \
-  -H "Content-Type: application/json" \
-  -d '{
-    "waypoints": [
-      {"latitude": 40.7128, "longitude": -74.0060},
-      {"latitude": 34.0522, "longitude": -118.2437}
-    ]
-  }'
+# Get all riding locations
+curl "http://localhost:3001/api/locations?category=riding"
+
+# Get all campsites
+curl "http://localhost:3001/api/locations?category=campsite"
 ```
 
-**JavaScript:**
+**fetch:**
 ```javascript
-const waypoints = [
-  { latitude: 40.7128, longitude: -74.0060 },  // NYC
-  { latitude: 34.0522, longitude: -118.2437 }  // LA
-];
+// Get boondocking spots
+const response = await fetch(
+  'http://localhost:3001/api/locations?category=campsite&sub_type=boondocking'
+);
+const boondocking = await response.json();
+```
 
-const response = await fetch('http://localhost:3001/api/directions', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ waypoints })
+### Filter by Difficulty
+
+**curl:**
+```bash
+# Get hard trails
+curl "http://localhost:3001/api/locations?difficulty=Hard"
+```
+
+**fetch:**
+```javascript
+const response = await fetch('http://localhost:3001/api/locations?difficulty=Moderate');
+const moderateTrails = await response.json();
+```
+
+### Filter by Scenery Rating
+
+**curl:**
+```bash
+# Get locations with scenery 8+
+curl "http://localhost:3001/api/locations?scenery_min=8"
+
+# Get locations with scenery 9+
+curl "http://localhost:3001/api/locations?scenery_min=9"
+```
+
+**fetch:**
+```javascript
+// Get bucket-list scenery locations
+const response = await fetch('http://localhost:3001/api/locations?scenery_min=9');
+const epicLocations = await response.json();
+console.log(`Found ${epicLocations.length} epic locations`);
+```
+
+### Filter by Season
+
+**curl:**
+```bash
+# Get summer locations
+curl "http://localhost:3001/api/locations?best_season=Summer"
+```
+
+**fetch:**
+```javascript
+const response = await fetch('http://localhost:3001/api/locations?best_season=Winter');
+const winterLocations = await response.json();
+```
+
+### Multiple Filters
+
+**curl:**
+```bash
+# Hard trails with high scenery in summer
+curl "http://localhost:3001/api/locations?category=riding&difficulty=Hard&scenery_min=8&best_season=Summer"
+```
+
+**fetch:**
+```javascript
+// Build query dynamically
+const params = new URLSearchParams({
+  category: 'riding',
+  difficulty: 'Moderate',
+  scenery_min: '7',
+  limit: '50',
 });
 
-const route = await response.json();
-console.log(`Distance: ${route.distance} miles`);
-console.log(`Duration: ${route.duration} hours`);
+const response = await fetch(`http://localhost:3001/api/locations?${params}`);
+const results = await response.json();
 ```
 
-### Get Route for Entire Trip
+### Search by Name (if implemented)
 
+**curl:**
+```bash
+# Search for "Moab" in name
+curl "http://localhost:3001/api/locations?search=Moab"
+```
+
+**fetch:**
 ```javascript
-async function getTripRoute(tripId) {
-  // Get trip stops
-  const stopsResponse = await fetch(`http://localhost:3001/api/trips/${tripId}/stops`);
-  const stops = await stopsResponse.json();
-  
-  // Build waypoints array
-  const waypoints = stops.map(stop => ({
-    latitude: stop.location.latitude,
-    longitude: stop.location.longitude
-  }));
-  
-  // Get directions
-  const directionsResponse = await fetch('http://localhost:3001/api/directions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ waypoints })
-  });
-  
-  return await directionsResponse.json();
+async function searchLocations(query) {
+  const params = new URLSearchParams({ search: query });
+  const response = await fetch(`http://localhost:3001/api/locations?${params}`);
+  return response.json();
 }
 
-const route = await getTripRoute(1);
-console.log(`Total trip: ${route.distance} miles, ${route.duration} hours`);
+const results = await searchLocations('national park');
+```
+
+---
+
+## Error Handling
+
+### Handling HTTP Errors
+
+**fetch:**
+```javascript
+async function safeApiCall(url, options = {}) {
+  try {
+    const response = await fetch(url, options);
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || `HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    return response.json();
+  } catch (error) {
+    console.error('API call failed:', error.message);
+    throw error;
+  }
+}
+
+// Usage
+try {
+  const location = await safeApiCall('http://localhost:3001/api/locations/999');
+} catch (error) {
+  console.error('Failed to fetch location:', error.message);
+  // Handle error (show user message, retry, etc.)
+}
+```
+
+### Common HTTP Status Codes
+
+- **200 OK** - Successful GET, PUT, DELETE
+- **201 Created** - Successful POST (new resource created)
+- **400 Bad Request** - Invalid data (missing required fields, invalid values)
+- **404 Not Found** - Resource doesn't exist
+- **500 Internal Server Error** - Server error (check logs)
+
+### Validation Errors
+
+**Example response (400 Bad Request):**
+```json
+{
+  "error": "Validation failed: latitude is required"
+}
+```
+
+**Handling:**
+```javascript
+try {
+  await createLocation({ name: 'Test' }); // Missing required latitude/longitude
+} catch (error) {
+  if (error.message.includes('Validation failed')) {
+    console.error('Please provide all required fields:', error.message);
+  }
+}
 ```
 
 ---
 
 ## Advanced Examples
 
-### Find Nearby Locations
-
-Find campsites within 50 miles of a riding location:
+### Batch Operations
 
 ```javascript
-function distance(lat1, lon1, lat2, lon2) {
-  const R = 3959; // Earth's radius in miles
+// Add multiple locations
+async function batchCreateLocations(locations) {
+  const results = [];
+  for (const loc of locations) {
+    try {
+      const created = await createLocation(loc);
+      results.push({ success: true, id: created.id });
+    } catch (error) {
+      results.push({ success: false, error: error.message });
+    }
+  }
+  return results;
+}
+
+const locations = [
+  { name: 'Trail 1', latitude: 40.1, longitude: -105.1, category: 'riding' },
+  { name: 'Trail 2', latitude: 40.2, longitude: -105.2, category: 'riding' },
+];
+
+const results = await batchCreateLocations(locations);
+console.log(`Created ${results.filter(r => r.success).length} locations`);
+```
+
+### Building a Location Search UI
+
+```javascript
+// Debounced search function
+let searchTimeout;
+
+function searchWithDebounce(query, callback, delay = 300) {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(async () => {
+    const results = await searchLocations(query);
+    callback(results);
+  }, delay);
+}
+
+// Usage in a search input handler
+searchInput.addEventListener('input', (e) => {
+  const query = e.target.value;
+  if (query.length >= 3) {
+    searchWithDebounce(query, (results) => {
+      displaySearchResults(results);
+    });
+  }
+});
+```
+
+### Nearby Locations
+
+```javascript
+// Find locations near coordinates (client-side filtering)
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 3959; // Earth radius in miles
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = 
+  const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
@@ -430,163 +599,72 @@ function distance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-async function findNearbyCamping(ridingLocationId, maxDistance = 50) {
-  // Get riding location
-  const ridingResponse = await fetch(
-    `http://localhost:3001/api/locations/${ridingLocationId}`
-  );
-  const riding = await ridingResponse.json();
+async function findNearbyLocations(lat, lon, radiusMiles = 50) {
+  const allLocations = await fetch('http://localhost:3001/api/locations').then(r => r.json());
   
-  // Get all campsites
-  const campsitesResponse = await fetch(
-    'http://localhost:3001/api/locations?category=campsite'
-  );
-  const campsites = await campsitesResponse.json();
-  
-  // Filter by distance
-  const nearby = campsites
-    .map(camp => ({
-      ...camp,
-      distance: distance(
-        riding.latitude, riding.longitude,
-        camp.latitude, camp.longitude
-      )
+  return allLocations
+    .map(loc => ({
+      ...loc,
+      distance: haversineDistance(lat, lon, loc.latitude, loc.longitude)
     }))
-    .filter(camp => camp.distance <= maxDistance)
+    .filter(loc => loc.distance <= radiusMiles)
     .sort((a, b) => a.distance - b.distance);
-  
-  return nearby;
 }
 
-const nearbyCamping = await findNearbyCamping(123, 50);
-console.log(`Found ${nearbyCamping.length} campsites within 50 miles`);
+// Find riding within 30 miles of a campsite
+const nearby = await findNearbyLocations(39.5, -106.0, 30);
+console.log(`Found ${nearby.length} locations within 30 miles`);
 ```
 
-### Build Complete Trip Itinerary
+---
+
+## Testing API Locally
+
+### Using curl for Quick Tests
+
+```bash
+# Health check
+curl -s http://localhost:3001/api/health | jq
+
+# Pretty-print JSON response with jq
+curl -s "http://localhost:3001/api/locations?limit=5" | jq '.[:2]'
+
+# Save response to file
+curl -s http://localhost:3001/api/locations > locations.json
+
+# Check response time
+curl -w "\nTime: %{time_total}s\n" -s -o /dev/null http://localhost:3001/api/locations
+```
+
+### Browser Developer Tools
 
 ```javascript
-async function buildTripItinerary(tripId) {
-  // Get trip
-  const tripResponse = await fetch(`http://localhost:3001/api/trips/${tripId}`);
-  const trip = await tripResponse.json();
-  
-  // Get stops
-  const stopsResponse = await fetch(`http://localhost:3001/api/trips/${tripId}/stops`);
-  const stops = await stopsResponse.json();
-  
-  // Get route
-  const waypoints = stops.map(s => ({
-    latitude: s.location.latitude,
-    longitude: s.location.longitude
-  }));
-  
-  const routeResponse = await fetch('http://localhost:3001/api/directions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ waypoints })
-  });
-  const route = await routeResponse.json();
-  
-  return {
-    trip,
-    stops,
-    route,
-    summary: {
-      totalDistance: route.distance,
-      totalDuration: route.duration,
-      stopCount: stops.length
-    }
-  };
-}
+// Paste in browser console (with dev server running)
+fetch('http://localhost:3001/api/locations?category=riding&limit=10')
+  .then(r => r.json())
+  .then(data => console.table(data));
 ```
 
 ---
 
-## Error Handling
+## Rate Limiting & Best Practices
 
-### JavaScript with Error Handling
+### Best Practices
 
-```javascript
-async function safeApiFetch(url, options = {}) {
-  try {
-    const response = await fetch(url, options);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('API request failed:', error);
-    throw error;
-  }
-}
+1. **Cache responses** when data doesn't change frequently
+2. **Use pagination** for large datasets (limit + offset)
+3. **Debounce search** to avoid excessive requests
+4. **Handle errors gracefully** with user-friendly messages
+5. **Validate data client-side** before sending to API
 
-// Usage
-try {
-  const locations = await safeApiFetch('http://localhost:3001/api/locations');
-  console.log(`Loaded ${locations.length} locations`);
-} catch (error) {
-  console.error('Failed to load locations');
-}
-```
+### Performance Tips
 
-### Common HTTP Status Codes
-
-- `200` - Success
-- `201` - Created (for POST requests)
-- `400` - Bad Request (invalid data)
-- `404` - Not Found
-- `500` - Internal Server Error
+- Request only the data you need (use filters)
+- Use `limit` parameter to reduce payload size
+- Cache static data (categories, difficulty levels, etc.)
+- Implement retry logic for failed requests
 
 ---
 
-## Performance Tips
-
-1. **Use pagination** for large datasets (limit + offset)
-2. **Filter server-side** instead of fetching all and filtering client-side
-3. **Cache frequently-used data** (like all locations) in localStorage
-4. **Debounce search inputs** to reduce API calls during typing
-
-### Caching Example
-
-```javascript
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
-async function getCachedLocations() {
-  const cached = localStorage.getItem('locations');
-  const timestamp = localStorage.getItem('locations_timestamp');
-  
-  if (cached && timestamp) {
-    const age = Date.now() - parseInt(timestamp);
-    if (age < CACHE_DURATION) {
-      return JSON.parse(cached);
-    }
-  }
-  
-  // Fetch fresh data
-  const response = await fetch('http://localhost:3001/api/locations');
-  const locations = await response.json();
-  
-  // Cache it
-  localStorage.setItem('locations', JSON.stringify(locations));
-  localStorage.setItem('locations_timestamp', Date.now().toString());
-  
-  return locations;
-}
-```
-
----
-
-## Rate Limiting
-
-*(Currently no rate limiting enforced - update if added)*
-
-For production use, implement reasonable rate limits:
-- Max 100 requests per minute per IP
-- Use caching to minimize repeated requests
-- Batch operations when possible
-
----
-
-*For more details, see API.md for full endpoint documentation*
+*Last updated: 2026-02-28*
+*API Version: 1.0*
