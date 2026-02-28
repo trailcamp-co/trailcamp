@@ -150,6 +150,30 @@ export function addCustomLayers(
     },
   });
 
+  // Emoji labels rendered natively on the WebGL canvas (perfectly bound to coordinates)
+  map.addLayer({
+    id: 'unclustered-emoji',
+    type: 'symbol',
+    source: 'locations',
+    filter: ['!', ['has', 'point_count']],
+    minzoom: 8,
+    layout: {
+      'text-field': ['get', 'icon'],
+      'text-size': ['interpolate', ['linear'], ['zoom'],
+        8, 12, 10, 16, 12, 20, 14, 24,
+      ],
+      'text-allow-overlap': true,
+      'text-ignore-placement': true,
+      'text-anchor': 'center',
+      'text-offset': [0, 0],
+    },
+    paint: {
+      'text-opacity': ['interpolate', ['linear'], ['zoom'],
+        8, 0.6, 10, 0.85, 12, 1.0,
+      ],
+    },
+  });
+
   // Route line
   map.addSource('route', {
     type: 'geojson',

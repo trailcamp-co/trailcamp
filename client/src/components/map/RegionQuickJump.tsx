@@ -45,7 +45,7 @@ export default function RegionQuickJump({ mapRef }: RegionQuickJumpProps) {
   };
 
   return (
-    <div className="absolute bottom-8 right-4 z-10">
+    <div className="absolute bottom-16 right-4 z-10">
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-dark-900/90 backdrop-blur-sm border border-dark-700/50 text-xs text-gray-300 hover:bg-dark-800 transition-all shadow-lg
