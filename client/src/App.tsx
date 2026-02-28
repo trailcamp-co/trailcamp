@@ -1,43 +1,49 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import * as turf from '@turf/turf';
+import { useState, useEffect, useCallback } from 'react';
 import { useTrips, useTripStops, useLocations, getMapboxToken } from './hooks/useApi';
-import Map from './components/Map';
+import { useFilters } from './hooks/useFilters';
+import { useSearch } from './hooks/useSearch';
+import { useRoute } from './hooks/useRoute';
+import { useWeather } from './hooks/useWeather';
+import { useMapInteraction } from './hooks/useMapInteraction';
+import Map from './components/map';
 import TopBar from './components/TopBar';
-import LeftSidebar from './components/LeftSidebar';
+import LeftSidebar from './components/sidebar';
 import RightPanel from './components/RightPanel';
 import StatsPanel from './components/StatsPanel';
 import AddLocationModal from './components/AddLocationModal';
-import type { Location, Trip, TripStop, LocationCategory, MapStyle, Filters, WeatherData } from './types';
-import type { MapBounds } from './components/Map';
-import { MAP_STYLES, DEFAULT_FILTERS, WEATHER_CODES } from './types';
+import type { Location, MapStyle } from './types';
+import { MAP_STYLES } from './types';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(true);
   const [mapStyle, setMapStyle] = useState<MapStyle>(MAP_STYLES[0]);
   const [mapboxToken, setMapboxToken] = useState('');
-  const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
-  const [showRightPanel, setShowRightPanel] = useState(false);
-  const [showStats, setShowStats] = useState(false);
+  const [selectedTrip, setSelectedTrip] = useState<ReturnType<typeof useTrips>['trips'][number] | null>(null);
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [showAddLocation, setShowAddLocation] = useState(false);
   const [addLocationCoords, setAddLocationCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const [filters, setFilters] = useState<Filters>({
-    ...DEFAULT_FILTERS,
-    categories: new Set(DEFAULT_FILTERS.categories),
-  });
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Location[] | null>(null);
-  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
-  const [routeGeoJSON, setRouteGeoJSON] = useState<any>(null);
-  const [flyToLocation, setFlyToLocation] = useState<{ lng: number; lat: number } | null>(null);
-  const [weatherCache, setWeatherCache] = useState<Record<string, WeatherData>>({});
-  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
-
-  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { trips, createTrip, updateTrip, deleteTrip } = useTrips();
   const { stops, addStop, updateStop, reorderStops, deleteStop } = useTripStops(selectedTrip?.id ?? null);
-  const { locations, fetchLocations, searchLocations, createLocation, updateLocation, deleteLocation } = useLocations();
+  const { locations, searchLocations, createLocation, updateLocation, deleteLocation } = useLocations();
+
+  const { routeGeoJSON } = useRoute(stops, updateStop);
+  const { weatherCache, fetchWeather } = useWeather();
+  const { filters, setFilters, filteredLocations, handleToggleLayer } = useFilters(locations, routeGeoJSON);
+  const { searchQuery, searchResults, handleSearch, clearSearch } = useSearch(searchLocations);
+  const {
+    selectedLocation,
+    showRightPanel,
+    showStats,
+    setShowStats,
+    flyToLocation,
+    mapBounds,
+    setMapBounds,
+    handleLocationClick,
+    handleCloseRightPanel,
+    handleFlyTo,
+    handleToggleStats,
+  } = useMapInteraction();
 
   // Load mapbox token
   useEffect(() => {
@@ -58,106 +64,6 @@ export default function App() {
     document.documentElement.className = darkMode ? 'dark' : 'light';
   }, [darkMode]);
 
-  // Fetch route when stops change
-  useEffect(() => {
-    if (stops.length < 2) {
-      setRouteGeoJSON(null);
-      return;
-    }
-
-    const fetchRoute = async () => {
-      try {
-        const stopsParam = stops.map(s => `${s.latitude},${s.longitude}`).join(';');
-        const res = await fetch(`/api/directions?stops=${stopsParam}`);
-        const data = await res.json();
-        if (data.geometry) {
-          setRouteGeoJSON(data.geometry);
-          // Update stop drive times
-          if (data.legs) {
-            data.legs.forEach((leg: any, i: number) => {
-              if (stops[i + 1]) {
-                updateStop(stops[i + 1].id, {
-                  drive_time_mins: leg.duration_mins,
-                  drive_distance_miles: leg.distance_miles,
-                });
-              }
-            });
-          }
-        }
-      } catch {
-        // Route fetch failed silently
-      }
-    };
-
-    fetchRoute();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stops.length, stops.map(s => `${s.latitude},${s.longitude}`).join(';')]);
-
-  // Weather fetching
-  const fetchWeather = useCallback(async (lat: number, lng: number, date: string): Promise<WeatherData | null> => {
-    const cacheKey = `${lat.toFixed(2)},${lng.toFixed(2)},${date}`;
-
-    // Check cache first
-    const cached = weatherCache[cacheKey];
-    if (cached) return cached;
-
-    try {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=America/Denver&start_date=${date}&end_date=${date}`;
-      const res = await fetch(url);
-      const data = await res.json();
-
-      if (data.daily && data.daily.temperature_2m_max && data.daily.temperature_2m_max.length > 0) {
-        const weathercode = data.daily.weathercode[0];
-        const codeInfo = WEATHER_CODES[weathercode] || { icon: '?', label: 'Unknown' };
-        const weather: WeatherData = {
-          date,
-          high: Math.round(data.daily.temperature_2m_max[0] * 9 / 5 + 32),
-          low: Math.round(data.daily.temperature_2m_min[0] * 9 / 5 + 32),
-          precipitation: data.daily.precipitation_sum[0],
-          weathercode,
-          icon: codeInfo.icon,
-          label: codeInfo.label,
-        };
-
-        setWeatherCache(prev => ({ ...prev, [cacheKey]: weather }));
-
-        return weather;
-      }
-      return null;
-    } catch {
-      return null;
-    }
-  }, [weatherCache]);
-
-  const handleLocationClick = useCallback((location: Location) => {
-    setSelectedLocation(location);
-    setShowRightPanel(true);
-    setShowStats(false);
-  }, []);
-
-  const handleCloseRightPanel = useCallback(() => {
-    setShowRightPanel(false);
-    setSelectedLocation(null);
-  }, []);
-
-  const handleSearch = useCallback((query: string) => {
-    setSearchQuery(query);
-
-    if (searchDebounceRef.current) {
-      clearTimeout(searchDebounceRef.current);
-    }
-
-    if (!query.trim()) {
-      setSearchResults(null);
-      return;
-    }
-
-    searchDebounceRef.current = setTimeout(async () => {
-      const results = await searchLocations(query);
-      setSearchResults(results);
-    }, 300);
-  }, [searchLocations]);
-
   const handleAddStopFromLocation = useCallback(async (location: Location) => {
     if (!selectedTrip) return;
     await addStop({
@@ -172,58 +78,6 @@ export default function App() {
     setAddLocationCoords({ lat: e.lat, lng: e.lng });
     setShowAddLocation(true);
   }, []);
-
-  const handleToggleLayer = useCallback((category: LocationCategory) => {
-    setFilters(prev => {
-      const nextCategories = new Set(prev.categories);
-      if (nextCategories.has(category)) nextCategories.delete(category);
-      else nextCategories.add(category);
-      return { ...prev, categories: nextCategories };
-    });
-  }, []);
-
-  const handleFlyTo = useCallback((lng: number, lat: number) => {
-    setFlyToLocation({ lng, lat });
-    setTimeout(() => setFlyToLocation(null), 100);
-  }, []);
-
-  // Filter locations for display
-  const filteredLocations = locations.filter(l => {
-    // Category filter
-    if (!filters.categories.has(l.category)) return false;
-
-    // Visited status filter
-    if (filters.visitedStatus === 'visited' && !l.visited) return false;
-    if (filters.visitedStatus === 'want_to_visit' && !l.want_to_visit) return false;
-    if (filters.visitedStatus === 'highly_rated' && (!l.user_rating || l.user_rating < 4)) return false;
-
-    // Boolean amenity filters
-    if (filters.waterNearby && !l.water_nearby) return false;
-    if (filters.dumpNearby && !l.dump_nearby) return false;
-    if (filters.shade && !l.shade) return false;
-    if (filters.levelGround && !l.level_ground) return false;
-
-    // Difficulty filter (for riding locations)
-    if (filters.difficulty && l.category === 'riding' && l.difficulty !== filters.difficulty) return false;
-
-    // Minimum scenery filter
-    if (filters.minScenery > 0 && (!l.scenery_rating || l.scenery_rating < filters.minScenery)) return false;
-
-    // Near route filter
-    if (filters.nearRoute && routeGeoJSON) {
-      try {
-        const point = turf.point([l.longitude, l.latitude]);
-        const line = turf.lineString(routeGeoJSON.coordinates || routeGeoJSON.geometry?.coordinates || []);
-        const nearest = turf.nearestPointOnLine(line, point);
-        const dist = turf.distance(point, nearest, { units: 'miles' });
-        if (dist > filters.nearRouteDistance) return false;
-      } catch {
-        // If route geometry is invalid, skip this filter
-      }
-    }
-
-    return true;
-  });
 
   if (!mapboxToken) {
     return (
@@ -249,13 +103,12 @@ export default function App() {
         onSelectSearchResult={(loc) => {
           handleLocationClick(loc);
           handleFlyTo(loc.longitude, loc.latitude);
-          setSearchResults(null);
-          setSearchQuery('');
+          clearSearch();
         }}
         selectedTrip={selectedTrip}
         trips={trips}
         onSelectTrip={setSelectedTrip}
-        onToggleStats={() => { setShowStats(!showStats); setShowRightPanel(false); }}
+        onToggleStats={handleToggleStats}
         onToggleSidebar={() => setLeftSidebarOpen(!leftSidebarOpen)}
         filters={filters}
         setFilters={setFilters}
