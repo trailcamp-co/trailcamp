@@ -1,0 +1,22 @@
+{
+  "snapshots": [
+    {
+      "timestamp": "2026-03-01T01:00:51.887Z",
+      "totalSize": 10395648,
+      "totalSizeFormatted": "9.91 MB",
+      "tables": {
+        "locations": 6148,
+        "locations_fts": 6148,
+        "locations_fts_config": 1,
+        "locations_fts_data": 1231,
+        "locations_fts_docsize": 6238,
+        "locations_fts_idx": 1107,
+        "trip_journal": 0,
+        "trip_stops": 8,
+        "trips": 1
+      },
+      "indexCount": 18,
+      "totalRows": 20882
+    }
+  ]
+}
