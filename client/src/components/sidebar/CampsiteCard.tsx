@@ -34,9 +34,14 @@ export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, dis
         <div className="flex-1 min-w-0">
           {/* Row 1: Name + actions */}
           <div className="flex items-start justify-between gap-2 mb-1">
-            <h4 className="text-[13px] font-semibold text-gray-200 [.light_&]:text-gray-800 leading-tight group-hover:text-white [.light_&]:group-hover:text-gray-900 transition-colors">
-              {loc.name}
-            </h4>
+            <div>
+              <h4 className="text-[13px] font-semibold text-gray-200 [.light_&]:text-gray-800 leading-tight group-hover:text-white [.light_&]:group-hover:text-gray-900 transition-colors">
+                {loc.name}
+              </h4>
+              {(loc.city || loc.state) && (
+                <p className="text-[10px] text-gray-500 mt-0.5">{[loc.city, loc.state].filter(Boolean).join(', ')}</p>
+              )}
+            </div>
             <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
               {distanceFromHome != null && (
                 <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-400 font-medium tabular-nums" title="Distance from home">

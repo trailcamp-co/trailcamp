@@ -188,6 +188,9 @@ export default function MobileLocationDetail({
         <span className="text-2xl flex-shrink-0 mt-0.5">{CATEGORY_ICONS[location.category] || '📍'}</span>
         <div className="flex-1 min-w-0">
           <h2 className="text-lg font-bold text-white leading-tight truncate">{location.name}</h2>
+          {(location.city || location.state) && (
+            <p className="text-[11px] text-gray-500 mt-0.5">{[location.city, location.state].filter(Boolean).join(', ')}</p>
+          )}
           <div className="flex items-center gap-2 mt-1">
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium"
               style={{ backgroundColor: CATEGORY_COLORS[location.category] + '22', color: CATEGORY_COLORS[location.category] }}>

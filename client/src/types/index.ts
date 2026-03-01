@@ -75,6 +75,8 @@ export interface Location {
   want_to_visit: number;
   favorited: number;
   featured: number;
+  city: string | null;
+  state: string | null;
   created_at: string;
   updated_at: string;
   distance_from?: number;

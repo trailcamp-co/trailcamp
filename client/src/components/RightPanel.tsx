@@ -309,7 +309,12 @@ export default function RightPanel({
               {location.source && <span className={`text-xs px-2 py-0.5 rounded-full ${darkMode ? 'bg-dark-800 text-gray-400' : 'bg-gray-100 text-gray-500'} [.light_&]:bg-gray-100 [.light_&]:text-gray-500`}>{location.source}</span>}
             </div>
             <div className="flex items-start justify-between gap-2">
-              <h2 className={`text-xl font-bold leading-tight ${darkMode ? 'text-white' : 'text-gray-900'} [.light_&]:text-gray-900`}>{location.name}</h2>
+              <div>
+                <h2 className={`text-xl font-bold leading-tight ${darkMode ? 'text-white' : 'text-gray-900'} [.light_&]:text-gray-900`}>{location.name}</h2>
+                {(location.city || location.state) && (
+                  <p className="text-xs text-gray-500 mt-0.5">{[location.city, location.state].filter(Boolean).join(', ')}</p>
+                )}
+              </div>
               {weather && (
                 <div className="flex-shrink-0 text-right" title={weather.desc}>
                   <div className="text-lg leading-none">{weather.icon}</div>

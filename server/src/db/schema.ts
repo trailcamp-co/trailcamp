@@ -82,6 +82,7 @@ export const locations = pgTable(
     favorited: integer('favorited').notNull().default(0),
 
     // Geo enrichment
+    city: text('city'),
     state: text('state'),
     county: text('county'),
     country: text('country'),
