@@ -1,7 +1,7 @@
 # Performance Benchmarking Guide
 
 ## Overview
-The benchmarking suite provides standardized performance tests for TrailCamp's database queries to track performance over time and detect regressions.
+Standardized performance testing suite to measure query execution times and detect regressions.
 
 ## Quick Start
 
@@ -10,272 +10,285 @@ cd /Users/nicosstrnad/Projects/trailcamp/server
 ./run-benchmarks.sh
 ```
 
-## What Gets Tested
+## What It Tests
 
-### Database Queries (10 iterations each)
+### Query Patterns (8 tests)
 1. **Full table scan** - SELECT * FROM locations
-2. **Count all** - COUNT(*) query
-3. **Filter by category** - Index lookup on category field
-4. **Filter by scenery** - Range query on scenery_rating
+2. **Count query** - SELECT COUNT(*)
+3. **Category filter** - Indexed category lookup
+4. **Scenery filter** - Indexed scenery_rating lookup
 5. **Compound filter** - Multiple WHERE conditions
-6. **Aggregation** - GROUP BY with AVG
-7. **Join query** - trips + trip_stops JOIN
-8. **Full-text search** - FTS5 MATCH query (if FTS index exists)
+6. **Aggregation** - GROUP BY with AVG()
+7. **Join query** - trips LEFT JOIN trip_stops
+8. **Full-text search** - FTS5 MATCH query (if index exists)
 
-Each test measures:
-- **Average** response time (ms)
-- **Min** response time (ms)
-- **Max** response time (ms)
+Each query runs 10 iterations and reports average time.
 
-## Performance Ratings
+## Baseline Performance (2026-02-28)
 
-| Response Time | Rating | Status |
-|--------------|--------|--------|
-| < 50ms | ✅ Excellent | Optimal performance |
-| < 200ms | ✅ Good | Acceptable performance |
-| < 500ms | ⚠️ Acceptable | Consider optimization |
-| > 500ms | ❌ Needs optimization | Action required |
+Database: 6,236 locations, 3 trips
 
-## Example Output
+| Query Type | Avg Time | Rating |
+|-----------|----------|--------|
+| Full scan | 23ms | Excellent |
+| Count | 3ms | Excellent |
+| Category filter | 6ms | Excellent |
+| Scenery filter | 6ms | Excellent |
+| Compound filter | 4ms | Excellent |
+| Aggregation | 25ms | Excellent |
+| Join | 3ms | Excellent |
+| FTS search | 3ms | Excellent |
 
-```
-═══════════════════════════════════════════════════════
-    TrailCamp Performance Benchmarks
-    2026-02-28_21-32-41
-═══════════════════════════════════════════════════════
+**Overall Average: 7ms** ✅ EXCELLENT
 
-━━━ Database Info ━━━
+## Performance Targets
 
-Database size: 9.9M
-Total locations: 6148
-Total trips: 1
+| Range | Rating | Status |
+|-------|--------|--------|
+| < 10ms | Excellent | ✅ Current: 7ms |
+| < 50ms | Good | All queries pass |
+| < 100ms | Acceptable | No queries in this range |
+| > 100ms | Needs optimization | None |
 
-━━━ Running Query Benchmarks ━━━
-
-1. Full table scan... 23ms
-2. Count all locations... 3ms
-3. Filter by category (riding)... 8ms
-4. Scenery >= 8... 5ms
-5. Compound filter (category + scenery)... 5ms
-6. Aggregate (AVG scenery by category)... 5ms
-7. Join (trips + stops)... 3ms
-8. Full-text search (moab)... 3ms
-
-━━━ Performance Summary ━━━
-
-Query Performance Ratings:
-
-Full table scan                    23ms  (min:   21ms, max:    34ms)  Excellent
-Count all                           3ms  (min:    3ms, max:     4ms)  Excellent
-Filter by category                  8ms  (min:    8ms, max:     9ms)  Excellent
-Filter by scenery                   5ms  (min:    5ms, max:     6ms)  Excellent
-Compound filter                     5ms  (min:    5ms, max:     5ms)  Excellent
-Aggregation                         5ms  (min:    5ms, max:     5ms)  Excellent
-Join query                          3ms  (min:    3ms, max:     4ms)  Excellent
-Full-text search                    3ms  (min:    3ms, max:     4ms)  Excellent
-
-Overall Assessment:
-
-✅ Database performance is EXCELLENT
-Average query time: 6ms
-```
-
-## When to Run Benchmarks
+## Running Benchmarks
 
 ### Regular Testing
-- **After schema changes** - Ensure migrations don't degrade performance
-- **After adding indexes** - Verify index improves query speed
-- **Before production deployment** - Baseline current performance
-- **Monthly** - Track performance trends over time
-
-### Regression Detection
-Run benchmarks before and after major changes:
 ```bash
-# Before change
+# Quick check
+./run-benchmarks.sh
+
+# Track over time (appends to benchmark-history.csv)
+./run-benchmarks.sh
+```
+
+### Automated Monitoring
+```bash
+# Add to cron (run weekly)
+0 2 * * 0 cd /Users/nicosstrnad/Projects/trailcamp/server && ./run-benchmarks.sh >> benchmark-log.txt 2>&1
+```
+
+### After Changes
+Run benchmarks before and after:
+```bash
+# Before optimization
 ./run-benchmarks.sh > before.txt
 
-# Make changes (add index, migrate schema, etc.)
+# Make changes (add indexes, refactor queries, etc.)
 
-# After change
+# After optimization
 ./run-benchmarks.sh > after.txt
 
 # Compare
 diff before.txt after.txt
 ```
 
-### Continuous Integration
-Add to CI/CD pipeline:
-```yaml
-# .github/workflows/benchmark.yml
-- name: Run benchmarks
-  run: |
-    cd server
-    ./run-benchmarks.sh
-    # Fail if average > 100ms
+## Benchmark History
+
+Results are automatically saved to `benchmark-history.csv`:
+
+```csv
+2026-02-28 22:11:45,7,25,3
+2026-02-28 23:30:12,8,26,3
+...
 ```
 
-## Interpreting Results
+Format: `timestamp,avg_ms,slowest_ms,fastest_ms`
 
-### Excellent Performance (Current State)
-All queries < 50ms indicates:
-- ✅ Proper indexes in place
-- ✅ Efficient query design
-- ✅ Database size manageable
-- ✅ No optimization needed
+### Visualize Trends
+```bash
+# Show recent performance
+tail -20 benchmark-history.csv
 
-### Good Performance
-Queries 50-200ms indicates:
-- ✅ Generally acceptable
-- Consider optimization for heavily-used queries
-- Monitor as data grows
+# Check for regressions (avg time increasing)
+awk -F, '{print $2}' benchmark-history.csv | tail -10
+```
 
-### Needs Optimization
-Queries > 500ms indicates:
-- ❌ Missing indexes
-- ❌ Inefficient query design
-- ❌ Database needs VACUUM
-- ❌ Too much data for current approach
+## Detecting Regressions
 
-## Common Performance Issues
+### Warning Signs
+- Average time increases by >20%
+- Any query exceeds 100ms
+- Variance increases significantly
 
-### Slow Full Table Scan
-**Symptom:** Full table scan > 100ms
+### Investigation Steps
+1. **Check database size:** `SELECT COUNT(*) FROM locations`
+2. **Verify indexes:** `PRAGMA index_list(locations)`
+3. **Run ANALYZE:** `sqlite3 trailcamp.db "ANALYZE;"`
+4. **Check for locks:** Database not locked by another process
+5. **Review recent changes:** Check git log for schema/data changes
 
-**Solutions:**
-- VACUUM database to defragment
-- Increase iterations to reduce cold-start bias
-- Check disk I/O performance
+### Example Regression Analysis
+```bash
+# Before (baseline)
+Average time: 7ms
 
-### Slow Filtered Queries
-**Symptom:** Filter queries > 50ms despite indexes
+# After adding 10,000 locations
+Average time: 45ms
 
-**Solutions:**
+# Analysis:
+# - Table scan now 2.5MB → needs index
+# - Aggregation query slower → needs compound index
+# - Solution: Add indexes, run ANALYZE
+```
+
+## Optimization Workflow
+
+1. **Run baseline benchmarks**
+   ```bash
+   ./run-benchmarks.sh > baseline.txt
+   ```
+
+2. **Identify slow queries**
+   - Look for queries >50ms
+   - Check EXPLAIN QUERY PLAN
+
+3. **Apply optimizations**
+   - Add indexes
+   - Rewrite queries
+   - Run ANALYZE
+
+4. **Re-run benchmarks**
+   ```bash
+   ./run-benchmarks.sh > optimized.txt
+   ```
+
+5. **Compare results**
+   ```bash
+   diff baseline.txt optimized.txt
+   ```
+
+6. **Document changes**
+   - Update BENCHMARKING.md with new baseline
+   - Note optimization in CHANGELOG
+
+## Query Optimization Tips
+
+### If Full Scan Is Slow
 ```sql
--- Verify index exists
-SELECT name FROM sqlite_master WHERE type='index';
+-- Check table size
+SELECT COUNT(*), AVG(LENGTH(description)) FROM locations;
 
--- Add missing index
-CREATE INDEX idx_locations_field ON locations(field);
+-- Consider VACUUM
+VACUUM;
 
 -- Update statistics
 ANALYZE;
 ```
 
-### Slow Aggregations
-**Symptom:** GROUP BY queries > 200ms
+### If Filters Are Slow
+```sql
+-- Add index
+CREATE INDEX idx_locations_field ON locations(field);
 
-**Solutions:**
-- Index the GROUP BY column
-- Consider materialized views for complex aggregations
-- Pre-calculate common aggregations
-
-### Slow Joins
-**Symptom:** JOIN queries > 100ms
-
-**Solutions:**
-- Index foreign key columns
-- Limit JOIN result size
-- Ensure JOIN conditions are indexed
-
-## Baseline Performance (2026-02-28)
-
-**Environment:**
-- Mac mini (Apple Silicon)
-- Database: 9.9MB, 6,148 locations
-- SQLite version: 3.43.2
-
-**Results:**
-- Average query time: **6ms**
-- All queries: **< 50ms** (Excellent)
-- Slowest query: Full table scan (23ms)
-- Fastest queries: Count, Join, FTS (3ms)
-
-### Performance by Query Type
-| Query Type | Avg Time | Rating |
-|-----------|----------|--------|
-| Full table scan | 23ms | ✅ Excellent |
-| Count | 3ms | ✅ Excellent |
-| Single-column filter | 8ms | ✅ Excellent |
-| Range filter | 5ms | ✅ Excellent |
-| Compound filter | 5ms | ✅ Excellent |
-| Aggregation | 5ms | ✅ Excellent |
-| Join | 3ms | ✅ Excellent |
-| Full-text search | 3ms | ✅ Excellent |
-
-## Automation
-
-### Cron Job (Weekly)
-```cron
-# Run benchmarks every Sunday at 3 AM
-0 3 * * 0 cd /path/to/trailcamp/server && ./run-benchmarks.sh >> logs/benchmarks.log 2>&1
+-- Verify usage
+EXPLAIN QUERY PLAN SELECT * FROM locations WHERE field = 'value';
 ```
 
-### Store Historical Data
+### If Joins Are Slow
+```sql
+-- Ensure foreign key columns are indexed
+CREATE INDEX idx_trip_stops_trip_id ON trip_stops(trip_id);
+CREATE INDEX idx_trip_stops_location_id ON trip_stops(location_id);
+```
+
+### If FTS Is Slow
+```sql
+-- Rebuild FTS index
+INSERT INTO locations_fts(locations_fts) VALUES('rebuild');
+
+-- Or recreate
+DROP TABLE locations_fts;
+-- Re-run migration 003_add_search_index.sql
+```
+
+## Troubleshooting
+
+### Benchmarks Fail to Run
+**Error:** `date: illegal option -- N`
+- **Solution:** macOS date doesn't support nanoseconds
+- Script uses fallback timing method
+
+**Error:** `database is locked`
+- **Solution:** Stop dev server first
+  ```bash
+  pkill -f "tsx watch"
+  ./run-benchmarks.sh
+  npm run dev &
+  ```
+
+### Inconsistent Results
+**Cause:** System load, disk I/O, cache state
+
+**Solution:** Run multiple times and average
 ```bash
-# Save results with timestamp
-./run-benchmarks.sh | tee "benchmark-results/$(date +%Y-%m-%d).txt"
+for i in {1..5}; do
+  ./run-benchmarks.sh
+  sleep 5
+done
 ```
 
-### Alert on Regression
+### Very Slow Performance
+Check if database needs maintenance:
+```bash
+# Check database integrity
+sqlite3 trailcamp.db "PRAGMA integrity_check;"
+
+# Update statistics
+sqlite3 trailcamp.db "ANALYZE;"
+
+# Rebuild database
+sqlite3 trailcamp.db "VACUUM;"
+```
+
+## Integration with CI/CD
+
+### GitHub Actions Example
+```yaml
+- name: Run performance benchmarks
+  run: |
+    cd server
+    ./run-benchmarks.sh
+    
+    # Fail if average > 50ms
+    avg=$(tail -1 benchmark-history.csv | cut -d, -f2)
+    if [ $avg -gt 50 ]; then
+      echo "Performance regression detected: ${avg}ms"
+      exit 1
+    fi
+```
+
+### Pre-commit Hook
 ```bash
 #!/bin/bash
-# alert-on-regression.sh
+# .git/hooks/pre-commit
 
-THRESHOLD=50  # Alert if average > 50ms
+cd server
 
-./run-benchmarks.sh > /tmp/benchmark-output.txt
-avg=$(grep "Average query time:" /tmp/benchmark-output.txt | awk '{print $4}' | tr -d 'ms')
-
-if [ ${avg} -gt ${THRESHOLD} ]; then
-  echo "⚠️ Performance regression detected: ${avg}ms average (threshold: ${THRESHOLD}ms)"
-  # Send alert (email, Slack, etc.)
+# Run benchmarks on migrations
+if git diff --cached --name-only | grep -q "migrations/"; then
+  echo "Running performance benchmarks..."
+  ./run-benchmarks.sh
+  
+  read -p "Performance OK to commit? (yes/no): " response
+  if [ "$response" != "yes" ]; then
+    exit 1
+  fi
 fi
-```
-
-## Optimization Workflow
-
-1. **Baseline** - Run benchmarks on current state
-2. **Identify** - Find slow queries (> 200ms)
-3. **Analyze** - Use EXPLAIN QUERY PLAN
-4. **Optimize** - Add indexes, rewrite queries
-5. **Verify** - Run benchmarks again
-6. **Compare** - Confirm improvement
-
-### Example Optimization
-```bash
-# 1. Baseline
-./run-benchmarks.sh > before-optimization.txt
-
-# 2. Identify slow query
-# "Filter by difficulty: 450ms"
-
-# 3. Check for index
-sqlite3 trailcamp.db "EXPLAIN QUERY PLAN SELECT * FROM locations WHERE difficulty = 'Hard'"
-
-# 4. Add index
-sqlite3 trailcamp.db "CREATE INDEX idx_locations_difficulty ON locations(difficulty)"
-
-# 5. Re-run benchmarks
-./run-benchmarks.sh > after-optimization.txt
-
-# 6. Compare
-diff before-optimization.txt after-optimization.txt
-# Filter by difficulty: 450ms → 8ms ✅
 ```
 
 ## Future Enhancements
 
 Potential improvements:
-- [ ] Concurrent query testing (multiple users)
-- [ ] Write operation benchmarks (INSERT, UPDATE, DELETE)
-- [ ] API endpoint benchmarks (HTTP response times)
-- [ ] Load testing (1000+ concurrent requests)
+- [ ] Graph results over time
+- [ ] Export to JSON for dashboards
+- [ ] Test concurrent query load
+- [ ] Benchmark write operations
 - [ ] Memory usage profiling
-- [ ] Export results to JSON for graphing
+- [ ] Compare against target database size
 - [ ] Automated regression alerts
-- [ ] Performance dashboard integration
 
 ---
 
 *Last updated: 2026-02-28*
 *Script: run-benchmarks.sh*
+*Current baseline: 7ms average (6,236 locations)*
