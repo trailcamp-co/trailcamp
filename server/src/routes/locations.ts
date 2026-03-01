@@ -180,14 +180,24 @@ router.get('/', optionalAuth, async (req: Request, res: Response) => {
         .where(whereClause)
         .orderBy(sql`distance_from`);
 
-      const result = rows.map((r) => ({ ...r.location, distance_from: r.distanceFrom, group_count: 1 }));
-
-      for (const loc of result) {
-        if (loc.groupId) {
-          const [countRes] = await db.select({ cnt: sql<number>`count(*)` }).from(locations).where(eq(locations.groupId, loc.groupId));
-          loc.group_count = countRes?.cnt ?? 1;
+      // Precompute group counts in one query
+      const groupIds = [...new Set(rows.map(r => r.location.groupId).filter(Boolean))] as number[];
+      const groupCountMap = new Map<number, number>();
+      if (groupIds.length > 0) {
+        const groupCounts = await db.select({
+          groupId: locations.groupId,
+          cnt: sql<number>`count(*)`,
+        }).from(locations).where(sql`${locations.groupId} IN ${groupIds}`).groupBy(locations.groupId);
+        for (const gc of groupCounts) {
+          if (gc.groupId) groupCountMap.set(gc.groupId, gc.cnt);
         }
       }
+
+      const result = rows.map((r) => ({
+        ...r.location,
+        distance_from: r.distanceFrom,
+        group_count: r.location.groupId ? (groupCountMap.get(r.location.groupId) ?? 1) : 1,
+      }));
 
       if (req.query.trip_month) {
         const month = Number(req.query.trip_month);
@@ -203,15 +213,22 @@ router.get('/', optionalAuth, async (req: Request, res: Response) => {
     }
 
     const rows = await db.select().from(locations).where(whereClause).orderBy(asc(locations.name));
-    const result: (typeof rows[number] & { group_count: number; seasonal_status?: string })[] =
-      rows.map((r) => ({ ...r, group_count: 1 }));
 
-    for (const loc of result) {
-      if (loc.groupId) {
-        const [countRes] = await db.select({ cnt: sql<number>`count(*)` }).from(locations).where(eq(locations.groupId, loc.groupId));
-        loc.group_count = countRes?.cnt ?? 1;
+    // Precompute group counts in one query
+    const groupIds2 = [...new Set(rows.map(r => r.groupId).filter(Boolean))] as number[];
+    const groupCountMap2 = new Map<number, number>();
+    if (groupIds2.length > 0) {
+      const groupCounts = await db.select({
+        groupId: locations.groupId,
+        cnt: sql<number>`count(*)`,
+      }).from(locations).where(sql`${locations.groupId} IN ${groupIds2}`).groupBy(locations.groupId);
+      for (const gc of groupCounts) {
+        if (gc.groupId) groupCountMap2.set(gc.groupId, gc.cnt);
       }
     }
+
+    const result: (typeof rows[number] & { group_count: number; seasonal_status?: string })[] =
+      rows.map((r) => ({ ...r, group_count: r.groupId ? (groupCountMap2.get(r.groupId) ?? 1) : 1 }));
 
     if (req.query.trip_month) {
       const month = Number(req.query.trip_month);
