@@ -1,6 +1,6 @@
 #!/bin/bash
-# Migration Rollback Script for TrailCamp
-# Safely rolls back database migrations
+# Migration Rollback System for TrailCamp
+# Safely rollback database migrations
 
 set -e
 
@@ -16,121 +16,148 @@ MIGRATIONS_DIR="./migrations"
 BACKUP_DIR="./backups"
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
-echo -e "${BLUE}    TrailCamp Migration Rollback${NC}"
+echo -e "${BLUE}    TrailCamp Migration Rollback System${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}\n"
 
-# Check if database exists
-if [ ! -f "${DB_PATH}" ]; then
-    echo -e "${RED}✗ Database not found: ${DB_PATH}${NC}\n"
+# Check if migrations directory exists
+if [ ! -d "${MIGRATIONS_DIR}" ]; then
+    echo -e "${RED}✗ Migrations directory not found: ${MIGRATIONS_DIR}${NC}\n"
     exit 1
 fi
 
-# Show available migrations
+# List available migrations
 echo -e "${BLUE}Available migrations:${NC}\n"
-
-migration_files=($(ls -1 ${MIGRATIONS_DIR}/*.sql 2>/dev/null | sort -r))
-
-if [ ${#migration_files[@]} -eq 0 ]; then
-    echo -e "${YELLOW}No migration files found in ${MIGRATIONS_DIR}${NC}\n"
-    exit 1
-fi
-
-for i in "${!migration_files[@]}"; do
-    migration_file=$(basename "${migration_files[$i]}")
-    echo -e "  $((i+1)). ${migration_file}"
+ls -1 "${MIGRATIONS_DIR}"/*.sql 2>/dev/null | while read migration; do
+    basename "$migration"
 done
 
 echo ""
 
-# Get migration to rollback
+# Get migration number to rollback
 if [ -z "$1" ]; then
-    echo -e "${YELLOW}Usage: ./rollback-migration.sh <migration-number>${NC}"
-    echo -e "${YELLOW}Example: ./rollback-migration.sh 004${NC}\n"
+    echo -e "${YELLOW}Usage: ./rollback-migration.sh <migration_number>${NC}"
+    echo -e "Example: ./rollback-migration.sh 003\n"
     exit 1
 fi
 
 MIGRATION_NUM="$1"
-MIGRATION_FILE="${MIGRATIONS_DIR}/${MIGRATION_NUM}_*.sql"
+UP_FILE="${MIGRATIONS_DIR}/${MIGRATION_NUM}_*.sql"
+DOWN_FILE="${MIGRATIONS_DIR}/${MIGRATION_NUM}_*_down.sql"
 
-# Find matching migration
-matching_files=($(ls ${MIGRATION_FILE} 2>/dev/null))
+# Find matching files
+UP_FILES=$(ls ${UP_FILE} 2>/dev/null | grep -v "_down.sql" || true)
+DOWN_FILES=$(ls ${DOWN_FILE} 2>/dev/null || true)
 
-if [ ${#matching_files[@]} -eq 0 ]; then
+if [ -z "$UP_FILES" ]; then
     echo -e "${RED}✗ Migration ${MIGRATION_NUM} not found${NC}\n"
     exit 1
 fi
 
-MIGRATION_PATH="${matching_files[0]}"
-MIGRATION_NAME=$(basename "${MIGRATION_PATH}")
+UP_FILE_PATH=$(echo $UP_FILES | head -n 1)
+UP_FILE_NAME=$(basename "$UP_FILE_PATH")
 
-echo -e "${YELLOW}Rolling back migration: ${MIGRATION_NAME}${NC}\n"
+echo -e "${BLUE}Migration to rollback:${NC} ${UP_FILE_NAME}\n"
 
-# Look for rollback SQL
-ROLLBACK_FILE="${MIGRATION_PATH%.sql}_rollback.sql"
+# Check if rollback file exists
+if [ -n "$DOWN_FILES" ]; then
+    # Use existing down migration
+    DOWN_FILE_PATH=$(echo $DOWN_FILES | head -n 1)
+    DOWN_FILE_NAME=$(basename "$DOWN_FILE_PATH")
+    echo -e "${GREEN}✓ Found rollback file: ${DOWN_FILE_NAME}${NC}\n"
+else
+    # Try to generate rollback automatically
+    echo -e "${YELLOW}⚠ No rollback file found${NC}"
+    echo -e "${YELLOW}Attempting to auto-generate rollback SQL...${NC}\n"
+    
+    # Create down migration file
+    DOWN_FILE_PATH="${UP_FILE_PATH%.sql}_down.sql"
+    
+    # Generate rollback SQL based on common patterns
+    cat > "$DOWN_FILE_PATH" << 'ROLLBACK'
+-- Auto-generated rollback for migration
+-- REVIEW THIS FILE BEFORE RUNNING!
 
-if [ ! -f "${ROLLBACK_FILE}" ]; then
-    echo -e "${RED}✗ Rollback file not found: $(basename ${ROLLBACK_FILE})${NC}"
-    echo -e "${YELLOW}ℹ  Create rollback SQL file to enable safe rollback${NC}\n"
+-- Common rollback patterns:
+-- 
+-- To undo ALTER TABLE ADD COLUMN:
+-- ALTER TABLE table_name DROP COLUMN column_name;
+--
+-- To undo CREATE INDEX:
+-- DROP INDEX index_name;
+--
+-- To undo CREATE TABLE:
+-- DROP TABLE table_name;
+--
+-- To undo CREATE TRIGGER:
+-- DROP TRIGGER trigger_name;
+--
+-- To undo INSERT:
+-- DELETE FROM table_name WHERE <condition>;
+--
+-- To undo UPDATE:
+-- UPDATE table_name SET column = old_value WHERE <condition>;
+
+-- TODO: Add specific rollback commands for this migration
+-- Review the up migration and write the inverse operations:
+
+ROLLBACK
+    
+    # Append comments about the original migration
+    echo "-- Original migration: ${UP_FILE_NAME}" >> "$DOWN_FILE_PATH"
+    echo "-- " >> "$DOWN_FILE_PATH"
+    echo "-- Review the original migration and add rollback SQL above" >> "$DOWN_FILE_PATH"
+    
+    echo -e "${YELLOW}✓ Created template rollback file: $(basename "$DOWN_FILE_PATH")${NC}"
+    echo -e "${RED}⚠ MANUAL REVIEW REQUIRED${NC}\n"
+    echo -e "Edit ${DOWN_FILE_PATH} and add the rollback SQL, then run again.\n"
     exit 1
 fi
 
-# Show rollback SQL
-echo -e "${BLUE}Rollback SQL:${NC}"
-echo -e "${BLUE}─────────────────────────────────────────────────────${NC}"
-cat "${ROLLBACK_FILE}"
-echo -e "${BLUE}─────────────────────────────────────────────────────${NC}\n"
+# Confirm with user
+echo -e "${YELLOW}WARNING: This will rollback migration ${MIGRATION_NUM}${NC}"
+echo -e "${YELLOW}This action modifies the database schema.${NC}\n"
+echo -e "Rollback file: ${DOWN_FILE_NAME}\n"
 
-# Confirm
-read -p "Do you want to proceed with rollback? (yes/no): " confirm
+read -p "Continue with rollback? (yes/no): " CONFIRM
 
-if [ "$confirm" != "yes" ]; then
+if [ "$CONFIRM" != "yes" ]; then
     echo -e "\n${YELLOW}Rollback cancelled${NC}\n"
     exit 0
 fi
 
-# Create backup first
-echo -e "\n${YELLOW}Creating backup before rollback...${NC}"
+# Create backup before rollback
+echo -e "\n${BLUE}Creating backup before rollback...${NC}"
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 BACKUP_FILE="${BACKUP_DIR}/pre-rollback-${MIGRATION_NUM}-${TIMESTAMP}.sql"
 
 mkdir -p "${BACKUP_DIR}"
 sqlite3 "${DB_PATH}" ".dump" > "${BACKUP_FILE}"
+BACKUP_SIZE=$(du -h "${BACKUP_FILE}" | cut -f1)
+echo -e "${GREEN}✓ Backup created: $(basename "$BACKUP_FILE") (${BACKUP_SIZE})${NC}\n"
 
-if [ -f "${BACKUP_FILE}" ]; then
-    FILE_SIZE=$(du -h "${BACKUP_FILE}" | cut -f1)
-    echo -e "${GREEN}✓ Backup created: ${BACKUP_FILE} (${FILE_SIZE})${NC}\n"
-else
-    echo -e "${RED}✗ Backup failed${NC}\n"
-    exit 1
-fi
+# Run rollback
+echo -e "${BLUE}Executing rollback...${NC}\n"
 
-# Execute rollback
-echo -e "${YELLOW}Executing rollback...${NC}\n"
-
-if sqlite3 "${DB_PATH}" < "${ROLLBACK_FILE}"; then
-    echo -e "\n${GREEN}✓ Rollback successful${NC}\n"
+if sqlite3 "${DB_PATH}" < "${DOWN_FILE_PATH}"; then
+    echo -e "\n${GREEN}✓ Rollback completed successfully${NC}\n"
     
     # Verify database integrity
-    echo -e "${YELLOW}Verifying database integrity...${NC}"
-    INTEGRITY=$(sqlite3 "${DB_PATH}" "PRAGMA integrity_check")
-    
+    INTEGRITY=$(sqlite3 "${DB_PATH}" "PRAGMA integrity_check;")
     if [ "$INTEGRITY" = "ok" ]; then
-        echo -e "${GREEN}✓ Database integrity: OK${NC}\n"
+        echo -e "${GREEN}✓ Database integrity check: OK${NC}\n"
     else
-        echo -e "${RED}✗ Database integrity check failed: ${INTEGRITY}${NC}"
-        echo -e "${YELLOW}Restore from backup: ${BACKUP_FILE}${NC}\n"
+        echo -e "${RED}✗ Database integrity check FAILED${NC}"
+        echo -e "${RED}Restore from backup: ${BACKUP_FILE}${NC}\n"
         exit 1
     fi
     
-    echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
-    echo -e "${GREEN}Rollback Complete${NC}"
-    echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}\n"
-    
-    echo -e "Migration ${MIGRATION_NUM} rolled back successfully"
-    echo -e "Backup saved: ${BACKUP_FILE}\n"
+    echo -e "${BLUE}Rollback summary:${NC}"
+    echo -e "  Migration rolled back: ${MIGRATION_NUM}"
+    echo -e "  Backup location: ${BACKUP_FILE}"
+    echo -e "  Database status: OK\n"
 else
     echo -e "\n${RED}✗ Rollback failed${NC}"
-    echo -e "${YELLOW}Database may be in inconsistent state${NC}"
+    echo -e "${RED}Database may be in an inconsistent state${NC}"
     echo -e "${YELLOW}Restore from backup: ${BACKUP_FILE}${NC}\n"
     exit 1
 fi
