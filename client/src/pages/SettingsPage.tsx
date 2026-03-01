@@ -100,7 +100,16 @@ export default function SettingsPage() {
 
   const handleGeocodeAddress = async () => {
     if (!homeAddress.trim()) return;
-    const token = (window as unknown as Record<string, unknown>).__mapboxToken as string;
+    let token = (window as unknown as Record<string, unknown>).__mapboxToken as string;
+    if (!token) {
+      // Fetch token if not cached (Settings page may load before App)
+      try {
+        const res = await fetch(`${API_BASE}/mapbox-token`);
+        const data = await res.json();
+        token = data.token;
+        (window as unknown as Record<string, unknown>).__mapboxToken = token;
+      } catch { return; }
+    }
     if (!token) return;
 
     try {
