@@ -325,7 +325,39 @@ export default function App() {
         {/* ===== MOBILE: Full-screen overlay panels ===== */}
         {mobileTab === 'explore' && (
           <div className="mobile-panel-overlay bg-dark-950 lg:hidden animate-fade-in pb-20">
-            {sidebarContent}
+            <ErrorBoundary fallbackLabel="Explore error">
+              <LeftSidebar
+                selectedTrip={selectedTrip}
+                trips={trips}
+                stops={stops}
+                onSelectTrip={setSelectedTrip}
+                onCreateTrip={createTrip}
+                onUpdateTrip={updateTrip}
+                onDeleteTrip={deleteTrip}
+                onAddStop={addStop}
+                onUpdateStop={updateStop}
+                onDeleteStop={deleteStop}
+                onReorderStops={reorderStops}
+                onFlyTo={(lng, lat) => { handleFlyTo(lng, lat); setMobileTab('map'); }}
+                locations={locations}
+                filters={filters}
+                setFilters={setFilters}
+                weatherCache={weatherCache}
+                fetchWeather={fetchWeather}
+                routeGeoJSON={routeGeoJSON}
+                mapBounds={mapBounds}
+                onLocationClick={(loc) => { handleLocationClickWrapped(loc); setMobileTab('map'); }}
+                onToggleFavorite={toggleFavorite}
+                filterMode={filters.visitedStatus}
+                onFilterMode={(mode: Filters['visitedStatus']) =>
+                  setFilters(prev => ({ ...prev, visitedStatus: mode }))
+                }
+                homeLat={homeLat}
+                homeLon={homeLon}
+                hideTabs
+                defaultTab="camp"
+              />
+            </ErrorBoundary>
           </div>
         )}
 
@@ -360,7 +392,8 @@ export default function App() {
                 }
                 homeLat={homeLat}
                 homeLon={homeLon}
-                defaultTab="trip"
+                hideTabs
+                forceTab="trip"
               />
             </ErrorBoundary>
           </div>
@@ -397,7 +430,8 @@ export default function App() {
                 }
                 homeLat={homeLat}
                 homeLon={homeLon}
-                defaultTab="camp"
+                hideTabs
+                forceTab="camp"
               />
             </ErrorBoundary>
           </div>

@@ -21,6 +21,7 @@ import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TR
 import type { SnapPoint } from './BottomSheet';
 import ReviewsSection from './ReviewsSection';
 import type { UserLocationData } from '../hooks/useUserData';
+import { getExternalUrl } from '../utils/getExternalUrl';
 
 const CATEGORY_LUCIDE_ICONS: Record<string, React.ReactNode> = {
   campsite: <Trees className="w-3.5 h-3.5" />,
@@ -233,6 +234,18 @@ export default function MobileLocationDetail({
             </button>
           </div>
 
+          {/* External link (visible at half+) */}
+          {(() => {
+            const generated = getExternalUrl(location);
+            if (!generated) return null;
+            return (
+              <a href={generated.url} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-dark-800 border border-dark-700/50 text-sm font-medium text-orange-400 hover:text-orange-300 transition-colors">
+                <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />{generated.label}
+              </a>
+            );
+          })()}
+
           {/* Description (truncated at HALF, full at FULL) */}
           {location.description && (
             <div className="mb-4">
@@ -313,18 +326,27 @@ export default function MobileLocationDetail({
           )}
 
           {/* External Links */}
-          {location.external_links && (() => {
+          {(() => {
             let links: { label: string; url: string }[] = [];
-            try {
-              const parsed = JSON.parse(location.external_links);
-              if (Array.isArray(parsed)) links = parsed;
-            } catch {
-              links = [{ label: 'Link', url: location.external_links }];
+            if (location.external_links) {
+              try {
+                const parsed = JSON.parse(location.external_links);
+                if (Array.isArray(parsed)) links = parsed;
+              } catch {
+                links = [{ label: 'Link', url: location.external_links }];
+              }
             }
-            if (links.length === 0) return null;
+            const generated = getExternalUrl(location);
+            if (links.length === 0 && !generated) return null;
             return (
               <div className="border-t border-dark-700/50 pt-4 mb-4">
                 <span className="text-xs font-medium uppercase tracking-wider text-gray-500 block mb-2">Links</span>
+                {generated && !links.some(l => l.url === generated.url) && (
+                  <a href={generated.url} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm font-medium text-orange-400 hover:text-orange-300 mb-1">
+                    <ExternalLink className="w-3.5 h-3.5" />{generated.label}
+                  </a>
+                )}
                 {links.map((link, i) => (
                   <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 mb-1">

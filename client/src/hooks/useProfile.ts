@@ -63,5 +63,5 @@ export function formatDistanceFromHome(miles: number): string {
   if (miles < 50) return `${Math.round(miles)} mi`;
   const hours = miles / 55; // Rough avg driving speed
   if (hours < 1) return `${Math.round(miles)} mi`;
-  return `~${hours.toFixed(1)} hrs`;
+  return `~${Math.round(hours)} hrs`;
 }

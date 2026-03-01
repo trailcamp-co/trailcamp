@@ -731,10 +731,11 @@ export default function TripTab({
             <>
               <button
                 onClick={() => onSelectTrip(null)}
-                className="p-1 text-gray-500 hover:text-orange-400 transition-colors"
+                className="flex items-center gap-1 p-1 text-gray-500 hover:text-orange-400 transition-colors"
                 title="Back to My Trips"
               >
                 <ChevronUp size={16} />
+                <span className="text-xs font-medium lg:hidden">Trips</span>
               </button>
               <h2
                 className="flex-1 text-lg font-semibold text-white [.light_&]:text-gray-900 cursor-pointer hover:text-orange-400 transition-colors truncate"
@@ -1286,9 +1287,20 @@ export default function TripTab({
 
             {/* Timeline entry list grouped by date */}
             {journalEntries.length === 0 ? (
-              <p className="text-xs text-gray-600 [.light_&]:text-gray-400 italic text-center py-3">
-                No journal entries yet. Start documenting your trip!
-              </p>
+              <div className="text-center py-4">
+                <p className="text-xs text-gray-600 [.light_&]:text-gray-400 italic mb-2">
+                  No journal entries yet
+                </p>
+                <button
+                  onClick={() => {
+                    const textarea = document.querySelector<HTMLTextAreaElement>('textarea[placeholder="Write a journal entry..."]');
+                    textarea?.focus();
+                  }}
+                  className="text-xs font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-orange-400 border border-orange-500/30 hover:bg-orange-500/25 transition-colors [.light_&]:bg-orange-100 [.light_&]:text-orange-600 [.light_&]:border-orange-200"
+                >
+                  Write your first entry
+                </button>
+              </div>
             ) : (
               <div className="max-h-72 overflow-y-auto space-y-3">
                 {journalByDate.map(([date, entries]) => (

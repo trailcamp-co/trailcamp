@@ -26,6 +26,7 @@ import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TR
 import { fetchNearbyRiding, fetchGroupMembers } from '../hooks/useApi';
 import ReviewsSection from './ReviewsSection';
 import type { UserLocationData } from '../hooks/useUserData';
+import { getExternalUrl } from '../utils/getExternalUrl';
 
 interface RightPanelProps {
   location: Location;
@@ -292,6 +293,7 @@ export default function RightPanel({
   };
 
   const externalLinks = parseExternalLinks();
+  const generatedLink = getExternalUrl(location);
   const hasPhotos = location.photos && location.photos.length > 0;
 
   return (
@@ -370,11 +372,12 @@ export default function RightPanel({
           const dLng = (location.longitude - homeLon) * Math.PI / 180;
           const a = Math.sin(dLat/2)**2 + Math.cos(homeLat*Math.PI/180)*Math.cos(location.latitude*Math.PI/180)*Math.sin(dLng/2)**2;
           const dist = Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
-          const hours = Math.round(dist / 55);
+          const driveHours = dist / 55;
+          const driveLabel = driveHours < 1 ? `~${Math.round(driveHours * 60)} min` : `~${Math.round(driveHours)} hrs`;
           return (
             <div className="px-5 pt-4 flex items-center gap-2 text-xs text-gray-500 [.light_&]:text-gray-400">
               <MapPin size={12} className="text-orange-400 flex-shrink-0" />
-              <span>{dist.toLocaleString()} mi from home (~{hours}h drive)</span>
+              <span>{dist.toLocaleString()} mi from home ({driveLabel} drive)</span>
             </div>
           );
         })()}
@@ -604,10 +607,16 @@ export default function RightPanel({
 
 
         {/* External Links */}
-        {externalLinks.length > 0 && (
+        {(externalLinks.length > 0 || generatedLink) && (
           <div className={`p-5 ${sectionDivider}`}>
             <div className={`${labelStyle} mb-2`}>Links</div>
             <div className="flex flex-col gap-2">
+              {generatedLink && !externalLinks.some(l => l.url === generatedLink.url) && (
+                <a href={generatedLink.url} target="_blank" rel="noopener noreferrer"
+                  className={`flex items-center gap-2 text-sm font-medium transition-colors ${darkMode ? 'text-orange-400 hover:text-orange-300' : 'text-orange-600 hover:text-orange-500'} [.light_&]:text-orange-600 [.light_&]:hover:text-orange-500`}>
+                  <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />{generatedLink.label}
+                </a>
+              )}
               {externalLinks.map((link, i) => (
                 <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
                   className={`flex items-center gap-2 text-sm font-medium transition-colors ${darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'} [.light_&]:text-blue-600 [.light_&]:hover:text-blue-500`}>

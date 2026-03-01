@@ -18,7 +18,10 @@ interface BottomSheetProps {
 
 export default function BottomSheet({ open, snapPoint, onSnapChange, onDismiss, children }: BottomSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const dragState = useRef<{ startY: number; startHeight: number } | null>(null);
+  const contentDragReady = useRef(false);
+  const contentDragStartY = useRef(0);
   const [currentHeight, setCurrentHeight] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -108,7 +111,7 @@ export default function BottomSheet({ open, snapPoint, onSnapChange, onDismiss, 
   if (!open) return null;
 
   const height = currentHeight ?? getSnapHeight(snapPoint);
-  const isScrollable = snapPoint === 'full' && !isDragging;
+  const isScrollable = (snapPoint === 'full' || snapPoint === 'half') && !isDragging;
 
   return (
     <div
@@ -134,23 +137,38 @@ export default function BottomSheet({ open, snapPoint, onSnapChange, onDismiss, 
 
       {/* Content */}
       <div
+        ref={contentRef}
         className={`flex-1 min-h-0 ${isScrollable ? 'overflow-y-auto' : 'overflow-hidden'}`}
         style={{ WebkitOverflowScrolling: 'touch' }}
         onTouchStart={(e) => {
-          // Allow drag from content area only if not scrollable
           if (!isScrollable) {
             handleTouchStart(e);
+          } else {
+            // At half snap, allow drag-to-expand when scrolled to top
+            const el = contentRef.current;
+            if (el && el.scrollTop <= 0 && snapPoint === 'half') {
+              contentDragReady.current = true;
+              contentDragStartY.current = e.touches[0].clientY;
+            }
           }
         }}
         onTouchMove={(e) => {
           if (!isScrollable) {
             handleTouchMove(e);
+          } else if (contentDragReady.current && snapPoint === 'half') {
+            const delta = contentDragStartY.current - e.touches[0].clientY;
+            // User is dragging up while at scroll top → expand sheet
+            if (delta > 10) {
+              contentDragReady.current = false;
+              onSnapChange('full');
+            }
           }
         }}
         onTouchEnd={() => {
           if (!isScrollable) {
             handleTouchEnd();
           }
+          contentDragReady.current = false;
         }}
       >
         {children}

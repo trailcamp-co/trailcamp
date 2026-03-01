@@ -40,7 +40,7 @@ export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, dis
             <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
               {distanceFromHome != null && (
                 <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-400 font-medium tabular-nums" title="Distance from home">
-                  {distanceFromHome < 50 ? `${Math.round(distanceFromHome)} mi` : `~${(distanceFromHome / 55).toFixed(1)} hrs`}
+                  {distanceFromHome < 50 ? `${Math.round(distanceFromHome)} mi` : (distanceFromHome / 55) < 1 ? `~${Math.round(distanceFromHome / 55 * 60)} min` : `~${Math.round(distanceFromHome / 55)} hrs`}
                 </span>
               )}
               {distanceFrom != null && (

@@ -36,6 +36,8 @@ interface LeftSidebarProps {
   homeLat?: number | null;
   homeLon?: number | null;
   defaultTab?: SidebarTab;
+  hideTabs?: boolean;
+  forceTab?: SidebarTab;
 }
 
 export default function LeftSidebar({
@@ -65,8 +67,11 @@ export default function LeftSidebar({
   homeLat,
   homeLon,
   defaultTab,
+  hideTabs,
+  forceTab,
 }: LeftSidebarProps) {
   const [activeTab, setActiveTab] = useState<SidebarTab>(defaultTab || 'trip');
+  const currentTab = forceTab || activeTab;
 
   const ridingCount = locations.filter((l) => l.category === 'riding').length;
   const campsiteCount = locations.filter((l) => l.category === 'campsite').length;
@@ -86,58 +91,86 @@ export default function LeftSidebar({
     filters.campsiteSubTypes.size < ALL_CAMPSITE_SUBTYPES.length,
   ].filter(Boolean).length;
 
+  // Pill tabs for mobile hideTabs mode (Explore tab)
+  const mobilePillTabs: { id: SidebarTab; label: string }[] = [
+    { id: 'riding', label: 'Rides' },
+    { id: 'camp', label: 'Camp' },
+    { id: 'filters', label: 'Filters' },
+  ];
+
   return (
     <div className="w-full lg:w-80 h-full flex flex-col bg-dark-950 border-r border-dark-700/50 overflow-hidden">
-      {/* Tab Bar */}
-      <div className="flex-shrink-0 flex border-b border-dark-700/50">
-        {(
-          [
-            { id: 'trip' as SidebarTab, label: 'Trip', icon: MapPin, count: stopCount },
-            { id: 'riding' as SidebarTab, label: 'Rides', icon: Bike, count: ridingCount },
-            { id: 'camp' as SidebarTab, label: 'Camp', icon: Tent, count: campsiteCount },
-            { id: 'filters' as SidebarTab, label: 'Filters', icon: Sliders, count: activeFilterCount > 0 ? activeFilterCount : undefined },
-            { id: 'packing' as SidebarTab, label: 'Pack', icon: PackageCheck, count: undefined },
-          ] as const
-        ).map(({ id, label, icon: Icon, count }) => (
-          <button
-            key={id}
-            onClick={() => setActiveTab(id)}
-            title={count ? `${label} (${count.toLocaleString()})` : label}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-1 h-10 text-xs font-medium transition-all ${
-              activeTab === id
-                ? 'text-orange-400 border-b-[3px] border-orange-400 bg-dark-800/70 font-semibold'
-                : 'text-gray-500 hover:text-gray-300 border-b-[3px] border-transparent'
-            }`}
-          >
-            <Icon size={15} className="flex-shrink-0" />
-            {label}
-          </button>
-        ))}
-      </div>
+      {/* Full Tab Bar (desktop or when hideTabs is false) */}
+      {!hideTabs && (
+        <div className="flex-shrink-0 flex border-b border-dark-700/50">
+          {(
+            [
+              { id: 'trip' as SidebarTab, label: 'Trip', icon: MapPin, count: stopCount },
+              { id: 'riding' as SidebarTab, label: 'Rides', icon: Bike, count: ridingCount },
+              { id: 'camp' as SidebarTab, label: 'Camp', icon: Tent, count: campsiteCount },
+              { id: 'filters' as SidebarTab, label: 'Filters', icon: Sliders, count: activeFilterCount > 0 ? activeFilterCount : undefined },
+              { id: 'packing' as SidebarTab, label: 'Pack', icon: PackageCheck, count: undefined },
+            ] as const
+          ).map(({ id, label, icon: Icon, count }) => (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id)}
+              title={count ? `${label} (${count.toLocaleString()})` : label}
+              className={`flex-1 flex items-center justify-center gap-1.5 px-1 h-10 text-xs font-medium transition-all ${
+                currentTab === id
+                  ? 'text-orange-400 border-b-[3px] border-orange-400 bg-dark-800/70 font-semibold'
+                  : 'text-gray-500 hover:text-gray-300 border-b-[3px] border-transparent'
+              }`}
+            >
+              <Icon size={15} className="flex-shrink-0" />
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Compact pill switcher (mobile only, when hideTabs + no forceTab) */}
+      {hideTabs && !forceTab && (
+        <div className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 border-b border-dark-700/50">
+          {mobilePillTabs.map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                currentTab === id
+                  ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                  : 'bg-dark-800 text-gray-400 border border-dark-700/50 hover:text-gray-200'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Riding Tab */}
-      {activeTab === 'riding' && (
+      {currentTab === 'riding' && (
         <div className="flex-1 overflow-hidden animate-fade-in">
           <RidingTab locations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} homeLat={homeLat} homeLon={homeLon} />
         </div>
       )}
 
       {/* Campsite Tab */}
-      {activeTab === 'camp' && (
+      {currentTab === 'camp' && (
         <div className="flex-1 overflow-hidden animate-fade-in">
           <CampsiteTab locations={locations} allLocations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} homeLat={homeLat} homeLon={homeLon} />
         </div>
       )}
 
       {/* Filters Tab */}
-      {activeTab === 'filters' && (
+      {currentTab === 'filters' && (
         <div className="flex-1 overflow-y-auto animate-fade-in">
           <FiltersTab filters={filters} setFilters={setFilters} routeGeoJSON={routeGeoJSON} filterMode={filterMode} onFilterMode={onFilterMode} />
         </div>
       )}
 
       {/* Trip Tab */}
-      {activeTab === 'trip' && (
+      {currentTab === 'trip' && (
         <div className="animate-fade-in flex-1 overflow-hidden flex flex-col">
           <TripTab
             selectedTrip={selectedTrip}
@@ -159,7 +192,7 @@ export default function LeftSidebar({
         </div>
       )}
       {/* Packing List Tab */}
-      {activeTab === 'packing' && (
+      {currentTab === 'packing' && (
         <div className="animate-fade-in flex-1 overflow-hidden flex flex-col">
           <PackingList />
         </div>
