@@ -9,7 +9,10 @@ import {
   MapPin,
   X,
   Clock,
+  LogOut,
+  User,
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import type { Trip, Location } from '../types';
 import { CATEGORY_ICONS, CATEGORY_COLORS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
 
@@ -440,6 +443,55 @@ export default function TopBar({
       >
         {darkMode ? <Sun size={18} /> : <Moon size={18} />}
       </button>
+
+      {/* ---- User Menu ---- */}
+      <UserMenu />
+    </div>
+  );
+}
+
+function UserMenu() {
+  const { user, signOut } = useAuth();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  if (!user) return null;
+
+  const displayName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'User';
+  const initials = displayName.slice(0, 2).toUpperCase();
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-8 h-8 rounded-full bg-orange-500/20 text-orange-400 font-semibold text-xs flex items-center justify-center hover:bg-orange-500/30 transition"
+        title={user.email || ''}
+      >
+        {initials}
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-2 w-56 rounded-xl shadow-xl overflow-hidden z-50 glass animate-slide-down [.light_&]:bg-white [.light_&]:border [.light_&]:border-gray-200">
+          <div className="px-4 py-3 border-b border-dark-700 [.light_&]:border-gray-200">
+            <p className="text-sm font-medium text-white [.light_&]:text-gray-900 truncate">{displayName}</p>
+            <p className="text-xs text-gray-400 [.light_&]:text-gray-500 truncate">{user.email}</p>
+          </div>
+          <button
+            onClick={() => { signOut(); setOpen(false); }}
+            className="w-full text-left px-4 py-2.5 text-sm text-gray-300 [.light_&]:text-gray-600 hover:bg-dark-600 [.light_&]:hover:bg-gray-50 transition-colors flex items-center gap-2"
+          >
+            <LogOut size={14} />
+            Sign out
+          </button>
+        </div>
+      )}
     </div>
   );
 }
