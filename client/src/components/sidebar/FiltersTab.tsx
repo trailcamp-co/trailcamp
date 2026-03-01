@@ -1,7 +1,5 @@
 import {
   Filter,
-  Mountain,
-  Star,
   Route,
   Sliders,
   Thermometer,
@@ -81,7 +79,6 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
   const activeCount = [
     filterMode !== 'all',
     filters.difficulty !== null,
-    filters.minScenery > 0,
     filters.hideOutOfSeason,
     filters.nearRoute,
     filters.waterNearby,
@@ -146,9 +143,7 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
             { label: '🏍️ Single track', fn: () => {
               setFilters(prev => ({ ...prev, categories: new Set(['riding']), difficulty: null }));
             }},
-            { label: '⭐ Top rated', fn: () => {
-              setFilters(prev => ({ ...prev, minScenery: 4 }));
-            }},
+
             { label: '🌿 In season', fn: () => {
               setFilters(prev => ({ ...prev, hideOutOfSeason: true, seasonMonth: new Date().getMonth() + 1 }));
             }},
@@ -300,42 +295,7 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="border-t border-dark-700/50" />
 
-      {/* Min scenery rating */}
-      <div>
-        <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-          <Star size={12} className="text-orange-400" />
-          Min Scenery Rating
-        </h4>
-        <div className="flex items-center gap-1 px-2">
-          {[1, 2, 3, 4, 5].map((val) => (
-            <button
-              key={val}
-              onClick={() =>
-                setFilters((prev) => ({
-                  ...prev,
-                  minScenery: prev.minScenery === val ? 0 : val,
-                }))
-              }
-              className="transition-colors"
-            >
-              <Star
-                size={18}
-                className={
-                  val <= filters.minScenery
-                    ? 'text-yellow-400 fill-yellow-400'
-                    : 'text-gray-600 hover:text-yellow-400/50'
-                }
-              />
-            </button>
-          ))}
-          {filters.minScenery > 0 && (
-            <span className="text-xs text-gray-500 ml-2">{filters.minScenery}+ stars</span>
-          )}
-        </div>
-      </div>
 
       {/* Divider */}
       <div className="border-t border-dark-700/50" />

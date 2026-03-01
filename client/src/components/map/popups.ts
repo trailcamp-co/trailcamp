@@ -97,13 +97,7 @@ export function buildClickPopupHTML(properties: Record<string, string | number>,
     </div>
   ` : '';
 
-  // Scenery stars
-  const scenery = Number(p.scenery_rating) || 0;
-  const starsHtml = scenery > 0
-    ? `<div style="margin-top:4px;letter-spacing:1px;">${Array.from({length: 5}, (_, i) =>
-        `<span style="color:${i < scenery ? '#facc15' : '#1e293b'};font-size:11px;">★</span>`
-      ).join('')}</div>`
-    : '';
+  const starsHtml = '';
 
   return `
     <div style="font-family:Inter,system-ui,sans-serif;min-width:220px;max-width:290px;">

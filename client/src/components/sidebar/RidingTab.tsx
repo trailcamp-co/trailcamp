@@ -4,7 +4,7 @@ import type { Location } from '../../types';
 import { DIFFICULTY_COLORS } from '../../types';
 import RidingCard from './RidingCard';
 
-type RidingSortField = 'name' | 'distance_miles' | 'difficulty' | 'scenery_rating' | 'distance_from' | 'featured';
+type RidingSortField = 'name' | 'distance_miles' | 'difficulty' | 'distance_from' | 'featured';
 
 const DIFFICULTY_ORDER: Record<string, number> = {
   Easy: 1,
@@ -114,7 +114,7 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
         case 'name': return dir * a.name.localeCompare(b.name);
         case 'distance_miles': return dir * ((a.distance_miles ?? 0) - (b.distance_miles ?? 0));
         case 'difficulty': return dir * ((DIFFICULTY_ORDER[a.difficulty ?? ''] ?? 0) - (DIFFICULTY_ORDER[b.difficulty ?? ''] ?? 0));
-        case 'scenery_rating': return dir * ((a.scenery_rating ?? 0) - (b.scenery_rating ?? 0));
+
         case 'distance_from': return dir * ((a.distance_from ?? 999999) - (b.distance_from ?? 999999));
         case 'featured': return dir * ((b.featured ?? 0) - (a.featured ?? 0));
         default: return 0;
@@ -158,7 +158,7 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
             { field: 'featured' as RidingSortField, label: '⭐ Epic' },
             { field: 'distance_miles' as RidingSortField, label: 'Miles' },
             { field: 'difficulty' as RidingSortField, label: 'Diff' },
-            { field: 'scenery_rating' as RidingSortField, label: 'Scenery' },
+
             ...(distanceFromCoords ? [{ field: 'distance_from' as RidingSortField, label: 'Distance' }] : []),
           ]).map(({ field, label }) => (
             <button key={field} onClick={() => handleSortChange(field)}

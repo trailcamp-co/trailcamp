@@ -89,11 +89,7 @@ export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, onL
                 {loc.seasonal_status === 'great' ? '● In Season' : loc.seasonal_status === 'shoulder' ? '● Shoulder' : '● Off Season'}
               </span>
             )}
-            {loc.scenery_rating != null && loc.scenery_rating > 0 && (
-              <span className="text-yellow-400">
-                {'★'.repeat(Math.min(5, Math.round(loc.scenery_rating / 2)))}
-              </span>
-            )}
+
           </div>
         </div>
       </div>

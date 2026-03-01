@@ -4,7 +4,7 @@ import type { Location, CampsiteSubType } from '../../types';
 import { CAMPSITE_SUBTYPE_ICONS, CAMPSITE_SUBTYPE_LABELS } from '../../types';
 import CampsiteCard from './CampsiteCard';
 
-type CampsiteSortField = 'name' | 'cost' | 'scenery_rating' | 'distance_from' | 'riding_nearby';
+type CampsiteSortField = 'name' | 'cost' | 'distance_from' | 'riding_nearby';
 
 function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 3959;
@@ -94,7 +94,7 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
       switch (sortField) {
         case 'name': return dir * a.name.localeCompare(b.name);
         case 'cost': return dir * ((a.cost_per_night ?? 999) - (b.cost_per_night ?? 999));
-        case 'scenery_rating': return dir * ((a.scenery_rating ?? 0) - (b.scenery_rating ?? 0));
+
         case 'distance_from': return dir * ((a.distance_from ?? 999999) - (b.distance_from ?? 999999));
         default: return 0;
       }
@@ -151,7 +151,7 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
             { field: 'name' as CampsiteSortField, label: 'Name' },
             { field: 'cost' as CampsiteSortField, label: 'Cost' },
             { field: 'riding_nearby' as CampsiteSortField, label: '🏍️ Rides' },
-            { field: 'scenery_rating' as CampsiteSortField, label: 'Scenery' },
+
             ...(distanceFromCoords ? [{ field: 'distance_from' as CampsiteSortField, label: 'Distance' }] : []),
           ]).map(({ field, label }) => (
             <button key={field} onClick={() => handleSortChange(field)}

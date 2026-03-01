@@ -30,9 +30,7 @@ export default function RidingCard({ location: loc, onFlyTo, distanceFrom, onLoc
         {/* Left: difficulty color bar */}
         <div className="flex flex-col items-center gap-1 pt-0.5">
           <div className="w-1 flex-1 rounded-full min-h-[32px]" style={{ backgroundColor: diffColor + '60' }} />
-          {loc.scenery_rating != null && loc.scenery_rating >= 8 && (
-            <span className="text-[10px]" title={`Scenery: ${loc.scenery_rating}/10`}>🏔️</span>
-          )}
+
         </div>
 
         {/* Content */}

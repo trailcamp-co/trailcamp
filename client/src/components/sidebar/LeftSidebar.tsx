@@ -72,7 +72,6 @@ export default function LeftSidebar({
   const activeFilterCount = [
     filterMode !== 'all',
     filters.difficulty !== null,
-    filters.minScenery > 0,
     filters.hideOutOfSeason,
     filters.nearRoute,
     filters.waterNearby,
