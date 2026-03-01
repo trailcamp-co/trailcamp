@@ -19,6 +19,8 @@
 
   body {
     @apply bg-dark-950 text-gray-100 font-sans;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Focus rings */
@@ -385,3 +387,47 @@ input:focus, textarea:focus, select:focus {
 .stagger-item:nth-child(3) { animation-delay: 0.06s; }
 .stagger-item:nth-child(4) { animation-delay: 0.08s; }
 .stagger-item:nth-child(5) { animation-delay: 0.10s; }
+
+/* ============================================
+   MOBILE LAYOUT
+   ============================================ */
+
+/* Bottom tab bar safe area */
+.mobile-bottom-tabs {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Mobile map: full viewport minus bottom tab bar */
+@media (max-width: 1023px) {
+  .mobile-map-container {
+    height: calc(100vh - 56px - env(safe-area-inset-bottom, 0px));
+    height: calc(100dvh - 56px - env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Push mapbox controls above bottom tab bar */
+  .mapboxgl-ctrl-bottom-left,
+  .mapboxgl-ctrl-bottom-right {
+    bottom: 64px !important;
+  }
+
+  .mapboxgl-ctrl-attrib {
+    bottom: 64px !important;
+  }
+
+  /* Mobile overlay panels fill the screen */
+  .mobile-panel-overlay {
+    position: fixed;
+    inset: 0;
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+    z-index: 30;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Toast positioning on mobile - above bottom bar */
+  .toast-container {
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+    right: 16px !important;
+    left: 16px !important;
+  }
+}

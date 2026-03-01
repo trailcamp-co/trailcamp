@@ -7,7 +7,7 @@ import CampsiteTab from './CampsiteTab';
 import FiltersTab from './FiltersTab';
 import PackingList from './PackingList';
 
-type SidebarTab = 'trip' | 'riding' | 'camp' | 'filters' | 'packing';
+export type SidebarTab = 'trip' | 'riding' | 'camp' | 'filters' | 'packing';
 
 interface LeftSidebarProps {
   selectedTrip: Trip | null;
@@ -35,6 +35,7 @@ interface LeftSidebarProps {
   onFilterMode: (mode: 'all' | 'visited' | 'highly_rated' | 'favorites') => void;
   homeLat?: number | null;
   homeLon?: number | null;
+  defaultTab?: SidebarTab;
 }
 
 export default function LeftSidebar({
@@ -63,8 +64,9 @@ export default function LeftSidebar({
   onFilterMode,
   homeLat,
   homeLon,
+  defaultTab,
 }: LeftSidebarProps) {
-  const [activeTab, setActiveTab] = useState<SidebarTab>('trip');
+  const [activeTab, setActiveTab] = useState<SidebarTab>(defaultTab || 'trip');
 
   const ridingCount = locations.filter((l) => l.category === 'riding').length;
   const campsiteCount = locations.filter((l) => l.category === 'campsite').length;
@@ -85,7 +87,7 @@ export default function LeftSidebar({
   ].filter(Boolean).length;
 
   return (
-    <div className="w-80 h-full flex flex-col bg-dark-950 border-r border-dark-700/50 overflow-hidden">
+    <div className="w-full lg:w-80 h-full flex flex-col bg-dark-950 border-r border-dark-700/50 overflow-hidden">
       {/* Tab Bar */}
       <div className="flex-shrink-0 flex border-b border-dark-700/50">
         {(

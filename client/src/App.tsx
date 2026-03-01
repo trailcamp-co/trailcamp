@@ -15,11 +15,15 @@ import StatsPanel from './components/StatsPanel';
 import ErrorBoundary from './components/ErrorBoundary';
 import AddLocationModal from './components/AddLocationModal';
 import ToastContainer from './components/ToastContainer';
+import MobileBottomTabs from './components/MobileBottomTabs';
+import MobileFAB from './components/MobileFAB';
+import type { MobileTab } from './components/MobileBottomTabs';
 import type { Location, MapStyle, Filters } from './types';
 import { MAP_STYLES } from './types';
 import { useUserData } from './hooks/useUserData';
 import { useFavorites } from './hooks/useFavorites';
 import { useProfile } from './hooks/useProfile';
+import { useNavigate } from 'react-router-dom';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -32,6 +36,16 @@ export default function App() {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [showAddLocation, setShowAddLocation] = useState(false);
   const [addLocationCoords, setAddLocationCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [mobileTab, setMobileTab] = useState<MobileTab>('map');
+  const navigate = useNavigate();
+
+  const handleMobileTabChange = useCallback((tab: MobileTab) => {
+    if (tab === 'profile') {
+      navigate('/settings');
+      return;
+    }
+    setMobileTab(tab);
+  }, [navigate]);
 
   const { trips, createTrip, updateTrip, deleteTrip } = useTrips();
   const { stops, addStop, updateStop, reorderStops, deleteStop } = useTripStops(selectedTrip?.id ?? null);
@@ -134,77 +148,77 @@ export default function App() {
     );
   }
 
-  return (
-    <div className="h-screen flex flex-col overflow-hidden">
-      <TopBar
-        darkMode={darkMode}
-        onToggleDarkMode={() => setDarkMode(!darkMode)}
-        searchQuery={searchQuery}
-        onSearch={handleSearch}
-        searchResults={searchResults}
-        onSelectSearchResult={(loc) => {
-          handleLocationClick(loc);
-          handleFlyTo(loc.longitude, loc.latitude);
-          clearSearch();
-        }}
+  // Sidebar content (shared between desktop sidebar and mobile overlays)
+  const sidebarContent = (
+    <ErrorBoundary fallbackLabel="Sidebar error">
+      <LeftSidebar
         selectedTrip={selectedTrip}
         trips={trips}
+        stops={stops}
         onSelectTrip={setSelectedTrip}
         onCreateTrip={createTrip}
-        onToggleStats={handleToggleStats}
-        onToggleSidebar={() => setLeftSidebarOpen(!leftSidebarOpen)}
-        locationCount={locations.length}
+        onUpdateTrip={updateTrip}
+        onDeleteTrip={deleteTrip}
+        onAddStop={addStop}
+        onUpdateStop={updateStop}
+        onDeleteStop={deleteStop}
+        onReorderStops={reorderStops}
+        onFlyTo={(lng, lat) => { handleFlyTo(lng, lat); setMobileTab('map'); }}
+        locations={locations}
+        filters={filters}
+        setFilters={setFilters}
+        weatherCache={weatherCache}
+        fetchWeather={fetchWeather}
+        routeGeoJSON={routeGeoJSON}
+        mapBounds={mapBounds}
+        onLocationClick={(loc) => { handleLocationClick(loc); setMobileTab('map'); }}
+        onToggleFavorite={toggleFavorite}
+        filterMode={filters.visitedStatus}
+        onFilterMode={(mode: Filters['visitedStatus']) =>
+          setFilters(prev => ({ ...prev, visitedStatus: mode }))
+        }
+        homeLat={homeLat}
+        homeLon={homeLon}
       />
+    </ErrorBoundary>
+  );
+
+  return (
+    <div className="h-screen flex flex-col overflow-hidden">
+      {/* TopBar — hidden on mobile, shown on desktop */}
+      <div className="hidden lg:block">
+        <TopBar
+          darkMode={darkMode}
+          onToggleDarkMode={() => setDarkMode(!darkMode)}
+          searchQuery={searchQuery}
+          onSearch={handleSearch}
+          searchResults={searchResults}
+          onSelectSearchResult={(loc) => {
+            handleLocationClick(loc);
+            handleFlyTo(loc.longitude, loc.latitude);
+            clearSearch();
+          }}
+          selectedTrip={selectedTrip}
+          trips={trips}
+          onSelectTrip={setSelectedTrip}
+          onCreateTrip={createTrip}
+          onToggleStats={handleToggleStats}
+          onToggleSidebar={() => setLeftSidebarOpen(!leftSidebarOpen)}
+          locationCount={locations.length}
+        />
+      </div>
 
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Mobile backdrop overlay */}
-        {leftSidebarOpen && (
-          <div 
-            className="fixed inset-0 bg-black/50 z-20 lg:hidden"
-            onClick={() => setLeftSidebarOpen(false)}
-          />
-        )}
-
-        {/* Left Sidebar */}
+        {/* ===== DESKTOP: Left Sidebar (unchanged) ===== */}
         <div className={`
-          transition-all duration-300 flex-shrink-0 overflow-hidden
+          hidden lg:block transition-all duration-300 flex-shrink-0 overflow-hidden
           ${leftSidebarOpen ? 'w-80' : 'w-0'}
         `}>
-          <ErrorBoundary fallbackLabel="Sidebar error">
-          <LeftSidebar
-            selectedTrip={selectedTrip}
-            trips={trips}
-            stops={stops}
-            onSelectTrip={setSelectedTrip}
-            onCreateTrip={createTrip}
-            onUpdateTrip={updateTrip}
-            onDeleteTrip={deleteTrip}
-            onAddStop={addStop}
-            onUpdateStop={updateStop}
-            onDeleteStop={deleteStop}
-            onReorderStops={reorderStops}
-            onFlyTo={handleFlyTo}
-            locations={locations}
-            filters={filters}
-            setFilters={setFilters}
-            weatherCache={weatherCache}
-            fetchWeather={fetchWeather}
-            routeGeoJSON={routeGeoJSON}
-            mapBounds={mapBounds}
-            onLocationClick={handleLocationClick}
-            onToggleFavorite={toggleFavorite}
-            filterMode={filters.visitedStatus}
-            onFilterMode={(mode: Filters['visitedStatus']) =>
-              setFilters(prev => ({ ...prev, visitedStatus: mode }))
-            }
-            homeLat={homeLat}
-            homeLon={homeLon}
-          />
-          </ErrorBoundary>
+          {sidebarContent}
         </div>
 
-        {/* Map */}
-        <div className="flex-1 relative">
+        {/* ===== Map (always rendered, full-screen on mobile) ===== */}
+        <div className="flex-1 relative mobile-map-container lg:!h-auto">
           <Map
             token={mapboxToken}
             style={mapStyle}
@@ -227,10 +241,10 @@ export default function App() {
           />
         </div>
 
-        {/* Right Panel */}
+        {/* ===== DESKTOP: Right Panel (slide from right) ===== */}
         <div
-          className={`slide-panel absolute right-0 top-0 bottom-0 z-20 ${
-            showRightPanel ? 'translate-x-0' : 'translate-x-full'
+          className={`slide-panel absolute right-0 top-0 bottom-0 z-20 hidden lg:block ${
+            showRightPanel ? 'lg:translate-x-0' : 'lg:translate-x-full'
           }`}
         >
           {selectedLocation && (
@@ -255,13 +269,108 @@ export default function App() {
           )}
         </div>
 
-        {/* Stats Panel */}
+        {/* ===== DESKTOP: Stats Panel ===== */}
         {showStats && (
-          <div className="absolute right-0 top-0 bottom-0 z-20">
+          <div className="absolute right-0 top-0 bottom-0 z-20 hidden lg:block">
             <StatsPanel onClose={() => setShowStats(false)} darkMode={darkMode} selectedTrip={selectedTrip} stops={stops} />
           </div>
         )}
+
+        {/* ===== MOBILE: Full-screen overlay panels ===== */}
+        {mobileTab === 'explore' && (
+          <div className="mobile-panel-overlay bg-dark-950 lg:hidden animate-fade-in">
+            {sidebarContent}
+          </div>
+        )}
+
+        {mobileTab === 'trips' && (
+          <div className="mobile-panel-overlay bg-dark-950 lg:hidden animate-fade-in">
+            <ErrorBoundary fallbackLabel="Trips error">
+              <LeftSidebar
+                selectedTrip={selectedTrip}
+                trips={trips}
+                stops={stops}
+                onSelectTrip={setSelectedTrip}
+                onCreateTrip={createTrip}
+                onUpdateTrip={updateTrip}
+                onDeleteTrip={deleteTrip}
+                onAddStop={addStop}
+                onUpdateStop={updateStop}
+                onDeleteStop={deleteStop}
+                onReorderStops={reorderStops}
+                onFlyTo={(lng, lat) => { handleFlyTo(lng, lat); setMobileTab('map'); }}
+                locations={locations}
+                filters={filters}
+                setFilters={setFilters}
+                weatherCache={weatherCache}
+                fetchWeather={fetchWeather}
+                routeGeoJSON={routeGeoJSON}
+                mapBounds={mapBounds}
+                onLocationClick={(loc) => { handleLocationClick(loc); setMobileTab('map'); }}
+                onToggleFavorite={toggleFavorite}
+                filterMode={filters.visitedStatus}
+                onFilterMode={(mode: Filters['visitedStatus']) =>
+                  setFilters(prev => ({ ...prev, visitedStatus: mode }))
+                }
+                homeLat={homeLat}
+                homeLon={homeLon}
+                defaultTab="trip"
+              />
+            </ErrorBoundary>
+          </div>
+        )}
+
+        {mobileTab === 'saved' && (
+          <div className="mobile-panel-overlay bg-dark-950 lg:hidden animate-fade-in">
+            <ErrorBoundary fallbackLabel="Saved error">
+              <LeftSidebar
+                selectedTrip={selectedTrip}
+                trips={trips}
+                stops={stops}
+                onSelectTrip={setSelectedTrip}
+                onCreateTrip={createTrip}
+                onUpdateTrip={updateTrip}
+                onDeleteTrip={deleteTrip}
+                onAddStop={addStop}
+                onUpdateStop={updateStop}
+                onDeleteStop={deleteStop}
+                onReorderStops={reorderStops}
+                onFlyTo={(lng, lat) => { handleFlyTo(lng, lat); setMobileTab('map'); }}
+                locations={locations}
+                filters={filters}
+                setFilters={setFilters}
+                weatherCache={weatherCache}
+                fetchWeather={fetchWeather}
+                routeGeoJSON={routeGeoJSON}
+                mapBounds={mapBounds}
+                onLocationClick={(loc) => { handleLocationClick(loc); setMobileTab('map'); }}
+                onToggleFavorite={toggleFavorite}
+                filterMode="favorites"
+                onFilterMode={(mode: Filters['visitedStatus']) =>
+                  setFilters(prev => ({ ...prev, visitedStatus: mode }))
+                }
+                homeLat={homeLat}
+                homeLon={homeLon}
+                defaultTab="camp"
+              />
+            </ErrorBoundary>
+          </div>
+        )}
       </div>
+
+      {/* Mobile FAB — only on map tab */}
+      {mobileTab === 'map' && (
+        <MobileFAB onClick={() => {
+          const center = mapBounds
+            ? { lat: (mapBounds.north + mapBounds.south) / 2, lng: (mapBounds.east + mapBounds.west) / 2 }
+            : { lat: 39.5, lng: -98.35 };
+          setAddLocationCoords(center);
+          setShowAddLocation(true);
+        }} />
+      )}
+
+      {/* Mobile Bottom Tabs */}
+      <MobileBottomTabs activeTab={mobileTab} onTabChange={handleMobileTabChange} />
 
       {/* Add Location Modal */}
       {showAddLocation && addLocationCoords && (
