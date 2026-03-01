@@ -1,5 +1,6 @@
 import {
   Filter,
+  Mountain,
   Route,
   Sliders,
   Thermometer,
