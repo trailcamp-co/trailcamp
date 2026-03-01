@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTrips, useTripStops, useLocations, getMapboxToken } from './hooks/useApi';
 import { useFilters } from './hooks/useFilters';
 import { useSearch } from './hooks/useSearch';
@@ -15,7 +15,7 @@ import StatsPanel from './components/StatsPanel';
 import ErrorBoundary from './components/ErrorBoundary';
 import AddLocationModal from './components/AddLocationModal';
 import ToastContainer from './components/ToastContainer';
-import type { Location, MapStyle } from './types';
+import type { Location, MapStyle, Filters } from './types';
 import { MAP_STYLES } from './types';
 import { useUserData } from './hooks/useUserData';
 import { useFavorites } from './hooks/useFavorites';
@@ -36,12 +36,21 @@ export default function App() {
   const { stops, addStop, updateStop, reorderStops, deleteStop } = useTripStops(selectedTrip?.id ?? null);
   const { locations, searchLocations, createLocation, updateLocation, deleteLocation, toggleFavorite } = useLocations();
   const { toasts, showToast, removeToast } = useToast();
-  const { getLocationData, updateLocationData } = useUserData();
+  const { getLocationData, updateLocationData, dataMap } = useUserData();
   const { isFavorited, toggleFavorite: toggleFav, favoriteIds } = useFavorites();
 
   const { routeGeoJSON } = useRoute(stops, updateStop);
   const { weatherCache, fetchWeather } = useWeather();
-  const { filters, setFilters, filteredLocations, handleToggleLayer, handleToggleCampsiteSubType } = useFilters(locations, routeGeoJSON, favoriteIds);
+  // Derive visited IDs from user data
+  const visitedIds = useMemo(() => {
+    const set = new Set<number>();
+    for (const [locId, data] of Object.entries(dataMap)) {
+      if (data.visited) set.add(Number(locId));
+    }
+    return set;
+  }, [dataMap]);
+
+  const { filters, setFilters, filteredLocations, handleToggleLayer, handleToggleCampsiteSubType } = useFilters(locations, routeGeoJSON, favoriteIds, visitedIds);
   const { searchQuery, searchResults, handleSearch, clearSearch } = useSearch(searchLocations);
   const {
     selectedLocation,
@@ -180,7 +189,7 @@ export default function App() {
             onLocationClick={handleLocationClick}
             onToggleFavorite={toggleFavorite}
             filterMode={filters.visitedStatus}
-            onFilterMode={(mode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites') =>
+            onFilterMode={(mode: Filters['visitedStatus']) =>
               setFilters(prev => ({ ...prev, visitedStatus: mode }))
             }
           />

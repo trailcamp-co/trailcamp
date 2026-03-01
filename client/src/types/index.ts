@@ -192,10 +192,8 @@ export interface Filters {
   campsiteSubTypes: Set<CampsiteSubType>;
   waterNearby: boolean;
   dumpNearby: boolean;
-  shade: boolean;
-  levelGround: boolean;
   difficulty: string | null;
-  visitedStatus: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites';
+  visitedStatus: 'all' | 'visited' | 'highly_rated' | 'favorites';
   minScenery: number;
   nearRoute: boolean;
   nearRouteDistance: number;
@@ -208,8 +206,6 @@ export const DEFAULT_FILTERS: Filters = {
   campsiteSubTypes: new Set(['boondocking', 'campground', 'parking', 'other'] as CampsiteSubType[]),
   waterNearby: false,
   dumpNearby: false,
-  shade: false,
-  levelGround: false,
   difficulty: null,
   visitedStatus: 'all',
   minScenery: 0,

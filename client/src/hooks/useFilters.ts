@@ -44,7 +44,13 @@ function computeSeasonalStatus(loc: Location, month: number): 'great' | 'shoulde
   return null; // couldn't determine
 }
 
-export function useFilters(locations: Location[], routeGeoJSON: GeoJSON.GeoJsonObject | null, favoriteIds?: Set<number>) {
+export function useFilters(
+  locations: Location[],
+  routeGeoJSON: GeoJSON.GeoJsonObject | null,
+  favoriteIds?: Set<number>,
+  visitedIds?: Set<number>,
+  reviewSummaries?: Map<number, { average_rating: number; review_count: number }>,
+) {
   const [filters, setFilters] = useState<Filters>({
     ...DEFAULT_FILTERS,
     categories: new Set(DEFAULT_FILTERS.categories),
@@ -101,14 +107,14 @@ export function useFilters(locations: Location[], routeGeoJSON: GeoJSON.GeoJsonO
       if (!filters.campsiteSubTypes.has(l.sub_type as CampsiteSubType)) return false;
     }
 
-    if (filters.visitedStatus === 'visited' && !l.visited) return false;
-    if (filters.visitedStatus === 'want_to_visit' && !l.want_to_visit) return false;
-    if (filters.visitedStatus === 'highly_rated' && (!l.user_rating || l.user_rating < 4)) return false;
+    if (filters.visitedStatus === 'visited' && !(visitedIds?.has(l.id))) return false;
+    if (filters.visitedStatus === 'highly_rated') {
+      const summary = reviewSummaries?.get(l.id);
+      if (!summary || summary.average_rating < 4) return false;
+    }
     if (filters.visitedStatus === 'favorites' && !(favoriteIds?.has(l.id))) return false;
     if (filters.waterNearby && !l.water_nearby) return false;
     if (filters.dumpNearby && !l.dump_nearby) return false;
-    if (filters.shade && !l.shade) return false;
-    if (filters.levelGround && !l.level_ground) return false;
     if (filters.difficulty && l.category === 'riding' && l.difficulty !== filters.difficulty) return false;
     if (filters.minScenery > 0 && (!l.scenery_rating || l.scenery_rating < filters.minScenery)) return false;
 

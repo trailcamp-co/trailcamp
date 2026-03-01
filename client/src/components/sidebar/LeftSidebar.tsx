@@ -31,8 +31,8 @@ interface LeftSidebarProps {
   mapBounds: { north: number; south: number; east: number; west: number } | null;
   onLocationClick?: (location: Location) => void;
   onToggleFavorite?: (id: number) => void;
-  filterMode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites';
-  onFilterMode: (mode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites') => void;
+  filterMode: 'all' | 'visited' | 'highly_rated' | 'favorites';
+  onFilterMode: (mode: 'all' | 'visited' | 'highly_rated' | 'favorites') => void;
 }
 
 export default function LeftSidebar({
@@ -77,8 +77,6 @@ export default function LeftSidebar({
     filters.nearRoute,
     filters.waterNearby,
     filters.dumpNearby,
-    filters.shade,
-    filters.levelGround,
     filters.categories.size < ALL_CATEGORIES.length,
     filters.campsiteSubTypes.size < ALL_CAMPSITE_SUBTYPES.length,
   ].filter(Boolean).length;

@@ -29,8 +29,7 @@ const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Se
 const FILTER_OPTIONS = [
   { value: 'all' as const, label: 'All' },
   { value: 'favorites' as const, label: '\u2764\uFE0F Favs' },
-  { value: 'visited' as const, label: 'Visited' },
-  { value: 'want_to_visit' as const, label: 'Want to Visit' },
+  { value: 'visited' as const, label: '\u2705 Visited' },
   { value: 'highly_rated' as const, label: '\u2B50 Top Rated' },
 ];
 
@@ -38,8 +37,8 @@ interface FiltersTabProps {
   filters: Filters;
   setFilters: React.Dispatch<React.SetStateAction<Filters>>;
   routeGeoJSON: GeoJSON.GeoJsonObject | null;
-  filterMode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites';
-  onFilterMode: (mode: 'all' | 'visited' | 'want_to_visit' | 'highly_rated' | 'favorites') => void;
+  filterMode: 'all' | 'visited' | 'highly_rated' | 'favorites';
+  onFilterMode: (mode: 'all' | 'visited' | 'highly_rated' | 'favorites') => void;
 }
 
 export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMode, onFilterMode }: FiltersTabProps) {
@@ -67,7 +66,7 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
     });
   };
 
-  const toggleBoolean = (key: 'waterNearby' | 'dumpNearby' | 'shade' | 'levelGround') => {
+  const toggleBoolean = (key: 'waterNearby' | 'dumpNearby') => {
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
@@ -80,8 +79,6 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
     filters.nearRoute,
     filters.waterNearby,
     filters.dumpNearby,
-    filters.shade,
-    filters.levelGround,
     filters.categories.size < ALL_CATEGORIES.length,
     filters.campsiteSubTypes.size < ALL_CAMPSITE_SUBTYPES.length,
   ].filter(Boolean).length;
@@ -246,8 +243,6 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
           {[
             { key: 'waterNearby' as const, label: 'Water Nearby', icon: '\uD83D\uDCA7' },
             { key: 'dumpNearby' as const, label: 'Dump Nearby', icon: '\uD83D\uDEBD' },
-            { key: 'shade' as const, label: 'Shade', icon: '\uD83C\uDF32' },
-            { key: 'levelGround' as const, label: 'Level Ground', icon: '\uD83D\uDCD0' },
           ].map(({ key, label, icon }) => (
             <div
               key={key}
