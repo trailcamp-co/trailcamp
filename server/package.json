@@ -9,17 +9,23 @@
     "seed": "tsx src/seed.ts"
   },
   "dependencies": {
-    "better-sqlite3": "^11.7.0",
+    "@supabase/supabase-js": "^2.98.0",
     "cors": "^2.8.5",
     "csv-parse": "^6.1.0",
     "dotenv": "^16.4.7",
-    "express": "^4.21.1"
+    "drizzle-orm": "^0.45.1",
+    "express": "^4.21.1",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "postgres": "^3.4.8",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.12",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/helmet": "^0.0.48",
     "@types/node": "^22.10.0",
+    "drizzle-kit": "^0.31.9",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   }
