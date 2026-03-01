@@ -6,3 +6,4 @@ server/backups/
 server/exports/
 server/logs/
 server/exports/
+server/.env

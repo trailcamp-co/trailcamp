@@ -1,24 +1,31 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle, PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
 
-const databaseUrl = process.env.DATABASE_URL;
+let _db: PostgresJsDatabase<typeof schema> | null = null;
+let _client: ReturnType<typeof postgres> | null = null;
 
-if (!databaseUrl) {
-  throw new Error('DATABASE_URL environment variable is required');
+function getClient() {
+  if (!_client) {
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      throw new Error('DATABASE_URL environment variable is required');
+    }
+    _client = postgres(databaseUrl, {
+      max: 10,
+      idle_timeout: 20,
+      connect_timeout: 10,
+    });
+  }
+  return _client;
 }
 
-// Connection pool for queries
-const queryClient = postgres(databaseUrl, {
-  max: 10,
-  idle_timeout: 20,
-  connect_timeout: 10,
+/** Lazy-initialized Drizzle database instance */
+export const db = new Proxy({} as PostgresJsDatabase<typeof schema>, {
+  get(_target, prop) {
+    if (!_db) {
+      _db = drizzle(getClient(), { schema });
+    }
+    return (_db as Record<string | symbol, unknown>)[prop];
+  },
 });
-
-export const db = drizzle(queryClient, { schema });
-
-// For migrations / one-off scripts that need a single connection
-export function createMigrationClient() {
-  if (!databaseUrl) throw new Error('DATABASE_URL is required');
-  return postgres(databaseUrl, { max: 1 });
-}
