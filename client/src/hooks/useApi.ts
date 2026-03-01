@@ -229,8 +229,12 @@ export async function fetchJournal(tripId: number) {
   return apiFetch<JournalEntry[]>(`/trips/${tripId}/journal`);
 }
 
-export async function createJournalEntry(tripId: number, data: { stop_id?: number | null; content: string }) {
+export async function createJournalEntry(tripId: number, data: { stop_id?: number | null; content: string; entry_date?: string | null }) {
   return apiFetch<JournalEntry>(`/trips/${tripId}/journal`, { method: 'POST', body: JSON.stringify(data) });
+}
+
+export async function updateJournalEntry(tripId: number, entryId: number, data: { stop_id?: number | null; content?: string; entry_date?: string | null }) {
+  return apiFetch<JournalEntry>(`/trips/${tripId}/journal/${entryId}`, { method: 'PUT', body: JSON.stringify(data) });
 }
 
 export async function deleteJournalEntry(tripId: number, entryId: number) {

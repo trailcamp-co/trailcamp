@@ -8,6 +8,16 @@ import { validate } from '../middleware/validate';
 
 const router = Router();
 
+/** Convert camelCase Drizzle output to snake_case for API response */
+function toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    const snakeKey = key.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`);
+    result[snakeKey] = value;
+  }
+  return result;
+}
+
 // ─── Zod Schemas ─────────────────────────────────────────────────────────────
 
 const createTripSchema = z.object({
@@ -50,6 +60,13 @@ const updateStopSchema = z.object({
 const journalSchema = z.object({
   stop_id: z.number().int().nullish(),
   content: z.string().min(1, 'Content is required'),
+  entry_date: z.string().nullish(),
+});
+
+const updateJournalSchema = z.object({
+  stop_id: z.number().int().nullish(),
+  content: z.string().min(1, 'Content is required').optional(),
+  entry_date: z.string().nullish(),
 });
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -107,7 +124,7 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
       .orderBy(desc(trips.createdAt));
 
     res.json(rows.map((r) => ({
-      ...r.trip,
+      ...toSnakeCase(r.trip as unknown as Record<string, unknown>),
       stop_count: r.stopCount,
       total_nights: r.totalNights,
       total_distance: r.totalDistance,
@@ -132,7 +149,7 @@ router.post('/', requireAuth, validate(createTripSchema), async (req: Request, r
       endDate: body.end_date ?? null,
       notes: body.notes ?? null,
     }).returning();
-    res.status(201).json(created);
+    res.status(201).json(toSnakeCase(created as unknown as Record<string, unknown>));
   } catch (err) {
     console.error('Error creating trip:', err);
     res.status(500).json({ error: 'Failed to create trip', code: 'INTERNAL_ERROR' });
@@ -158,7 +175,7 @@ router.put('/:id', requireAuth, validate(updateTripSchema), async (req: Request,
 
     const [updated] = await db.update(trips).set(updateData)
       .where(eq(trips.id, trip.id)).returning();
-    res.json(updated);
+    res.json(toSnakeCase(updated as unknown as Record<string, unknown>));
   } catch (err) {
     console.error('Error updating trip:', err);
     res.status(500).json({ error: 'Failed to update trip', code: 'INTERNAL_ERROR' });
@@ -200,7 +217,7 @@ router.post('/:id/duplicate', requireAuth, async (req: Request, res: Response) =
       });
     }
 
-    res.status(201).json(newTrip);
+    res.status(201).json(toSnakeCase(newTrip as unknown as Record<string, unknown>));
   } catch (err) {
     console.error('Error duplicating trip:', err);
     res.status(500).json({ error: 'Failed to duplicate trip', code: 'INTERNAL_ERROR' });
@@ -240,7 +257,7 @@ router.get('/:id/stops', requireAuth, async (req: Request, res: Response) => {
       .orderBy(asc(tripStops.sortOrder));
 
     res.json(rows.map((r) => ({
-      ...r.stop,
+      ...toSnakeCase(r.stop as unknown as Record<string, unknown>),
       location_name: r.locationName,
       location_category: r.locationCategory,
     })));
@@ -275,7 +292,7 @@ router.post('/:id/stops', requireAuth, validate(createStopSchema), async (req: R
       notes: body.notes ?? null,
     }).returning();
 
-    res.status(201).json(created);
+    res.status(201).json(toSnakeCase(created as unknown as Record<string, unknown>));
   } catch (err) {
     console.error('Error creating stop:', err);
     res.status(500).json({ error: 'Failed to create stop', code: 'INTERNAL_ERROR' });
@@ -314,7 +331,7 @@ router.put('/:id/stops/:stopId', requireAuth, validate(updateStopSchema), async 
       res.status(404).json({ error: 'Stop not found', code: 'NOT_FOUND' });
       return;
     }
-    res.json(updated);
+    res.json(toSnakeCase(updated as unknown as Record<string, unknown>));
   } catch (err) {
     console.error('Error updating stop:', err);
     res.status(500).json({ error: 'Failed to update stop', code: 'INTERNAL_ERROR' });
@@ -341,7 +358,7 @@ router.put('/:id/reorder', requireAuth, async (req: Request, res: Response) => {
 
     const stops = await db.select().from(tripStops)
       .where(eq(tripStops.tripId, trip.id)).orderBy(asc(tripStops.sortOrder));
-    res.json(stops);
+    res.json(stops.map(s => toSnakeCase(s as unknown as Record<string, unknown>)));
   } catch (err) {
     console.error('Error reordering stops:', err);
     res.status(500).json({ error: 'Failed to reorder stops', code: 'INTERNAL_ERROR' });
@@ -436,7 +453,7 @@ router.post('/:id/optimize', requireAuth, async (req: Request, res: Response) =>
 
     const updatedStops = await db.select().from(tripStops)
       .where(eq(tripStops.tripId, trip.id)).orderBy(asc(tripStops.sortOrder));
-    res.json({ stops: updatedStops, saved: Math.max(0, saved) });
+    res.json({ stops: updatedStops.map(s => toSnakeCase(s as unknown as Record<string, unknown>)), saved: Math.max(0, saved) });
   } catch (err) {
     console.error('Error optimizing trip:', err);
     res.status(500).json({ error: 'Failed to optimize trip', code: 'INTERNAL_ERROR' });
@@ -614,9 +631,9 @@ router.get('/:id/journal', requireAuth, async (req: Request, res: Response) => {
       .from(tripJournal)
       .leftJoin(tripStops, eq(tripJournal.stopId, tripStops.id))
       .where(eq(tripJournal.tripId, trip.id))
-      .orderBy(desc(tripJournal.createdAt));
+      .orderBy(desc(tripJournal.entryDate), desc(tripJournal.createdAt));
 
-    res.json(entries.map((r) => ({ ...r.entry, stop_name: r.stopName })));
+    res.json(entries.map((r) => ({ ...toSnakeCase(r.entry as unknown as Record<string, unknown>), stop_name: r.stopName })));
   } catch (err) {
     console.error('Error fetching journal:', err);
     res.status(500).json({ error: 'Failed to fetch journal', code: 'INTERNAL_ERROR' });
@@ -636,12 +653,43 @@ router.post('/:id/journal', requireAuth, validate(journalSchema), async (req: Re
       stopId: body.stop_id ?? null,
       userId: req.user!.id,
       content: body.content.trim(),
+      entryDate: body.entry_date ?? new Date().toISOString().split('T')[0],
     }).returning();
 
-    res.status(201).json(created);
+    res.status(201).json(toSnakeCase(created as unknown as Record<string, unknown>));
   } catch (err) {
     console.error('Error creating journal entry:', err);
     res.status(500).json({ error: 'Failed to create journal entry', code: 'INTERNAL_ERROR' });
+  }
+});
+
+// ─── PUT /api/trips/:id/journal/:entryId ──────────────────────────────────────
+
+router.put('/:id/journal/:entryId', requireAuth, validate(updateJournalSchema), async (req: Request, res: Response) => {
+  try {
+    const trip = await getUserTrip(Number(req.params.id), req.user!.id, res);
+    if (!trip) return;
+
+    const entryId = Number(req.params.entryId);
+    const body = req.body;
+    const updateData: Record<string, unknown> = {};
+
+    if (body.content !== undefined) updateData.content = body.content.trim();
+    if (body.stop_id !== undefined) updateData.stopId = body.stop_id;
+    if (body.entry_date !== undefined) updateData.entryDate = body.entry_date;
+
+    const [updated] = await db.update(tripJournal).set(updateData)
+      .where(and(eq(tripJournal.id, entryId), eq(tripJournal.tripId, trip.id)))
+      .returning();
+
+    if (!updated) {
+      res.status(404).json({ error: 'Journal entry not found', code: 'NOT_FOUND' });
+      return;
+    }
+    res.json(toSnakeCase(updated as unknown as Record<string, unknown>));
+  } catch (err) {
+    console.error('Error updating journal entry:', err);
+    res.status(500).json({ error: 'Failed to update journal entry', code: 'INTERNAL_ERROR' });
   }
 });
 

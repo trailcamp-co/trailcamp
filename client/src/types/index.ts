@@ -160,6 +160,7 @@ export interface JournalEntry {
   trip_id: number;
   stop_id: number | null;
   content: string;
+  entry_date: string | null;
   created_at: string;
   stop_name?: string | null;
 }

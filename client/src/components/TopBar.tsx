@@ -27,6 +27,7 @@ interface TopBarProps {
   selectedTrip: Trip | null;
   trips: Trip[];
   onSelectTrip: (trip: Trip | null) => void;
+  onCreateTrip?: (trip: Partial<Trip>) => Promise<Trip>;
   onToggleStats: () => void;
   onToggleSidebar: () => void;
   locationCount: number;
@@ -42,6 +43,7 @@ export default function TopBar({
   selectedTrip,
   trips,
   onSelectTrip,
+  onCreateTrip,
   onToggleStats,
   onToggleSidebar,
   locationCount,
@@ -241,18 +243,12 @@ export default function TopBar({
             <div className="border-t border-dark-700/50 [.light_&]:border-gray-200" />
             <button
               onClick={() => {
-                // Create a new trip via the existing handler
+                // Trigger trip creation via the onCreateTrip prop
                 const name = prompt('Trip name:');
                 if (name?.trim()) {
-                  fetch('/api/trips', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: name.trim() }),
-                  })
-                    .then(r => r.json())
+                  onCreateTrip?.({ name: name.trim(), status: 'planning' })
                     .then(trip => {
                       onSelectTrip(trip);
-                      window.location.reload();
                     });
                 }
                 setTripDropdownOpen(false);

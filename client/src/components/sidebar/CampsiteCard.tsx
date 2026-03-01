@@ -6,12 +6,13 @@ interface CampsiteCardProps {
   location: Location;
   onFlyTo: (lng: number, lat: number) => void;
   distanceFrom?: number;
+  distanceFromHome?: number | null;
   onLocationClick?: (location: Location) => void;
   onToggleFavorite?: (id: number) => void;
   nearbyRidingCount?: number;
 }
 
-export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, onLocationClick, onToggleFavorite, nearbyRidingCount }: CampsiteCardProps) {
+export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, distanceFromHome, onLocationClick, onToggleFavorite, nearbyRidingCount }: CampsiteCardProps) {
   const subType = (loc.sub_type as keyof typeof CAMPSITE_SUBTYPE_ICONS) || 'other';
   const subColor = CAMPSITE_SUBTYPE_COLORS[subType] || '#6b7280';
   const isFree = loc.cost_per_night != null && Number(loc.cost_per_night) === 0;
@@ -37,6 +38,11 @@ export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, onL
               {loc.name}
             </h4>
             <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
+              {distanceFromHome != null && (
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-400 font-medium tabular-nums" title="Distance from home">
+                  {distanceFromHome < 50 ? `${Math.round(distanceFromHome)} mi` : `~${(distanceFromHome / 55).toFixed(1)} hrs`}
+                </span>
+              )}
               {distanceFrom != null && (
                 <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-sky-500/15 text-sky-400 font-medium tabular-nums">
                   {distanceFrom < 1 ? '<1' : Math.round(distanceFrom)} mi

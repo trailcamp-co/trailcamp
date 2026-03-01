@@ -19,6 +19,7 @@ import type { Location, MapStyle, Filters } from './types';
 import { MAP_STYLES } from './types';
 import { useUserData } from './hooks/useUserData';
 import { useFavorites } from './hooks/useFavorites';
+import { useProfile } from './hooks/useProfile';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -38,6 +39,9 @@ export default function App() {
   const { toasts, showToast, removeToast } = useToast();
   const { getLocationData, updateLocationData, dataMap } = useUserData();
   const { isFavorited, toggleFavorite: toggleFav, favoriteIds } = useFavorites();
+  const { profile } = useProfile();
+  const homeLat = profile?.home_lat ?? null;
+  const homeLon = profile?.home_lon ?? null;
 
   const { routeGeoJSON } = useRoute(stops, updateStop);
   const { weatherCache, fetchWeather } = useWeather();
@@ -146,6 +150,7 @@ export default function App() {
         selectedTrip={selectedTrip}
         trips={trips}
         onSelectTrip={setSelectedTrip}
+        onCreateTrip={createTrip}
         onToggleStats={handleToggleStats}
         onToggleSidebar={() => setLeftSidebarOpen(!leftSidebarOpen)}
         locationCount={locations.length}
@@ -192,6 +197,8 @@ export default function App() {
             onFilterMode={(mode: Filters['visitedStatus']) =>
               setFilters(prev => ({ ...prev, visitedStatus: mode }))
             }
+            homeLat={homeLat}
+            homeLon={homeLon}
           />
           </ErrorBoundary>
         </div>
@@ -215,6 +222,8 @@ export default function App() {
             onToggleCampsiteSubType={handleToggleCampsiteSubType}
             mapStyle={mapStyle}
             onChangeMapStyle={setMapStyle}
+            homeLat={homeLat}
+            homeLon={homeLon}
           />
         </div>
 
@@ -240,6 +249,8 @@ export default function App() {
               onUpdateUserData={updateLocationData}
               isFavorited={isFavorited}
               onToggleFavorite={toggleFav}
+              homeLat={homeLat}
+              homeLon={homeLon}
             />
           )}
         </div>

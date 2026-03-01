@@ -4,7 +4,7 @@ import type { Location, CampsiteSubType } from '../../types';
 import { CAMPSITE_SUBTYPE_ICONS, CAMPSITE_SUBTYPE_LABELS } from '../../types';
 import CampsiteCard from './CampsiteCard';
 
-type CampsiteSortField = 'name' | 'cost' | 'distance_from' | 'riding_nearby';
+type CampsiteSortField = 'name' | 'cost' | 'distance_from' | 'riding_nearby' | 'distance_from_home';
 
 function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 3959;
@@ -21,9 +21,11 @@ interface CampsiteTabProps {
   mapBounds: { north: number; south: number; east: number; west: number } | null;
   onLocationClick?: (location: Location) => void;
   onToggleFavorite?: (id: number) => void;
+  homeLat?: number | null;
+  homeLon?: number | null;
 }
 
-export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBounds, onLocationClick, onToggleFavorite }: CampsiteTabProps) {
+export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBounds, onLocationClick, onToggleFavorite, homeLat, homeLon }: CampsiteTabProps) {
   const [sortField, setSortField] = useState<CampsiteSortField>('name');
   const [sortAsc, setSortAsc] = useState(true);
   const [filterSubType, setFilterSubType] = useState<CampsiteSubType | 'all'>('all');
@@ -89,19 +91,27 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
       }));
     }
 
+    // Compute distance from home for each location
+    if (homeLat != null && homeLon != null) {
+      filtered = filtered.map(l => ({
+        ...l,
+        _distanceFromHome: haversineDistance(homeLat, homeLon, l.latitude, l.longitude),
+      }));
+    }
+
     filtered.sort((a, b) => {
       const dir = sortAsc ? 1 : -1;
       switch (sortField) {
         case 'name': return dir * a.name.localeCompare(b.name);
         case 'cost': return dir * ((a.cost_per_night ?? 999) - (b.cost_per_night ?? 999));
-
         case 'distance_from': return dir * ((a.distance_from ?? 999999) - (b.distance_from ?? 999999));
+        case 'distance_from_home': return dir * (((a as any)._distanceFromHome ?? 999999) - ((b as any)._distanceFromHome ?? 999999));
         default: return 0;
       }
     });
 
     return filtered;
-  }, [locations, sortField, sortAsc, filterSubType, freeOnly, viewportFilter, mapBounds, favoritesOnly, distanceFromCoords]);
+  }, [locations, sortField, sortAsc, filterSubType, freeOnly, viewportFilter, mapBounds, favoritesOnly, distanceFromCoords, homeLat, homeLon]);
 
   const handleSortChange = (field: CampsiteSortField) => {
     if (sortField === field) setSortAsc(!sortAsc);
@@ -152,6 +162,7 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
             { field: 'cost' as CampsiteSortField, label: 'Cost' },
             { field: 'riding_nearby' as CampsiteSortField, label: '🏍️ Rides' },
 
+            ...(homeLat != null ? [{ field: 'distance_from_home' as CampsiteSortField, label: 'From Home' }] : []),
             ...(distanceFromCoords ? [{ field: 'distance_from' as CampsiteSortField, label: 'Distance' }] : []),
           ]).map(({ field, label }) => (
             <button key={field} onClick={() => handleSortChange(field)}
@@ -224,7 +235,7 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
           ? [...campsiteLocations].sort((a, b) => (sortAsc ? 1 : -1) * ((nearbyRidingCounts[b.id] ?? 0) - (nearbyRidingCounts[a.id] ?? 0)))
           : campsiteLocations
         ).map(loc => (
-          <CampsiteCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} nearbyRidingCount={nearbyRidingCounts[loc.id]} />
+          <CampsiteCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} distanceFromHome={(loc as any)._distanceFromHome ?? null} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} nearbyRidingCount={nearbyRidingCounts[loc.id]} />
         ))}
       </div>
     </div>

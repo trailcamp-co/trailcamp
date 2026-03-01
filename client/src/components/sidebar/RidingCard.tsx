@@ -6,11 +6,12 @@ interface RidingCardProps {
   location: Location;
   onFlyTo: (lng: number, lat: number) => void;
   distanceFrom?: number;
+  distanceFromHome?: number | null;
   onLocationClick?: (location: Location) => void;
   onToggleFavorite?: (id: number) => void;
 }
 
-export default function RidingCard({ location: loc, onFlyTo, distanceFrom, onLocationClick, onToggleFavorite }: RidingCardProps) {
+export default function RidingCard({ location: loc, onFlyTo, distanceFrom, distanceFromHome, onLocationClick, onToggleFavorite }: RidingCardProps) {
   const diffColor = DIFFICULTY_COLORS[loc.difficulty ?? ''] ?? '#6b7280';
   const trailTypes = parseTrailTypes(loc.trail_types || '');
 
@@ -42,6 +43,11 @@ export default function RidingCard({ location: loc, onFlyTo, distanceFrom, onLoc
               {!!loc.featured && <span className="text-[8px] px-1 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-bold uppercase tracking-wider flex-shrink-0">⭐ Epic</span>}
             </h4>
             <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
+              {distanceFromHome != null && (
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-400 font-medium tabular-nums" title="Distance from home">
+                  {distanceFromHome < 50 ? `${Math.round(distanceFromHome)} mi` : `~${(distanceFromHome / 55).toFixed(1)} hrs`}
+                </span>
+              )}
               {distanceFrom != null && (
                 <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-sky-500/15 text-sky-400 font-medium tabular-nums">
                   {distanceFrom < 1 ? '<1' : Math.round(distanceFrom)} mi

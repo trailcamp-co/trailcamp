@@ -35,6 +35,8 @@ interface MapContainerProps {
   onToggleCampsiteSubType?: (subType: CampsiteSubType) => void;
   mapStyle?: { id: string; name: string; url: string };
   onChangeMapStyle?: (style: MapStyle) => void;
+  homeLat?: number | null;
+  homeLon?: number | null;
 }
 
 export default function MapContainer({
@@ -54,10 +56,13 @@ export default function MapContainer({
   onToggleCampsiteSubType,
   mapStyle,
   onChangeMapStyle,
+  homeLat,
+  homeLon,
 }: MapContainerProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const stopMarkersRef = useRef<any[]>([]);
+  const homeMarkerRef = useRef<any>(null);
   // Emoji markers removed — native Mapbox circle layers handle all location rendering
   const [layerPanelOpen, setLayerPanelOpen] = useState(true);
   const [blmVisible, setBlmVisible] = useState(false);
@@ -205,6 +210,31 @@ export default function MapContainer({
       duration: FLY_TO_DURATION,
     });
   }, [flyToLocation]);
+
+  // Home pin marker
+  useEffect(() => {
+    const map = mapRef.current;
+    if (homeMarkerRef.current) {
+      homeMarkerRef.current.remove();
+      homeMarkerRef.current = null;
+    }
+    if (!map || homeLat == null || homeLon == null) return;
+
+    const el = document.createElement('div');
+    el.className = 'home-marker';
+    el.innerHTML = '<div style="width:28px;height:28px;background:#8b5cf6;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);font-size:14px;cursor:pointer;" title="Home">🏠</div>';
+
+    const marker = new mapboxgl.Marker({ element: el })
+      .setLngLat([homeLon, homeLat])
+      .addTo(map);
+
+    homeMarkerRef.current = marker;
+
+    return () => {
+      marker.remove();
+      homeMarkerRef.current = null;
+    };
+  }, [homeLat, homeLon]);
 
   const handleToggleBlm = useCallback(() => {
     const map = mapRef.current;

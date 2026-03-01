@@ -4,7 +4,7 @@ import type { Location } from '../../types';
 import { DIFFICULTY_COLORS } from '../../types';
 import RidingCard from './RidingCard';
 
-type RidingSortField = 'name' | 'distance_miles' | 'difficulty' | 'distance_from' | 'featured';
+type RidingSortField = 'name' | 'distance_miles' | 'difficulty' | 'distance_from' | 'featured' | 'distance_from_home';
 
 const DIFFICULTY_ORDER: Record<string, number> = {
   Easy: 1,
@@ -29,9 +29,11 @@ interface RidingTabProps {
   mapBounds: { north: number; south: number; east: number; west: number } | null;
   onLocationClick?: (location: Location) => void;
   onToggleFavorite?: (id: number) => void;
+  homeLat?: number | null;
+  homeLon?: number | null;
 }
 
-export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationClick, onToggleFavorite }: RidingTabProps) {
+export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationClick, onToggleFavorite, homeLat, homeLon }: RidingTabProps) {
   const [sortField, setSortField] = useState<RidingSortField>('name');
   const [sortAsc, setSortAsc] = useState(true);
   const [filterDifficulty, setFilterDifficulty] = useState<string | null>(null);
@@ -108,21 +110,29 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
       }));
     }
 
+    // Compute distance from home for each location
+    if (homeLat != null && homeLon != null) {
+      filtered = filtered.map(l => ({
+        ...l,
+        _distanceFromHome: haversineDistance(homeLat, homeLon, l.latitude, l.longitude),
+      }));
+    }
+
     filtered.sort((a, b) => {
       const dir = sortAsc ? 1 : -1;
       switch (sortField) {
         case 'name': return dir * a.name.localeCompare(b.name);
         case 'distance_miles': return dir * ((a.distance_miles ?? 0) - (b.distance_miles ?? 0));
         case 'difficulty': return dir * ((DIFFICULTY_ORDER[a.difficulty ?? ''] ?? 0) - (DIFFICULTY_ORDER[b.difficulty ?? ''] ?? 0));
-
         case 'distance_from': return dir * ((a.distance_from ?? 999999) - (b.distance_from ?? 999999));
+        case 'distance_from_home': return dir * (((a as any)._distanceFromHome ?? 999999) - ((b as any)._distanceFromHome ?? 999999));
         case 'featured': return dir * ((b.featured ?? 0) - (a.featured ?? 0));
         default: return 0;
       }
     });
 
     return filtered;
-  }, [locations, sortField, sortAsc, filterDifficulty, filterTrailType, viewportFilter, mapBounds, favoritesOnly, featuredOnly, distanceFromCoords]);
+  }, [locations, sortField, sortAsc, filterDifficulty, filterTrailType, viewportFilter, mapBounds, favoritesOnly, featuredOnly, distanceFromCoords, homeLat, homeLon]);
 
   const handleSortChange = (field: RidingSortField) => {
     if (sortField === field) setSortAsc(!sortAsc);
@@ -159,6 +169,7 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
             { field: 'distance_miles' as RidingSortField, label: 'Miles' },
             { field: 'difficulty' as RidingSortField, label: 'Diff' },
 
+            ...(homeLat != null ? [{ field: 'distance_from_home' as RidingSortField, label: 'From Home' }] : []),
             ...(distanceFromCoords ? [{ field: 'distance_from' as RidingSortField, label: 'Distance' }] : []),
           ]).map(({ field, label }) => (
             <button key={field} onClick={() => handleSortChange(field)}
@@ -227,7 +238,7 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
           </div>
         )}
         {ridingLocations.map((loc) => (
-          <RidingCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} />
+          <RidingCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} distanceFromHome={(loc as any)._distanceFromHome ?? null} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} />
         ))}
       </div>
     </div>

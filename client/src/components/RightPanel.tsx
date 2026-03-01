@@ -42,6 +42,8 @@ interface RightPanelProps {
   onUpdateUserData?: (locationId: number, updates: Partial<UserLocationData>) => Promise<UserLocationData | null>;
   isFavorited?: (locationId: number) => boolean;
   onToggleFavorite?: (locationId: number) => Promise<boolean>;
+  homeLat?: number | null;
+  homeLon?: number | null;
 }
 
 const CATEGORY_LUCIDE_ICONS: Record<string, React.ReactNode> = {
@@ -67,6 +69,7 @@ function DetailBadge({ label, value, darkMode }: { label: string; value: string 
 export default function RightPanel({
   location, onClose, onUpdate, onDelete, onAddToTrip, hasActiveTrip, darkMode, onFlyTo, onLocationClick, showToast,
   getUserData, onUpdateUserData, isFavorited: isFavoritedFn, onToggleFavorite,
+  homeLat, homeLon,
 }: RightPanelProps) {
   // Per-user data (overrides location fields for multi-tenant)
   const userData = getUserData?.(location.id);
@@ -361,14 +364,13 @@ export default function RightPanel({
         </div>
 
         {/* Distance from home */}
-        {(() => {
-          const HOME_LAT = 41.6031, HOME_LNG = -81.3612;
+        {homeLat != null && homeLon != null && (() => {
           const R = 3959;
-          const dLat = (location.latitude - HOME_LAT) * Math.PI / 180;
-          const dLng = (location.longitude - HOME_LNG) * Math.PI / 180;
-          const a = Math.sin(dLat/2)**2 + Math.cos(HOME_LAT*Math.PI/180)*Math.cos(location.latitude*Math.PI/180)*Math.sin(dLng/2)**2;
+          const dLat = (location.latitude - homeLat) * Math.PI / 180;
+          const dLng = (location.longitude - homeLon) * Math.PI / 180;
+          const a = Math.sin(dLat/2)**2 + Math.cos(homeLat*Math.PI/180)*Math.cos(location.latitude*Math.PI/180)*Math.sin(dLng/2)**2;
           const dist = Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
-          const hours = Math.round(dist / 55); // rough estimate at 55mph avg
+          const hours = Math.round(dist / 55);
           return (
             <div className="px-5 pt-4 flex items-center gap-2 text-xs text-gray-500 [.light_&]:text-gray-400">
               <MapPin size={12} className="text-orange-400 flex-shrink-0" />
