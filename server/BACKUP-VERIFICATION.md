@@ -1,257 +1,268 @@
 # Backup Verification Guide
 
 ## Overview
-The `verify-backups.sh` script tests backup integrity by restoring each backup to a temporary database and verifying the data.
+The `verify-backup.sh` script tests that backup files can be successfully restored and validates database integrity.
 
 ## Quick Start
 
+### Verify Latest Backup
 ```bash
 cd /Users/nicosstrnad/Projects/trailcamp/server
-./verify-backups.sh
+./verify-backup.sh
+```
+
+or explicitly:
+```bash
+./verify-backup.sh --latest
+```
+
+### Verify All Backups
+```bash
+./verify-backup.sh --all
+```
+
+### Verify Specific Backup
+```bash
+./verify-backup.sh backups/trailcamp-backup-2026-02-28_12-58-09.sql
 ```
 
 ## What It Tests
 
 ### 1. Restore Success
-- Attempts to restore each `.sql` backup file
-- Detects SQL errors during restore process
-- Fails if restore produces errors
+✅ Backup file can be imported into SQLite  
+✅ No SQL errors during restore
 
 ### 2. Database Integrity
-- Runs `PRAGMA integrity_check` on restored database
-- Verifies internal database structure is valid
-- Fails if integrity check returns anything other than "ok"
+✅ `PRAGMA integrity_check` passes  
+✅ Database structure is valid
 
 ### 3. Record Counts
-- Counts locations, trips, and trip_stops in restored database
-- Compares with current production database
-- Warns if difference exceeds 50 locations (significant divergence)
+✅ Locations table has records  
+✅ Trips table exists and is queryable  
+✅ Counts are logged for reference
 
-### 4. Cleanup
-- Creates temporary test database for each backup
-- Automatically removes test database after verification
-- No impact on production database
+### 4. Schema Validation
+✅ Expected tables exist (minimum 3: locations, trips, trip_stops)  
+✅ Schema structure is intact
 
-## Output Example
+### 5. Comparison with Original
+✅ Compares record counts with current database  
+⚠️ Warns if difference is > 100 records (likely newer data)  
+ℹ️ Shows how many locations have been added since backup
+
+### 6. Query Functionality
+✅ Tests a sample SELECT query  
+✅ Verifies data can be retrieved
+
+## Example Output
 
 ```
 ═══════════════════════════════════════════════════════
     TrailCamp Backup Verification
+    2026-02-28 21:10:44
 ═══════════════════════════════════════════════════════
 
-Found 7 backup(s) to verify
+Found 1 backup(s) in ./backups
 
-Current database:
-  Locations:   6148
-  Trips:       1
-  Trip stops:  0
+Testing latest backup: trailcamp-backup-2026-02-28_12-58-09.sql
 
-━━━ Verifying Backups ━━━
-
-Testing: trailcamp-backup-2026-02-28_12-58-09.sql (3.7M)
-  ✓ PASSED - Integrity: ok, Records: 5597 locations, 1 trips
-
-Testing: trailcamp-backup-2026-02-27_03-00-15.sql (3.5M)
-  ✓ PASSED - Integrity: ok, Records: 5234 locations, 0 trips
-
-...
+━━━ Testing: trailcamp-backup-2026-02-28_12-58-09.sql ━━━
+  Restoring backup... ✓
+  Checking integrity... ✓
+  Counting records... ✓
+    Locations: 5597
+    Trips: 1
+  Checking schema... ✓ 6 tables
+  Comparing with original... ⚠ Large difference: 551 locations
+  Testing sample query... ✓
+    Sample: Ghost Town Road Dispersed
+  ✓ BACKUP VALID
+    File size: 3.7M
+    Created: 2026-02-28 12:58
 
 ═══════════════════════════════════════════════════════
-Summary
+Verification Summary
 
-Total backups:    7
-Verified:         7
+Total tested:  1
+Passed:        1
+Failed:        0
+
+✅ ALL BACKUPS VERIFIED
 ═══════════════════════════════════════════════════════
-
-✅ All backups verified successfully!
 ```
 
 ## Exit Codes
 
-| Code | Meaning |
-|------|---------|
-| 0 | All backups verified successfully |
-| 1 | One or more backups failed OR no backups found |
+- `0` - All backups verified successfully
+- `1` - One or more backups failed verification
 
-## Common Scenarios
+## Use Cases
 
-### ✅ All Backups Valid
-```
-Total backups:    7
-Verified:         7
-
-✅ All backups verified successfully!
+### After Creating Backup
+Verify immediately:
+```bash
+./backup-database.sh
+./verify-backup.sh --latest
 ```
 
-**Action:** None needed. Backups are healthy.
-
-### ❌ Corrupted Backup
-```
-Testing: trailcamp-backup-2026-02-25_03-00-00.sql (3.2M)
-  ✗ FAILED - Restore errors detected
-
-Total backups:    7
-Verified:         6
-Failed:           1
-
-❌ 1 backup(s) failed verification
-Action: Review failed backups and re-run backup script
-```
-
-**Action:**
-1. Delete corrupted backup
-2. Run `./backup-database.sh` to create fresh backup
-
-### ⚠️ Significant Divergence
-```
-Testing: trailcamp-backup-2026-02-20_03-00-00.sql (2.8M)
-  ✓ PASSED - Integrity: ok, Records: 4500 locations, 0 trips
-    ⚠ Significant difference from current DB (diff: 1648)
-```
-
-**Meaning:** Backup is valid but from much earlier (1,648 fewer locations).
-
-**Action:** Normal for old backups. Ensure recent backups don't show this.
-
-### 📦 No Backups Found
-```
-✗ No backups found in ./backups
-
-(Script exits)
-```
-
-**Action:** Run `./backup-database.sh` to create first backup.
-
-## Automated Verification
-
-### Cron Job (Weekly)
-Verify backups every Sunday at 4am:
+### Scheduled Verification
+Add to cron (daily at 4:00 AM, after backup):
 ```cron
-0 4 * * 0 cd /Users/nicosstrnad/Projects/trailcamp/server && ./verify-backups.sh >> ./backups/verify.log 2>&1
+0 4 * * * cd /path/to/trailcamp/server && ./backup-database.sh >> backups/backup.log 2>&1
+5 4 * * * cd /path/to/trailcamp/server && ./verify-backup.sh --latest >> backups/verify.log 2>&1
 ```
+
+### Before Deployment
+Verify all backups before deploying changes:
+```bash
+./verify-backup.sh --all
+```
+
+### Restore Testing
+Before attempting actual restore, verify backup is good:
+```bash
+./verify-backup.sh backups/trailcamp-backup-2026-02-20_03-00-00.sql
+```
+
+## What Gets Tested
+
+The script creates a temporary test database (`test-restore.db`) and:
+
+1. Imports the backup SQL file
+2. Runs integrity checks
+3. Counts records in key tables
+4. Verifies schema structure
+5. Tests sample queries
+6. Compares with production database
+7. Cleans up test database
+
+**No production data is affected.**
+
+## Interpreting Results
+
+### ✓ BACKUP VALID
+All tests passed. Backup can be restored if needed.
+
+### ✗ Restore failed
+Backup file is corrupted or has SQL errors.  
+**Action:** Delete this backup and create a new one.
+
+### ✗ Integrity check failed
+Database structure is damaged.  
+**Action:** Delete this backup, investigate source database issues.
+
+### ⚠ Large difference: X locations
+Current database has significantly more data than backup.  
+**Normal:** If backup is old or database is actively growing.  
+**Investigate:** If difference is unexpected.
+
+### ✗ Could not count records
+Tables don't exist or query failed.  
+**Action:** Backup may be from wrong database or corrupted.
+
+## Automation
 
 ### Post-Backup Hook
-Verify immediately after creating backup:
+Add to backup script:
 ```bash
 #!/bin/bash
-# In backup-database.sh, add at the end:
-./verify-backups.sh > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "⚠️  Backup verification failed - check ./backups/verify.log"
+# enhanced-backup.sh
+
+./backup-database.sh
+
+if [ $? -eq 0 ]; then
+    echo "Verifying backup..."
+    ./verify-backup.sh --latest
+    
+    if [ $? -eq 0 ]; then
+        echo "✓ Backup created and verified"
+    else
+        echo "✗ Backup verification failed!"
+        # Send alert
+    fi
 fi
 ```
 
-### CI/CD Integration
-Add to deployment pipeline:
-```yaml
-# .github/workflows/backup-check.yml
-- name: Verify Backups
-  run: |
-    cd server
-    ./verify-backups.sh
+### Monitoring Integration
+```bash
+# Check verification status for monitoring
+if ! ./verify-backup.sh --latest > /dev/null 2>&1; then
+    echo "CRITICAL: Backup verification failed"
+    # Trigger alert (email, Slack, etc.)
+    exit 1
+fi
+```
+
+### Weekly Full Verification
+```cron
+# Every Sunday at 3 AM, verify all backups
+0 3 * * 0 cd /path/to/trailcamp/server && ./verify-backup.sh --all >> backups/weekly-verify.log 2>&1
 ```
 
 ## Troubleshooting
 
-### "Restore errors detected"
-**Cause:** Backup file is corrupted or incomplete
-
-**Solution:**
-1. Check backup file size (should be ~3-4MB for current DB)
-2. Try opening manually: `sqlite3 test.db < backup.sql`
-3. If corrupted, delete and create new backup
-
-### "Integrity check failed"
-**Cause:** Database structure is damaged
-
-**Solution:**
-1. Backup is likely useless - delete it
-2. Investigate when/how it was created
-3. Fix backup process if needed
-
-### "Significant difference"
-**Cause:** Backup is from much earlier OR current DB has issues
-
-**Solution:**
-1. Check backup timestamp - old backups are expected to differ
-2. If recent backup differs significantly, investigate data changes
-3. Ensure backup is being run regularly
-
 ### "No backups found"
-**Cause:** Backup directory empty OR wrong path
+**Solution:** Run `./backup-database.sh` to create first backup.
+
+### "Restore failed"
+**Causes:**
+- Corrupted backup file
+- Disk full
+- SQLite version mismatch
 
 **Solution:**
-1. Check `BACKUP_DIR` variable in script (default: `./backups`)
-2. Run `./backup-database.sh` to create backups
-3. Verify backups exist: `ls -lh ./backups/`
+1. Check disk space: `df -h`
+2. Try restoring manually: `sqlite3 test.db < backup.sql`
+3. Create new backup: `./backup-database.sh`
+
+### "Large difference" warning when expected
+This is normal if:
+- Backup is several hours/days old
+- Database is actively growing
+- Recent data imports occurred
+
+**Action:** Note the difference for records. Create new backup if desired.
+
+### Verification very slow
+**Cause:** Large backup files (>100MB)
+
+**Solution:**
+- Verify only latest: `./verify-backup.sh --latest`
+- Don't verify all backups frequently
 
 ## Best Practices
 
-### 1. Regular Verification
-Run verification weekly or monthly:
-- Catches corruption early
-- Ensures restore process works
-- Validates backup automation
+1. **Verify after every backup** - Ensure backup is usable
+2. **Keep verification logs** - Track backup health over time
+3. **Test restore procedure** - Periodically do a full restore test
+4. **Monitor disk space** - Ensure room for test database
+5. **Alert on failures** - Never ignore verification failures
 
-### 2. Before Critical Operations
-Verify backups before:
-- Schema migrations
-- Bulk data changes
-- Production deployments
+## Real Restore Process
 
-### 3. Test Restores
-Occasionally test full restore process:
+When you actually need to restore:
+
 ```bash
-# Backup current database
-cp trailcamp.db trailcamp.db.backup
+# 1. Stop the application
+pm2 stop trailcamp
 
-# Restore from backup
-sqlite3 trailcamp.db < backups/trailcamp-backup-latest.sql
+# 2. Backup current database (just in case)
+cp trailcamp.db trailcamp.db.before-restore
 
-# Verify application still works
-npm run dev
+# 3. Verify the backup you're restoring from
+./verify-backup.sh backups/trailcamp-backup-2026-02-28_12-58-09.sql
 
-# Restore original if needed
-mv trailcamp.db.backup trailcamp.db
+# 4. If verification passes, restore
+sqlite3 trailcamp.db < backups/trailcamp-backup-2026-02-28_12-58-09.sql
+
+# 5. Verify restored database
+./verify-backup.sh --latest
+
+# 6. Restart application
+pm2 start trailcamp
 ```
-
-### 4. Monitor Backup Age
-Alert if newest backup is too old:
-```bash
-NEWEST=$(ls -t backups/trailcamp-backup-*.sql | head -1)
-AGE_HOURS=$(( ($(date +%s) - $(stat -f %m "$NEWEST")) / 3600 ))
-
-if [ $AGE_HOURS -gt 48 ]; then
-    echo "⚠️  Newest backup is $AGE_HOURS hours old"
-fi
-```
-
-## Performance
-
-- **Speed:** ~2 seconds per backup (restore + verify)
-- **Disk:** Creates temporary database (~4MB per test)
-- **Impact:** Read-only, no effect on production database
-
-## Security
-
-### Backup Encryption
-Consider encrypting backups:
-```bash
-# Encrypt
-gpg --symmetric --cipher-algo AES256 backup.sql
-
-# Decrypt for verification
-gpg --decrypt backup.sql.gpg | sqlite3 test.db
-```
-
-### Backup Storage
-Store verified backups off-site:
-- Cloud storage (S3, Google Drive, Dropbox)
-- External drive
-- Remote server
 
 ---
 
 *Last updated: 2026-02-28*
-*Script: verify-backups.sh*
-*Backup directory: ./backups*
+*Script: verify-backup.sh*
