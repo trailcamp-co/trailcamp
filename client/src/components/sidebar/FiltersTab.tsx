@@ -18,11 +18,11 @@ import {
   DIFFICULTY_COLORS,
 } from '../../types';
 
-const ALL_CATEGORIES: LocationCategory[] = [
-  'campsite', 'riding', 'water', 'dump', 'scenic',
+const NON_CAMPSITE_CATEGORIES: LocationCategory[] = [
+  'riding', 'water', 'dump', 'scenic',
 ];
 
-const ALL_CAMPSITE_SUBTYPES: CampsiteSubType[] = ['boondocking', 'campground', 'parking', 'other'];
+const ALL_CAMPSITE_SUBTYPES: CampsiteSubType[] = ['campground', 'boondocking', 'parking', 'other'];
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -62,7 +62,14 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
       } else {
         next.add(st);
       }
-      return { ...prev, campsiteSubTypes: next };
+      // Keep 'campsite' category in sync — on if any sub-type is on
+      const nextCategories = new Set(prev.categories);
+      if (next.size > 0) {
+        nextCategories.add('campsite');
+      } else {
+        nextCategories.delete('campsite');
+      }
+      return { ...prev, campsiteSubTypes: next, categories: nextCategories };
     });
   };
 
@@ -79,7 +86,7 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
     filters.nearRoute,
     filters.waterNearby,
     filters.dumpNearby,
-    filters.categories.size < ALL_CATEGORIES.length,
+    filters.categories.size < NON_CAMPSITE_CATEGORIES.length + 1, // +1 for 'campsite'
     filters.campsiteSubTypes.size < ALL_CAMPSITE_SUBTYPES.length,
   ].filter(Boolean).length;
 
@@ -168,63 +175,62 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
           Categories
         </h4>
         <div className="space-y-1.5">
-          {ALL_CATEGORIES.map((cat) => (
-            <div key={cat}>
+          {/* Camp sub-types shown flat (matching Layers panel) */}
+          {ALL_CAMPSITE_SUBTYPES.map((st) => {
+            const isOn = filters.campsiteSubTypes.has(st);
+            return (
               <div
+                key={st}
                 className="flex items-center justify-between rounded-lg bg-dark-800 p-2.5 cursor-pointer hover:bg-dark-700 transition-colors"
-                onClick={() => toggleCategory(cat)}
+                onClick={() => toggleCampsiteSubType(st)}
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-sm" style={{ color: CATEGORY_COLORS[cat] }}>
-                    {CATEGORY_ICONS[cat]}
-                  </span>
+                  <span className="text-sm">{CAMPSITE_SUBTYPE_ICONS[st]}</span>
+                  <span
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: CAMPSITE_SUBTYPE_COLORS[st] }}
+                  />
                   <span className="text-sm text-gray-100">
-                    {CATEGORY_LABELS[cat]}
+                    {CAMPSITE_SUBTYPE_LABELS[st]}
                   </span>
                 </div>
                 <div
                   className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${
-                    filters.categories.has(cat) ? 'bg-orange-500' : 'bg-dark-700'
+                    isOn ? 'bg-orange-500' : 'bg-dark-700'
                   }`}
                 >
                   <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
-                    filters.categories.has(cat) ? 'translate-x-4' : ''
+                    isOn ? 'translate-x-4' : ''
                   }`} />
                 </div>
               </div>
+            );
+          })}
 
-              {/* Campsite sub-types */}
-              {cat === 'campsite' && filters.categories.has('campsite') && (
-                <div className="ml-4 mt-1.5 space-y-1">
-                  {ALL_CAMPSITE_SUBTYPES.map((st) => (
-                    <div
-                      key={st}
-                      className="flex items-center justify-between rounded-lg bg-dark-800/60 p-2 cursor-pointer hover:bg-dark-700/60 transition-colors"
-                      onClick={() => toggleCampsiteSubType(st)}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs">{CAMPSITE_SUBTYPE_ICONS[st]}</span>
-                        <span
-                          className="w-2 h-2 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: CAMPSITE_SUBTYPE_COLORS[st] }}
-                        />
-                        <span className="text-xs text-gray-400">
-                          {CAMPSITE_SUBTYPE_LABELS[st]}
-                        </span>
-                      </div>
-                      <div
-                        className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${
-                          filters.campsiteSubTypes.has(st) ? 'bg-orange-500' : 'bg-dark-700'
-                        }`}
-                      >
-                        <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
-                          filters.campsiteSubTypes.has(st) ? 'translate-x-4' : ''
-                        }`} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+          {/* Non-campsite categories */}
+          {NON_CAMPSITE_CATEGORIES.map((cat) => (
+            <div
+              key={cat}
+              className="flex items-center justify-between rounded-lg bg-dark-800 p-2.5 cursor-pointer hover:bg-dark-700 transition-colors"
+              onClick={() => toggleCategory(cat)}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-sm" style={{ color: CATEGORY_COLORS[cat] }}>
+                  {CATEGORY_ICONS[cat]}
+                </span>
+                <span className="text-sm text-gray-100">
+                  {CATEGORY_LABELS[cat]}
+                </span>
+              </div>
+              <div
+                className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${
+                  filters.categories.has(cat) ? 'bg-orange-500' : 'bg-dark-700'
+                }`}
+              >
+                <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                  filters.categories.has(cat) ? 'translate-x-4' : ''
+                }`} />
+              </div>
             </div>
           ))}
         </div>
