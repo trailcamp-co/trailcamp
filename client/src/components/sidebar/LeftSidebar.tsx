@@ -68,7 +68,7 @@ export default function LeftSidebar({
 
   // Calculate active filter count
   const ALL_CATEGORIES = ['campsite', 'riding', 'water', 'dump', 'scenic'];
-  const ALL_CAMPSITE_SUBTYPES = ['boondocking', 'campground', 'parking', 'other'];
+  const ALL_CAMPSITE_SUBTYPES = ['boondocking', 'campground', 'parking'];
   const activeFilterCount = [
     filterMode !== 'all',
     filters.difficulty !== null,

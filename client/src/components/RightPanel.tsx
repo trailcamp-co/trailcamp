@@ -605,8 +605,8 @@ export default function RightPanel({
           <div className={`p-5 ${sectionDivider}`}>
             <div className={`${labelStyle} mb-2`}>Scenery Rating</div>
             <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((level) => <Mountain key={level} className={`w-5 h-5 ${level <= location.scenery_rating! ? 'text-green-400' : darkMode ? 'text-gray-700' : 'text-gray-200'}`} />)}
-              <span className={`ml-2 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'} [.light_&]:text-gray-500`}>{location.scenery_rating}/5</span>
+              {(() => { const scaled = Math.min(5, Math.round((location.scenery_rating ?? 0) / 2)); return [1, 2, 3, 4, 5].map((level) => <Mountain key={level} className={`w-5 h-5 ${level <= scaled ? 'text-green-400' : darkMode ? 'text-gray-700' : 'text-gray-200'}`} />); })()}
+              <span className={`ml-2 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'} [.light_&]:text-gray-500`}>{Math.min(5, Math.round((location.scenery_rating ?? 0) / 2))}/5</span>
             </div>
           </div>
         )}

@@ -100,7 +100,7 @@ export default function LayerPanel({
 
       {/* Camp types */}
       <div className="py-0.5">
-        {(['campground', 'boondocking', 'parking', 'other'] as CampsiteSubType[]).map((st) => {
+        {(['campground', 'boondocking', 'parking'] as CampsiteSubType[]).map((st) => {
           const visible = visibleLayers.has('campsite') && (campsiteSubTypes?.has(st) ?? true);
           return (
             <LayerRow

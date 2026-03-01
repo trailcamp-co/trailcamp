@@ -120,7 +120,7 @@ export function useFilters(
     if (filters.waterNearby && !l.water_nearby) return false;
     if (filters.dumpNearby && !l.dump_nearby) return false;
     if (filters.difficulty && l.category === 'riding' && l.difficulty !== filters.difficulty) return false;
-    if (filters.minScenery > 0 && (!l.scenery_rating || l.scenery_rating < filters.minScenery)) return false;
+    if (filters.minScenery > 0 && (!l.scenery_rating || Math.round(l.scenery_rating / 2) < filters.minScenery)) return false;
 
     // Seasonal filter — only filters locations that have best_season data
     if (filters.hideOutOfSeason) {

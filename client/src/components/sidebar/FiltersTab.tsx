@@ -22,7 +22,7 @@ const NON_CAMPSITE_CATEGORIES: LocationCategory[] = [
   'riding', 'water', 'dump', 'scenic',
 ];
 
-const ALL_CAMPSITE_SUBTYPES: CampsiteSubType[] = ['campground', 'boondocking', 'parking', 'other'];
+const ALL_CAMPSITE_SUBTYPES: CampsiteSubType[] = ['campground', 'boondocking', 'parking'];
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
