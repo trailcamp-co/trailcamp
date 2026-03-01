@@ -4,3 +4,5 @@ dist/
 *.db
 server/backups/
 server/exports/
+server/logs/
+server/exports/

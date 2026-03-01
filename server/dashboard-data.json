@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-02-28T20:04:04.244Z",
+  "generatedAt": "2026-03-01T03:31:04.369Z",
   "summary": {
-    "totalLocations": 6236,
-    "riding": 1600,
-    "campsites": 4624,
-    "boondocking": 748,
+    "totalLocations": 6148,
+    "riding": 1554,
+    "campsites": 4582,
+    "boondocking": 732,
     "trips": 1,
-    "tripStops": 8,
+    "tripStops": 0,
     "dataQualityScore": 99,
     "systemHealth": "OK",
-    "totalTrailMiles": 84665
+    "totalTrailMiles": 82557
   },
   "dataQuality": {
     "scorecard": {
@@ -20,7 +20,7 @@
       },
       "sceneryRatings": {
         "score": 100,
-        "details": "6224 of 6236 have ratings"
+        "details": "6136 of 6148 have ratings"
       },
       "permitInfo": {
         "score": 95,
@@ -28,71 +28,71 @@
       },
       "trailMileage": {
         "score": 100,
-        "details": "1600 of 1600 riding locations"
+        "details": "1554 of 1554 riding locations"
       }
     },
     "overallScore": 99
   },
   "regionalDistribution": {
     "Southwest Desert": {
-      "total": 386,
-      "riding": 119,
-      "boondocking": 84,
+      "total": 382,
+      "riding": 118,
+      "boondocking": 81,
       "campgrounds": 178
     },
     "Rocky Mountains": {
-      "total": 1530,
-      "riding": 370,
-      "boondocking": 233,
-      "campgrounds": 924
+      "total": 1506,
+      "riding": 352,
+      "boondocking": 232,
+      "campgrounds": 919
     },
     "California": {
-      "total": 1012,
-      "riding": 235,
-      "boondocking": 152,
-      "campgrounds": 623
+      "total": 1005,
+      "riding": 234,
+      "boondocking": 149,
+      "campgrounds": 620
     },
     "Southeast": {
-      "total": 600,
-      "riding": 192,
+      "total": 591,
+      "riding": 185,
       "boondocking": 38,
-      "campgrounds": 370
+      "campgrounds": 368
     },
     "Other": {
-      "total": 956,
-      "riding": 253,
-      "boondocking": 52,
-      "campgrounds": 649
+      "total": 943,
+      "riding": 247,
+      "boondocking": 51,
+      "campgrounds": 643
     },
     "Pacific Northwest": {
-      "total": 818,
-      "riding": 122,
-      "boondocking": 154,
-      "campgrounds": 542
+      "total": 803,
+      "riding": 121,
+      "boondocking": 146,
+      "campgrounds": 536
     },
     "Great Plains": {
-      "total": 183,
+      "total": 181,
       "riding": 28,
       "boondocking": 0,
-      "campgrounds": 155
+      "campgrounds": 153
     },
     "Great Lakes": {
-      "total": 270,
-      "riding": 108,
+      "total": 264,
+      "riding": 103,
       "boondocking": 19,
-      "campgrounds": 143
+      "campgrounds": 142
     },
     "Northeast": {
-      "total": 265,
-      "riding": 134,
+      "total": 259,
+      "riding": 128,
       "boondocking": 12,
       "campgrounds": 119
     },
     "Alaska": {
-      "total": 201,
-      "riding": 25,
+      "total": 199,
+      "riding": 24,
       "boondocking": 4,
-      "campgrounds": 172
+      "campgrounds": 171
     },
     "Hawaii": {
       "total": 15,
@@ -104,59 +104,59 @@
   "topRegions": [
     {
       "region": "Rocky Mountains",
-      "total": 1530,
-      "riding": 370,
-      "boondocking": 233,
-      "campgrounds": 924
+      "total": 1506,
+      "riding": 352,
+      "boondocking": 232,
+      "campgrounds": 919
     },
     {
       "region": "California",
-      "total": 1012,
-      "riding": 235,
-      "boondocking": 152,
-      "campgrounds": 623
+      "total": 1005,
+      "riding": 234,
+      "boondocking": 149,
+      "campgrounds": 620
     },
     {
       "region": "Other",
-      "total": 956,
-      "riding": 253,
-      "boondocking": 52,
-      "campgrounds": 649
+      "total": 943,
+      "riding": 247,
+      "boondocking": 51,
+      "campgrounds": 643
     },
     {
       "region": "Pacific Northwest",
-      "total": 818,
-      "riding": 122,
-      "boondocking": 154,
-      "campgrounds": 542
+      "total": 803,
+      "riding": 121,
+      "boondocking": 146,
+      "campgrounds": 536
     },
     {
       "region": "Southeast",
-      "total": 600,
-      "riding": 192,
+      "total": 591,
+      "riding": 185,
       "boondocking": 38,
-      "campgrounds": 370
+      "campgrounds": 368
     }
   ],
   "contentStats": {
     "trailMiles": {
-      "total": 84665,
+      "total": 82557,
       "average": 53
     },
     "costData": {
-      "locationsWithCost": 876,
-      "freeCamping": 720,
-      "averagePaid": 22.17
+      "locationsWithCost": 856,
+      "freeCamping": 704,
+      "averagePaid": 22.1
     },
     "scenery": {
-      "worldClass": 121,
-      "excellent": 562,
+      "worldClass": 111,
+      "excellent": 539,
       "average": 6
     },
     "difficulty": {
-      "easy": 393,
-      "moderate": 870,
-      "hard": 337
+      "easy": 384,
+      "moderate": 843,
+      "hard": 327
     }
   },
   "coverage": {
@@ -166,8 +166,8 @@
     "allWithScenery": 100
   },
   "systemHealth": {
-    "databaseSize": "4.2M",
-    "backupCount": 1,
+    "databaseSize": "9.9M",
+    "backupCount": 2,
     "lastBackup": "Available",
     "integrityCheck": "OK"
   },
@@ -281,12 +281,6 @@
       "region": "Rocky Mountains"
     },
     {
-      "name": "BLM — Steens Mountain Dispersed",
-      "category": "campsite",
-      "scenery": 10,
-      "region": "Pacific Northwest"
-    },
-    {
       "name": "Badlands North Unit — Sage Creek Area",
       "category": "riding",
       "scenery": 10,
@@ -297,6 +291,12 @@
       "category": "riding",
       "scenery": 10,
       "region": "Other"
+    },
+    {
+      "name": "Beartooth Highway Dispersed — Red Lodge",
+      "category": "campsite",
+      "scenery": 10,
+      "region": "Rocky Mountains"
     }
   ],
   "alerts": []

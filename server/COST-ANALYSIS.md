@@ -1,13 +1,13 @@
 # Cost Analysis Report
 
-*Generated: 2026-02-28*
+*Generated: 2026-03-01*
 
 ## Summary
 
-- **Total locations with cost data:** 622
-- **Free locations:** 467 (75%)
-- **Paid locations:** 155 (25%)
-- **Average cost (paid only):** $22.25/night
+- **Total locations with cost data:** 856
+- **Free locations:** 704 (82%)
+- **Paid locations:** 152 (18%)
+- **Average cost (paid only):** $22.1/night
 - **Median cost (paid only):** $25/night
 - **Range:** $0 - $25/night
 
@@ -18,15 +18,15 @@
 | Region | Total | Free | Paid | Avg Cost | Median | Min | Max |
 |--------|-------|------|------|----------|--------|-----|-----|
 | Great Plains | 23 | 0 | 23 | $24.39 | $25 | $18 | $25 |
-| Other | 71 | 26 | 45 | $24.22 | $25 | $18 | $25 |
-| Southeast | 48 | 21 | 27 | $23.96 | $25 | $18 | $25 |
-| Great Lakes | 18 | 13 | 5 | $22.2 | $25 | $18 | $25 |
-| Southwest Desert | 78 | 75 | 3 | $20.33 | $18 | $18 | $25 |
-| Pacific Northwest | 119 | 97 | 22 | $20.23 | $18 | $18 | $25 |
-| Rocky Mountains | 171 | 153 | 18 | $19.56 | $18 | $18 | $25 |
+| Other | 92 | 51 | 41 | $24.15 | $25 | $18 | $25 |
+| Southeast | 65 | 38 | 27 | $23.96 | $25 | $18 | $25 |
+| Great Lakes | 24 | 19 | 5 | $22.2 | $25 | $18 | $25 |
+| Southwest Desert | 84 | 81 | 3 | $20.33 | $18 | $18 | $25 |
+| Pacific Northwest | 168 | 146 | 22 | $20.23 | $18 | $18 | $25 |
+| Rocky Mountains | 240 | 221 | 19 | $19.05 | $18 | $10 | $25 |
 | Alaska | 6 | 4 | 2 | $18 | $18 | $18 | $18 |
-| California | 81 | 71 | 10 | $14.6 | $18 | $1 | $18 |
-| Northeast | 7 | 7 | 0 | N/A | N/A | N/A | N/A |
+| California | 142 | 132 | 10 | $14.6 | $18 | $1 | $18 |
+| Northeast | 12 | 12 | 0 | N/A | N/A | N/A | N/A |
 
 ---
 
@@ -36,14 +36,14 @@
 
 | Region | Count |
 |--------|-------|
-| Rocky Mountains | 153 |
-| Pacific Northwest | 97 |
-| Southwest Desert | 75 |
-| California | 71 |
-| Other | 26 |
-| Southeast | 21 |
-| Great Lakes | 13 |
-| Northeast | 7 |
+| Rocky Mountains | 221 |
+| Pacific Northwest | 146 |
+| California | 132 |
+| Southwest Desert | 81 |
+| Other | 51 |
+| Southeast | 38 |
+| Great Lakes | 19 |
+| Northeast | 12 |
 | Alaska | 4 |
 
 ### Paid Campgrounds by Region
@@ -51,7 +51,7 @@
 | Region | Count | Avg Cost | Median | Min | Max |
 |--------|-------|----------|--------|-----|-----|
 | Great Plains | 23 | $24.39 | $25 | $18 | $25 |
-| Other | 45 | $24.22 | $25 | $18 | $25 |
+| Other | 41 | $24.15 | $25 | $18 | $25 |
 | Southeast | 27 | $23.96 | $25 | $18 | $25 |
 | Great Lakes | 5 | $22.2 | $25 | $18 | $25 |
 | Southwest Desert | 3 | $20.33 | $18 | $18 | $25 |
@@ -67,7 +67,7 @@
 Best regions for budget camping (lowest average paid costs):
 
 1. **California** - $14.6/night avg (10 locations)
-2. **Rocky Mountains** - $19.56/night avg (18 locations)
+2. **Rocky Mountains** - $19.05/night avg (19 locations)
 3. **Pacific Northwest** - $20.23/night avg (22 locations)
 4. **Great Lakes** - $22.2/night avg (5 locations)
 5. **Southeast** - $23.96/night avg (27 locations)
@@ -79,7 +79,7 @@ Best regions for budget camping (lowest average paid costs):
 Regions with highest average costs:
 
 1. **Great Plains** - $24.39/night avg (23 locations)
-2. **Other** - $24.22/night avg (45 locations)
+2. **Other** - $24.15/night avg (41 locations)
 3. **Southeast** - $23.96/night avg (27 locations)
 4. **Great Lakes** - $22.2/night avg (5 locations)
 5. **Pacific Northwest** - $20.23/night avg (22 locations)
@@ -89,24 +89,24 @@ Regions with highest average costs:
 ## Trip Budgeting Insights
 
 ### Free Camping Availability
-- **75%** of locations with cost data are FREE
-- Highest free camping: Rocky Mountains (153 locations)
+- **82%** of locations with cost data are FREE
+- Highest free camping: Rocky Mountains (221 locations)
 
 ### Cost Planning Guidelines
 
 **Budget trip (mostly free camping):**
 - Focus on boondocking and dispersed camping
-- Target regions: Rocky Mountains, Pacific Northwest, Southwest Desert
+- Target regions: Rocky Mountains, Pacific Northwest, California
 - Expected avg: $0-5/night
 
 **Mid-range trip (mix of free + campgrounds):**
 - Mix of boondocking and campgrounds
 - Expected avg: $10-20/night
-- Budget 16-29/night
+- Budget 15-29/night
 
 **Developed campgrounds:**
 - State/National park campgrounds
-- Expected avg: $22.25/night
+- Expected avg: $22.1/night
 - Budget $20-40/night for most regions
 
 ### Regional Cost Estimates (7-day trip)
@@ -114,23 +114,23 @@ Regions with highest average costs:
 Estimated camping costs for a week-long trip:
 
 - **Great Plains**: $171/week ($24.39/night avg)
-- **Other**: $170/week ($24.22/night avg)
+- **Other**: $169/week ($24.15/night avg)
 - **Southeast**: $168/week ($23.96/night avg)
 - **Great Lakes**: $155/week ($22.2/night avg)
 - **Southwest Desert**: $142/week ($20.33/night avg)
 - **Pacific Northwest**: $142/week ($20.23/night avg)
-- **Rocky Mountains**: $137/week ($19.56/night avg)
+- **Rocky Mountains**: $133/week ($19.05/night avg)
 - **Alaska**: $126/week ($18/night avg)
 
 ---
 
 ## Data Quality Notes
 
-- Cost data available for **622** of 4370 campsites (14%)
-- 155 paid locations analyzed
+- Cost data available for **856** of 4582 campsites (19%)
+- 152 paid locations analyzed
 - Cost range: $0 - $25/night
 
-**Missing cost data:** 3748 locations
+**Missing cost data:** 3726 locations
 
 ---
 
