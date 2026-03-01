@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
+import { LocateFixed, Compass, Loader2 } from 'lucide-react';
 import type { Location, TripStop, LocationCategory, CampsiteSubType, MapStyle } from '../../types';
 import { addCustomLayers, addOverlayLayers, buildLocationsGeoJSON, buildRouteGeoJSON } from './layers';
 import { createStopMarkers } from './markers';
@@ -74,6 +75,10 @@ export default function MapContainer({
   const styleUrlRef = useRef(style.url);
   const [mapReady, setMapReady] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; lng: number; lat: number } | null>(null);
+  const [gpsState, setGpsState] = useState<'idle' | 'loading' | 'active'>('idle');
+  const [compassBearing, setCompassBearing] = useState(0);
+  const [compassTracking, setCompassTracking] = useState(false);
+  const gpsMarkerRef = useRef<any>(null);
 
   useEffect(() => { locationsRef.current = locations; }, [locations]);
   useEffect(() => { routeRef.current = routeGeoJSON; }, [routeGeoJSON]);
@@ -93,11 +98,6 @@ export default function MapContainer({
     });
 
     map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
-    map.addControl(new mapboxgl.GeolocateControl({
-      positionOptions: { enableHighAccuracy: true },
-      trackUserLocation: false,
-      showUserHeading: true,
-    }), 'bottom-right');
     map.addControl(new mapboxgl.ScaleControl({ maxWidth: 100 }), 'bottom-left');
     map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
 
@@ -245,6 +245,125 @@ export default function MapContainer({
     };
   }, [homeLat, homeLon]);
 
+  // Track map bearing for compass icon rotation
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const onRotate = () => setCompassBearing(map.getBearing());
+    map.on('rotate', onRotate);
+    return () => { map.off('rotate', onRotate); };
+  }, [mapReady]);
+
+  // GPS: locate user and fly to position
+  const handleGpsClick = useCallback(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (gpsState === 'active') {
+      // Remove marker, deactivate
+      gpsMarkerRef.current?.remove();
+      gpsMarkerRef.current = null;
+      setGpsState('idle');
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser.');
+      return;
+    }
+
+    setGpsState('loading');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+
+        // Remove old marker
+        gpsMarkerRef.current?.remove();
+
+        // Create pulsing blue dot
+        const el = document.createElement('div');
+        el.className = 'gps-dot';
+
+        const marker = new mapboxgl.Marker({ element: el })
+          .setLngLat([longitude, latitude])
+          .addTo(map);
+        gpsMarkerRef.current = marker;
+
+        map.flyTo({
+          center: [longitude, latitude],
+          zoom: 14,
+          duration: 1200,
+        });
+
+        setGpsState('active');
+      },
+      (err) => {
+        setGpsState('idle');
+        if (err.code === err.PERMISSION_DENIED) {
+          alert('Location access was denied. Please enable location permissions in your browser settings.');
+        } else {
+          alert('Unable to retrieve your location. Please try again.');
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  }, [gpsState]);
+
+  // Compass: toggle device orientation tracking or reset bearing to north
+  const handleCompassClick = useCallback(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (compassTracking) {
+      setCompassTracking(false);
+      map.easeTo({ bearing: 0, duration: 500 });
+      return;
+    }
+
+    // Check if DeviceOrientationEvent is available
+    const hasOrientation = typeof DeviceOrientationEvent !== 'undefined';
+    if (!hasOrientation) {
+      // Just reset bearing to north
+      map.easeTo({ bearing: 0, duration: 500 });
+      return;
+    }
+
+    // On iOS 13+, need to request permission
+    const DOE = DeviceOrientationEvent as any;
+    if (typeof DOE.requestPermission === 'function') {
+      DOE.requestPermission().then((state: string) => {
+        if (state === 'granted') {
+          setCompassTracking(true);
+        } else {
+          // Permission denied, just reset north
+          map.easeTo({ bearing: 0, duration: 500 });
+        }
+      }).catch(() => {
+        map.easeTo({ bearing: 0, duration: 500 });
+      });
+    } else {
+      setCompassTracking(true);
+    }
+  }, [compassTracking]);
+
+  // Device orientation listener for compass mode
+  useEffect(() => {
+    if (!compassTracking) return;
+    const map = mapRef.current;
+    if (!map) return;
+
+    const handler = (e: DeviceOrientationEvent) => {
+      // Use webkitCompassHeading for iOS, alpha for Android
+      const heading = (e as any).webkitCompassHeading ?? (e.alpha != null ? 360 - e.alpha : null);
+      if (heading != null) {
+        map.easeTo({ bearing: heading, duration: 100 });
+      }
+    };
+
+    window.addEventListener('deviceorientation', handler, true);
+    return () => window.removeEventListener('deviceorientation', handler, true);
+  }, [compassTracking]);
+
   const handleToggleBlm = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -294,7 +413,40 @@ export default function MapContainer({
         totalCount={locations.length}
       />
       <RegionQuickJump mapRef={mapRef} />
-      
+
+      {/* GPS + Compass buttons — bottom-left on desktop, above tabs on mobile */}
+      <div className="absolute z-30 flex flex-col gap-2 left-[10px] map-controls-bottom">
+        <button
+          onClick={handleCompassClick}
+          className={`w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-all touch-manipulation ${
+            compassTracking
+              ? 'bg-blue-500 text-white'
+              : 'bg-dark-800/90 backdrop-blur-sm border border-dark-700/50 text-gray-300 hover:text-white hover:bg-dark-700'
+          }`}
+          title={compassTracking ? 'Stop compass tracking' : 'Reset north / compass mode'}
+        >
+          <Compass
+            size={20}
+            style={{ transform: `rotate(${-compassBearing}deg)`, transition: 'transform 0.1s ease-out' }}
+          />
+        </button>
+        <button
+          onClick={handleGpsClick}
+          className={`w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-all touch-manipulation ${
+            gpsState === 'active'
+              ? 'bg-blue-500 text-white'
+              : 'bg-dark-800/90 backdrop-blur-sm border border-dark-700/50 text-gray-300 hover:text-white hover:bg-dark-700'
+          }`}
+          title="My location"
+        >
+          {gpsState === 'loading' ? (
+            <Loader2 size={20} className="animate-spin" />
+          ) : (
+            <LocateFixed size={20} />
+          )}
+        </button>
+      </div>
+
       {/* Right-click context menu */}
       {contextMenu && (
         <div

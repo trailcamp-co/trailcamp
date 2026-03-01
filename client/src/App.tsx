@@ -17,6 +17,7 @@ import AddLocationModal from './components/AddLocationModal';
 import ToastContainer from './components/ToastContainer';
 import MobileBottomTabs from './components/MobileBottomTabs';
 import MobileFAB from './components/MobileFAB';
+import MobileSearchBar from './components/MobileSearchBar';
 import BottomSheet from './components/BottomSheet';
 import type { SnapPoint } from './components/BottomSheet';
 import MobileLocationDetail from './components/MobileLocationDetail';
@@ -393,6 +394,21 @@ export default function App() {
           </div>
         )}
       </div>
+
+      {/* Mobile Search Bar — only on map tab */}
+      {mobileTab === 'map' && (
+        <MobileSearchBar
+          searchQuery={searchQuery}
+          onSearch={handleSearch}
+          searchResults={searchResults}
+          onSelectResult={(loc) => {
+            handleLocationClickWrapped(loc);
+            handleFlyTo(loc.longitude, loc.latitude);
+            clearSearch();
+          }}
+          locationCount={locations.length}
+        />
+      )}
 
       {/* Mobile Bottom Sheet for location details */}
       {selectedLocation && (

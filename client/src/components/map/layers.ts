@@ -101,7 +101,7 @@ export function addCustomLayers(
         1000, 'rgba(30, 41, 59, 0.92)', // slate-800 for huge
       ],
       'circle-radius': ['step', ['get', 'point_count'],
-        12, 10, 14, 50, 17, 100, 20, 500, 24,
+        14, 10, 16, 50, 20, 100, 24, 500, 28,
       ],
       'circle-stroke-width': 2,
       'circle-stroke-color': 'rgba(255,255,255,0.5)',
@@ -132,7 +132,7 @@ export function addCustomLayers(
     paint: {
       'circle-color': ['get', 'color'],
       'circle-radius': ['interpolate', ['linear'], ['zoom'],
-        4, 4, 6, 6, 8, 9, 10, 12, 12, 16, 14, 20, 16, 24,
+        4, 5, 6, 7, 8, 11, 10, 14, 12, 18, 14, 22, 16, 26,
       ],
       'circle-stroke-width': ['interpolate', ['linear'], ['zoom'],
         5, 1, 10, 1.5, 14, 2.5,
