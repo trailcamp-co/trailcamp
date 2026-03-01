@@ -32,6 +32,7 @@ import {
   Share2,
   Copy,
   ArrowRight,
+  BookOpen,
 } from 'lucide-react';
 import type { Location, Trip, TripStop, WeatherData, JournalEntry, LocationCategory, CampsiteSubType } from '../../types';
 import {
@@ -1287,8 +1288,9 @@ export default function TripTab({
 
             {/* Timeline entry list grouped by date */}
             {journalEntries.length === 0 ? (
-              <div className="text-center py-4">
-                <p className="text-xs text-gray-600 [.light_&]:text-gray-400 italic mb-2">
+              <div className="text-center py-5">
+                <BookOpen size={24} className="mx-auto mb-2 text-gray-600 [.light_&]:text-gray-400" />
+                <p className="text-xs text-gray-500 [.light_&]:text-gray-400 mb-3">
                   No journal entries yet
                 </p>
                 <button
@@ -1296,8 +1298,9 @@ export default function TripTab({
                     const textarea = document.querySelector<HTMLTextAreaElement>('textarea[placeholder="Write a journal entry..."]');
                     textarea?.focus();
                   }}
-                  className="text-xs font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-orange-400 border border-orange-500/30 hover:bg-orange-500/25 transition-colors [.light_&]:bg-orange-100 [.light_&]:text-orange-600 [.light_&]:border-orange-200"
+                  className="text-xs font-medium px-3 py-1.5 rounded-lg text-orange-400 border border-dashed border-orange-500/30 hover:bg-orange-500/10 transition-colors [.light_&]:text-orange-600 [.light_&]:border-orange-200 [.light_&]:hover:bg-orange-50 inline-flex items-center gap-1.5"
                 >
+                  <Plus size={12} />
                   Write your first entry
                 </button>
               </div>

@@ -173,7 +173,7 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
             ...(distanceFromCoords ? [{ field: 'distance_from' as RidingSortField, label: 'Distance' }] : []),
           ]).map(({ field, label }) => (
             <button key={field} onClick={() => handleSortChange(field)}
-              className={`text-[10px] px-2 py-0.5 rounded-md transition-colors ${
+              className={`text-[10px] px-3 py-2 lg:px-2 lg:py-0.5 min-h-[36px] lg:min-h-0 rounded-md transition-colors ${
                 sortField === field ? 'bg-orange-500/20 text-orange-400'
                   : 'text-gray-500 hover:text-gray-300 hover:bg-dark-700/50'
               }`}>
@@ -199,16 +199,16 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <button onClick={() => setFavoritesOnly(!favoritesOnly)} title="Favorites only"
-              className={`text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors ${favoritesOnly ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-gray-500 hover:text-gray-300 border border-dark-700/50'}`}>
+              className={`text-[10px] px-3 py-2 lg:px-2 lg:py-0.5 min-h-[36px] lg:min-h-0 rounded-full flex items-center gap-1 transition-colors ${favoritesOnly ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-gray-500 hover:text-gray-300 border border-dark-700/50'}`}>
               <Heart size={10} className={favoritesOnly ? 'fill-red-400' : ''} /> Favs
             </button>
             <button onClick={() => setFeaturedOnly(!featuredOnly)} title="Featured epic spots only"
-              className={`text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors ${featuredOnly ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' : 'text-gray-500 hover:text-gray-300 border border-dark-700/50'}`}>
+              className={`text-[10px] px-3 py-2 lg:px-2 lg:py-0.5 min-h-[36px] lg:min-h-0 rounded-full flex items-center gap-1 transition-colors ${featuredOnly ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' : 'text-gray-500 hover:text-gray-300 border border-dark-700/50'}`}>
               ⭐ Epic
             </button>
           </div>
           <button onClick={() => setViewportFilter(!viewportFilter)}
-            className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
+            className={`text-[10px] px-3 py-2 lg:px-2 lg:py-0.5 min-h-[36px] lg:min-h-0 rounded-full transition-colors ${
               viewportFilter ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
                 : 'text-gray-500 hover:text-gray-300 border border-dark-700/50'
             }`}>

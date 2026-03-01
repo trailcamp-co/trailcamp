@@ -238,7 +238,9 @@ export default function MapContainer({
 
     const el = document.createElement('div');
     el.className = 'home-marker';
-    el.innerHTML = '<div style="width:28px;height:28px;background:#8b5cf6;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);font-size:14px;cursor:pointer;" title="Home">🏠</div>';
+    el.innerHTML = `<div style="width:34px;height:34px;background:white;border:3px solid #8b5cf6;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(139,92,246,0.4),0 1px 4px rgba(0,0,0,0.3);cursor:pointer;" title="Home">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#8b5cf6" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+    </div>`;
 
     const marker = new mapboxgl.Marker({ element: el })
       .setLngLat([homeLon, homeLat])

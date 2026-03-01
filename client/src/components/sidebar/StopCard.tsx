@@ -11,6 +11,7 @@ import {
   CloudSun,
 } from 'lucide-react';
 import type { TripStop, WeatherData, LocationCategory, CampsiteSubType } from '../../types';
+import { hapticMedium } from '../../utils/haptics';
 import {
   CATEGORY_ICONS,
   CATEGORY_COLORS,
@@ -191,7 +192,7 @@ export function SortableStopCard({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 min-w-0">
                 <span className="text-sm flex-shrink-0">{stopIcon}</span>
-                <span className="text-sm font-medium text-gray-200 [.light_&]:text-gray-800 truncate">
+                <span className="text-sm font-medium text-gray-200 [.light_&]:text-gray-800 lg:truncate line-clamp-2 lg:line-clamp-none">
                   {stopName}
                 </span>
               </div>
@@ -285,6 +286,7 @@ export function SortableStopCard({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    hapticMedium();
                     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
                     const url = isIOS
                       ? `https://maps.apple.com/?daddr=${stop.latitude},${stop.longitude}`

@@ -166,7 +166,7 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
             ...(distanceFromCoords ? [{ field: 'distance_from' as CampsiteSortField, label: 'Distance' }] : []),
           ]).map(({ field, label }) => (
             <button key={field} onClick={() => handleSortChange(field)}
-              className={`text-[10px] px-2 py-0.5 rounded-md transition-colors ${
+              className={`text-[10px] px-3 py-2 lg:px-2 lg:py-0.5 min-h-[36px] lg:min-h-0 rounded-md transition-colors ${
                 sortField === field ? 'bg-orange-500/20 text-orange-400' : 'text-gray-500 hover:text-gray-300 hover:bg-dark-700/50'
               }`}>
               {label}{sortField === field && (sortAsc ? ' ↑' : ' ↓')}
@@ -177,12 +177,12 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
         {/* Sub-type filter chips */}
         <div className="flex items-center gap-1 flex-wrap">
           <button onClick={() => setFilterSubType('all')}
-            className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
+            className={`text-[10px] px-3 py-2 lg:px-2 lg:py-0.5 min-h-[36px] lg:min-h-0 rounded-full transition-colors ${
               filterSubType === 'all' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : 'text-gray-500 border border-dark-700/50 hover:text-gray-300'
             }`}>All</button>
           {(['boondocking', 'campground', 'parking'] as CampsiteSubType[]).map(st => (
             <button key={st} onClick={() => setFilterSubType(filterSubType === st ? 'all' : st)}
-              className={`text-[10px] px-2 py-0.5 rounded-full transition-colors flex items-center gap-1 ${
+              className={`text-[10px] px-3 py-2 lg:px-2 lg:py-0.5 min-h-[36px] lg:min-h-0 rounded-full transition-colors flex items-center gap-1 ${
                 filterSubType === st ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : 'text-gray-500 border border-dark-700/50 hover:text-gray-300'
               }`}>
               {CAMPSITE_SUBTYPE_ICONS[st]} {CAMPSITE_SUBTYPE_LABELS[st]}
@@ -194,20 +194,20 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <button onClick={() => setFreeOnly(!freeOnly)}
-              className={`text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors ${
+              className={`text-[10px] px-3 py-2 lg:px-2 lg:py-0.5 min-h-[36px] lg:min-h-0 rounded-full flex items-center gap-1 transition-colors ${
                 freeOnly ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'text-gray-500 border border-dark-700/50 hover:text-gray-300'
               }`}>
               💚 Free only
             </button>
             <button onClick={() => setFavoritesOnly(!favoritesOnly)}
-              className={`text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors ${
+              className={`text-[10px] px-3 py-2 lg:px-2 lg:py-0.5 min-h-[36px] lg:min-h-0 rounded-full flex items-center gap-1 transition-colors ${
                 favoritesOnly ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-gray-500 border border-dark-700/50 hover:text-gray-300'
               }`}>
               <Heart size={10} className={favoritesOnly ? 'fill-red-400' : ''} /> Favs
             </button>
           </div>
           <button onClick={() => setViewportFilter(!viewportFilter)}
-            className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
+            className={`text-[10px] px-3 py-2 lg:px-2 lg:py-0.5 min-h-[36px] lg:min-h-0 rounded-full transition-colors ${
               viewportFilter ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : 'text-gray-500 border border-dark-700/50 hover:text-gray-300'
             }`}>
             {viewportFilter ? 'In view' : 'Show all'}

@@ -1,4 +1,5 @@
 import { useRef, useCallback, useEffect, useState } from 'react';
+import { hapticLight } from '../utils/haptics';
 
 export type SnapPoint = 'peek' | 'half' | 'full';
 
@@ -96,6 +97,7 @@ export default function BottomSheet({ open, snapPoint, onSnapChange, onDismiss, 
     if (nearest === 'dismiss') {
       onDismiss();
     } else {
+      hapticLight();
       onSnapChange(nearest);
       setCurrentHeight(getSnapHeight(nearest));
     }

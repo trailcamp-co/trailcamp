@@ -1,5 +1,6 @@
 import { Map, Compass, Heart, User } from 'lucide-react';
 import { Bike } from 'lucide-react';
+import { hapticLight } from '../utils/haptics';
 
 export type MobileTab = 'map' | 'explore' | 'trips' | 'saved' | 'profile';
 
@@ -25,7 +26,7 @@ export default function MobileBottomTabs({ activeTab, onTabChange }: MobileBotto
           return (
             <button
               key={id}
-              onClick={() => onTabChange(id)}
+              onClick={() => { hapticLight(); onTabChange(id); }}
               className={`flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-colors ${
                 isActive
                   ? 'text-orange-400'

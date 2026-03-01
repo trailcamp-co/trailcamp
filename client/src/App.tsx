@@ -476,6 +476,8 @@ export default function App() {
             onToggleFavorite={toggleFav}
             homeLat={homeLat}
             homeLon={homeLon}
+            allLocations={locations}
+            onFlyTo={handleFlyTo}
           />
         </BottomSheet>
       )}

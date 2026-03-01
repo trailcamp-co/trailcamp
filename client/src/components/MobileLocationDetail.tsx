@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useMemo } from 'react';
 import {
   Navigation,
   Heart,
@@ -22,6 +22,7 @@ import type { SnapPoint } from './BottomSheet';
 import ReviewsSection from './ReviewsSection';
 import type { UserLocationData } from '../hooks/useUserData';
 import { getExternalUrl } from '../utils/getExternalUrl';
+import { hapticLight, hapticMedium, hapticSuccess } from '../utils/haptics';
 
 const CATEGORY_LUCIDE_ICONS: Record<string, React.ReactNode> = {
   campsite: <Trees className="w-3.5 h-3.5" />,
@@ -46,6 +47,8 @@ interface MobileLocationDetailProps {
   onToggleFavorite?: (locationId: number) => Promise<boolean>;
   homeLat?: number | null;
   homeLon?: number | null;
+  allLocations?: Location[];
+  onFlyTo?: (lng: number, lat: number) => void;
 }
 
 function InfoPill({ children }: { children: React.ReactNode }) {
@@ -68,6 +71,8 @@ export default function MobileLocationDetail({
   onToggleFavorite,
   homeLat,
   homeLon,
+  allLocations,
+  onFlyTo,
 }: MobileLocationDetailProps) {
   const userData = getUserData?.(location.id);
   const favorited = isFavoritedFn?.(location.id) ?? false;
@@ -83,6 +88,7 @@ export default function MobileLocationDetail({
   }, [location.id, userData?.user_notes, location.user_notes]);
 
   const handleNavigate = useCallback(() => {
+    hapticMedium();
     // Try native map links on mobile
     const dest = `${location.latitude},${location.longitude}`;
     const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
@@ -94,11 +100,13 @@ export default function MobileLocationDetail({
   }, [location.latitude, location.longitude]);
 
   const handleToggleFavorite = useCallback(async () => {
+    hapticLight();
     setHeartKey(k => k + 1);
     await onToggleFavorite?.(location.id);
   }, [location.id, onToggleFavorite]);
 
   const handleToggleVisited = useCallback(async () => {
+    hapticLight();
     await onUpdateUserData?.(location.id, {
       visited: effectiveVisited ? 0 : 1,
       visited_date: effectiveVisited ? null : new Date().toISOString().split('T')[0],
@@ -109,6 +117,7 @@ export default function MobileLocationDetail({
     setAddingToTrip(true);
     try {
       await onAddToTrip(location);
+      hapticSuccess();
       showToast?.('Added to trip!', 'success');
     } catch {
       showToast?.('Failed to add to trip', 'error');
@@ -147,6 +156,26 @@ export default function MobileLocationDetail({
     const a = Math.sin(dLat / 2) ** 2 + Math.cos(homeLat * Math.PI / 180) * Math.cos(location.latitude * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
     return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
   })() : null;
+
+  // Nearby locations: campsites show nearby riding, riding shows nearby campsites
+  const nearbyLocations = useMemo(() => {
+    if (!allLocations || allLocations.length === 0) return [];
+    const targetCategory = location.category === 'campsite' ? 'riding' : location.category === 'riding' ? 'campsite' : null;
+    if (!targetCategory) return [];
+    const R = 3959;
+    return allLocations
+      .filter(l => l.category === targetCategory)
+      .map(l => {
+        const dLat = (l.latitude - location.latitude) * Math.PI / 180;
+        const dLng = (l.longitude - location.longitude) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) ** 2 + Math.cos(location.latitude * Math.PI / 180) * Math.cos(l.latitude * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+        const dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return { ...l, _distance: Math.round(dist) };
+      })
+      .filter(l => l._distance <= 20)
+      .sort((a, b) => a._distance - b._distance)
+      .slice(0, 3);
+  }, [allLocations, location.id, location.category, location.latitude, location.longitude]);
 
   const showExpanded = snapPoint === 'half' || snapPoint === 'full';
   const showFull = snapPoint === 'full';
@@ -252,6 +281,28 @@ export default function MobileLocationDetail({
               <p className={`text-sm text-gray-300 leading-relaxed ${!showFull ? 'line-clamp-3' : ''}`}>
                 {location.description}
               </p>
+            </div>
+          )}
+
+          {/* Nearby section */}
+          {nearbyLocations.length > 0 && (
+            <div className="mb-4">
+              <span className="text-xs font-medium uppercase tracking-wider text-gray-500 block mb-2">
+                Nearby {location.category === 'campsite' ? 'Riding Areas' : 'Campsites'}
+              </span>
+              <div className="space-y-1">
+                {nearbyLocations.map(loc => (
+                  <button
+                    key={loc.id}
+                    onClick={() => onFlyTo?.(loc.longitude, loc.latitude)}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-dark-800 border border-dark-700/50 hover:border-dark-600 transition-colors text-left"
+                  >
+                    <span className="text-sm flex-shrink-0">{CATEGORY_ICONS[loc.category] || '📍'}</span>
+                    <span className="flex-1 min-w-0 text-sm text-gray-300 truncate">{loc.name}</span>
+                    <span className="text-xs text-gray-500 flex-shrink-0">{loc._distance} mi</span>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
