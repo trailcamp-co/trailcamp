@@ -1,0 +1,99 @@
+{
+  "critical": [],
+  "warning": [
+    {
+      "check": "Permit Information",
+      "message": "18 locations require permits but missing permit_info",
+      "count": 18,
+      "sql": "SELECT id, name FROM locations WHERE permit_required = 1 AND (permit_info IS NULL OR permit_info = '');"
+    }
+  ],
+  "info": [
+    {
+      "check": "Potential Near-Duplicates",
+      "message": "20 pairs of locations within ~300 feet (may be legitimate)",
+      "count": 20,
+      "sql": null
+    }
+  ],
+  "passed": [
+    {
+      "check": "Trip Stops → Locations",
+      "message": "All trip stops reference valid locations",
+      "count": null,
+      "sql": null
+    },
+    {
+      "check": "Trip Stops → Trips",
+      "message": "All trip stops reference valid trips",
+      "count": null,
+      "sql": null
+    },
+    {
+      "check": "Riding Data Completeness",
+      "message": "All riding locations have trail types or difficulty",
+      "count": null,
+      "sql": null
+    },
+    {
+      "check": "Campsite Categorization",
+      "message": "All campsites with costs have sub_type",
+      "count": null,
+      "sql": null
+    },
+    {
+      "check": "Boondocking Costs",
+      "message": "All boondocking costs are reasonable",
+      "count": null,
+      "sql": null
+    },
+    {
+      "check": "Trail Difficulty",
+      "message": "All trails with distance have difficulty ratings",
+      "count": null,
+      "sql": null
+    },
+    {
+      "check": "Negative Values",
+      "message": "No negative values in numeric fields",
+      "count": null,
+      "sql": null
+    },
+    {
+      "check": "Scenery Rating Range",
+      "message": "All scenery ratings are 1-10",
+      "count": null,
+      "sql": null
+    },
+    {
+      "check": "Stay Limit Duration",
+      "message": "All stay limits are <= 365 days",
+      "count": null,
+      "sql": null
+    },
+    {
+      "check": "Water Availability",
+      "message": "Water info is logical",
+      "count": null,
+      "sql": null
+    },
+    {
+      "check": "Exact Duplicates",
+      "message": "No exact duplicates (same name + coordinates)",
+      "count": null,
+      "sql": null
+    },
+    {
+      "check": "SQLite Integrity",
+      "message": "Database integrity check passed",
+      "count": null,
+      "sql": null
+    },
+    {
+      "check": "Foreign Keys",
+      "message": "All foreign key constraints valid",
+      "count": null,
+      "sql": null
+    }
+  ]
+}
