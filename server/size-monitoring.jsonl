@@ -1,0 +1,1 @@
+{"timestamp":"2026-03-01T01:11:08.642Z","dbSizeBytes":10395648,"dbSizeHuman":"9.9M","tables":{"locations":6148,"trips":1,"trip_stops":8,"locations_fts":6148},"byCategory":{"campsite":4582,"dump":3,"riding":1554,"scenic":8,"water":1},"completeness":{"scenery":100,"difficulty":100,"cost":14,"state":100}}
