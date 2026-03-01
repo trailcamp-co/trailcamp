@@ -8,6 +8,16 @@ import { validate } from '../middleware/validate';
 
 const router = Router();
 
+/** Convert camelCase Drizzle output to snake_case for API response */
+function toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    const snakeKey = key.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`);
+    result[snakeKey] = value;
+  }
+  return result;
+}
+
 // ─── Zod Schemas ─────────────────────────────────────────────────────────────
 
 const createLocationSchema = z.object({
@@ -208,7 +218,7 @@ router.get('/', optionalAuth, async (req: Request, res: Response) => {
         }
       }
 
-      res.json(result);
+      res.json(result.map(r => toSnakeCase(r as Record<string, unknown>)));
       return;
     }
 
@@ -239,7 +249,7 @@ router.get('/', optionalAuth, async (req: Request, res: Response) => {
       }
     }
 
-    res.json(result);
+    res.json(result.map(r => toSnakeCase(r as Record<string, unknown>)));
   } catch (err) {
     console.error('Error fetching locations:', err);
     res.status(500).json({ error: 'Failed to fetch locations', code: 'INTERNAL_ERROR' });
@@ -255,7 +265,7 @@ router.get('/group/:groupId', optionalAuth, async (req: Request, res: Response) 
     const members = await db.select().from(locations)
       .where(eq(locations.groupId, groupId))
       .orderBy(desc(locations.isGroupPrimary), asc(locations.name));
-    res.json(members);
+    res.json(members.map(m => toSnakeCase(m as Record<string, unknown>)));
   } catch (err) {
     console.error('Error fetching group:', err);
     res.status(500).json({ error: 'Failed to fetch group', code: 'INTERNAL_ERROR' });
@@ -273,7 +283,7 @@ router.get('/featured', async (req: Request, res: Response) => {
     const rows = await db.select().from(locations)
       .where(and(...conditions))
       .orderBy(desc(locations.sceneryRating), asc(locations.name));
-    res.json(rows);
+    res.json(rows.map(r => toSnakeCase(r as Record<string, unknown>)));
   } catch (err) {
     console.error('Error fetching featured:', err);
     res.status(500).json({ error: 'Failed to fetch featured locations', code: 'INTERNAL_ERROR' });
@@ -318,7 +328,7 @@ router.get('/search', optionalAuth, async (req: Request, res: Response) => {
       .orderBy(sql`relevance DESC`, asc(locations.name))
       .limit(20);
 
-    res.json(rows.map((r) => ({ ...r.location, relevance: r.relevance })));
+    res.json(rows.map((r) => toSnakeCase({ ...r.location, relevance: r.relevance } as Record<string, unknown>)));
   } catch (err) {
     console.error('Error searching locations:', err);
     res.status(500).json({ error: 'Failed to search locations', code: 'INTERNAL_ERROR' });
@@ -349,7 +359,7 @@ router.get('/nearby-riding', async (req: Request, res: Response) => {
       .where(and(eq(locations.category, 'riding'), sql`${distanceExpr} <= ${radius}`))
       .orderBy(sql`distance_from`);
 
-    res.json(rows.map((r) => ({ ...r.location, distance_from: r.distanceFrom })));
+    res.json(rows.map((r) => toSnakeCase({ ...r.location, distance_from: r.distanceFrom } as Record<string, unknown>)));
   } catch (err) {
     console.error('Error fetching nearby riding:', err);
     res.status(500).json({ error: 'Failed to fetch nearby riding', code: 'INTERNAL_ERROR' });
@@ -368,7 +378,7 @@ router.get('/seasonal', async (req: Request, res: Response) => {
         { best_season: loc.bestSeason, latitude: loc.latitude, elevation_gain_ft: loc.elevationGainFt }, month
       ),
     }));
-    res.json(result);
+    res.json(result.map(r => toSnakeCase(r as Record<string, unknown>)));
   } catch (err) {
     console.error('Error fetching seasonal:', err);
     res.status(500).json({ error: 'Failed to fetch seasonal data', code: 'INTERNAL_ERROR' });
@@ -444,7 +454,7 @@ router.get('/:id', optionalAuth, async (req: Request, res: Response) => {
       res.status(404).json({ error: 'Location not found', code: 'NOT_FOUND' });
       return;
     }
-    res.json(location);
+    res.json(toSnakeCase(location as Record<string, unknown>));
   } catch (err) {
     console.error('Error fetching location:', err);
     res.status(500).json({ error: 'Failed to fetch location', code: 'INTERNAL_ERROR' });
@@ -466,7 +476,7 @@ router.put('/:id/favorite', requireAuth, async (req: Request, res: Response) => 
       .set({ favorited: newVal, updatedAt: new Date() })
       .where(eq(locations.id, id))
       .returning();
-    res.json(updated);
+    res.json(toSnakeCase(updated as Record<string, unknown>));
   } catch (err) {
     console.error('Error toggling favorite:', err);
     res.status(500).json({ error: 'Failed to toggle favorite', code: 'INTERNAL_ERROR' });
@@ -518,7 +528,7 @@ router.post('/', requireAuth, validate(createLocationSchema), async (req: Reques
       createdAt: now,
       updatedAt: now,
     }).returning();
-    res.status(201).json(created);
+    res.status(201).json(toSnakeCase(created as Record<string, unknown>));
   } catch (err) {
     console.error('Error creating location:', err);
     res.status(500).json({ error: 'Failed to create location', code: 'INTERNAL_ERROR' });
@@ -579,7 +589,7 @@ router.put('/:id', requireAuth, validate(updateLocationSchema), async (req: Requ
     }
 
     const [updated] = await db.update(locations).set(updateData).where(eq(locations.id, id)).returning();
-    res.json(updated);
+    res.json(toSnakeCase(updated as Record<string, unknown>));
   } catch (err) {
     console.error('Error updating location:', err);
     res.status(500).json({ error: 'Failed to update location', code: 'INTERNAL_ERROR' });
