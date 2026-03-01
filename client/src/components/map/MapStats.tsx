@@ -12,7 +12,7 @@ export default function MapStats({ ridingCount, campsiteCount, boondockingCount,
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="absolute top-3 left-3 z-10">
+    <div className="absolute bottom-20 left-3 lg:top-3 lg:bottom-auto z-10">
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-1.5 px-3 py-2 rounded-xl shadow-lg glass text-gray-200 hover:text-white transition-colors text-xs font-medium"
@@ -23,7 +23,7 @@ export default function MapStats({ ridingCount, campsiteCount, boondockingCount,
       </button>
 
       {open && (
-        <div className="mt-2 p-3 rounded-xl shadow-xl glass animate-fade-in min-w-[160px]">
+        <div className="mb-2 lg:mb-0 lg:mt-2 bottom-full lg:bottom-auto absolute lg:relative p-3 rounded-xl shadow-xl glass animate-fade-in min-w-[160px]">
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs">
               <span className="flex items-center gap-1.5 text-gray-300">

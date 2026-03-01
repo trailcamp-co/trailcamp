@@ -39,6 +39,7 @@ interface MapContainerProps {
   onChangeMapStyle?: (style: MapStyle) => void;
   homeLat?: number | null;
   homeLon?: number | null;
+  forceCloseLayerPanel?: number;
 }
 
 export default function MapContainer({
@@ -61,6 +62,7 @@ export default function MapContainer({
   onChangeMapStyle,
   homeLat,
   homeLon,
+  forceCloseLayerPanel,
 }: MapContainerProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
@@ -82,6 +84,11 @@ export default function MapContainer({
 
   useEffect(() => { locationsRef.current = locations; }, [locations]);
   useEffect(() => { routeRef.current = routeGeoJSON; }, [routeGeoJSON]);
+
+  // Close layer panel when triggered externally (e.g. mobile search expands)
+  useEffect(() => {
+    if (forceCloseLayerPanel) setLayerPanelOpen(false);
+  }, [forceCloseLayerPanel]);
 
   // Initialize map (once)
   useEffect(() => {

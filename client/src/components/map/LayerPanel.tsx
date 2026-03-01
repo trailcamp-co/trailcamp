@@ -59,7 +59,7 @@ export default function LayerPanel({
     return (
       <button
         onClick={onToggle}
-        className="absolute top-3 right-3 z-10 flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg glass text-gray-200 hover:text-white transition-colors"
+        className="absolute top-14 lg:top-3 right-3 z-10 flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg glass text-gray-200 hover:text-white transition-colors"
       >
         <Layers size={16} />
         <span className="text-sm font-medium">Layers</span>
@@ -68,7 +68,7 @@ export default function LayerPanel({
   }
 
   return (
-    <div className="absolute top-3 right-3 z-10 w-[200px] rounded-xl shadow-xl border border-dark-600/50 overflow-hidden glass">
+    <div className="absolute top-14 lg:top-3 right-3 z-10 w-[200px] rounded-xl shadow-xl border border-dark-600/50 overflow-hidden glass">
       {/* Header */}
       <button
         onClick={onToggle}
@@ -81,21 +81,39 @@ export default function LayerPanel({
         <ChevronUp size={12} className="text-gray-500" />
       </button>
 
-      {/* Map Style */}
-      <div className="flex border-b border-dark-600/30">
-        {MAP_STYLES.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => onChangeMapStyle(s)}
-            className={`flex-1 py-1.5 text-[10px] font-medium transition-colors ${
-              mapStyle.id === s.id
-                ? 'text-orange-400 bg-dark-700/40'
-                : 'text-gray-500 hover:text-gray-300'
-            }`}
+      {/* Map Style — compact dropdown on mobile, buttons on desktop */}
+      <div className="border-b border-dark-600/30">
+        {/* Mobile: select dropdown */}
+        <div className="lg:hidden px-2.5 py-1.5">
+          <select
+            value={mapStyle.id}
+            onChange={(e) => {
+              const s = MAP_STYLES.find(st => st.id === e.target.value);
+              if (s) onChangeMapStyle(s);
+            }}
+            className="w-full bg-dark-800 border border-dark-600/50 rounded-lg px-2 py-1.5 text-xs text-gray-200 outline-none appearance-none cursor-pointer"
           >
-            {s.name}
-          </button>
-        ))}
+            {MAP_STYLES.map((s) => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
+          </select>
+        </div>
+        {/* Desktop: button row */}
+        <div className="hidden lg:flex">
+          {MAP_STYLES.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => onChangeMapStyle(s)}
+              className={`flex-1 py-1.5 text-[10px] font-medium transition-colors ${
+                mapStyle.id === s.id
+                  ? 'text-orange-400 bg-dark-700/40'
+                  : 'text-gray-500 hover:text-gray-300'
+              }`}
+            >
+              {s.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Camp types */}

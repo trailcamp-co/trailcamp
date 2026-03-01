@@ -46,6 +46,7 @@ export default function App() {
   const [mobileTab, setMobileTab] = useState<MobileTab>('map');
   const [mobileSheetSnap, setMobileSheetSnap] = useState<SnapPoint>('half');
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
+  const [forceCloseLayerPanel, setForceCloseLayerPanel] = useState(0);
   const navigate = useNavigate();
 
   const isMobile = useCallback(() => window.innerWidth < 1024, []);
@@ -278,6 +279,7 @@ export default function App() {
             onChangeMapStyle={setMapStyle}
             homeLat={homeLat}
             homeLon={homeLon}
+            forceCloseLayerPanel={forceCloseLayerPanel}
           />
         </div>
 
@@ -414,6 +416,9 @@ export default function App() {
             clearSearch();
           }}
           locationCount={locations.length}
+          onExpandChange={(expanded) => {
+            if (expanded) setForceCloseLayerPanel(c => c + 1);
+          }}
         />
       )}
 

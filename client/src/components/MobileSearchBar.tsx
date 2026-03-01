@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Search, X, Clock } from 'lucide-react';
 import type { Location } from '../types';
 import { CATEGORY_ICONS, CATEGORY_COLORS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
@@ -9,6 +9,7 @@ interface MobileSearchBarProps {
   searchResults: Location[] | null;
   onSelectResult: (location: Location) => void;
   locationCount: number;
+  onExpandChange?: (expanded: boolean) => void;
 }
 
 export default function MobileSearchBar({
@@ -17,8 +18,13 @@ export default function MobileSearchBar({
   searchResults,
   onSelectResult,
   locationCount,
+  onExpandChange,
 }: MobileSearchBarProps) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpandedRaw] = useState(false);
+  const setExpanded = useCallback((val: boolean) => {
+    setExpandedRaw(val);
+    onExpandChange?.(val);
+  }, [onExpandChange]);
   const [recentSearches] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('trailcamp_recent_searches') || '[]'); } catch { return []; }
   });
