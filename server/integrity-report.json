@@ -1,0 +1,66 @@
+{
+  "timestamp": "2026-03-01T01:40:55.500Z",
+  "summary": {
+    "critical": 0,
+    "warning": 2,
+    "info": 3,
+    "total": 5
+  },
+  "issues": {
+    "critical": [],
+    "warning": [
+      {
+        "check": "Permit required but missing permit_info",
+        "count": 18,
+        "examples": [
+          "[6126] Beasley Knob OHV — Cohutta WMA",
+          "[6128] Redlands OHV — Lafayette",
+          "[6129] Big Scrub OHV — Ocala National Forest",
+          "[6131] Tosohatchee WMA — Christmas",
+          "[6133] Forks Area Trail — Sumter National Forest"
+        ]
+      },
+      {
+        "check": "Locations missing scenery ratings",
+        "count": 12,
+        "examples": [
+          "[6201] BLM — Mesquite Flat (campsite)",
+          "[6202] BLM — Hassayampa River (campsite)",
+          "[6203] BLM — Cactus Forest (campsite)",
+          "[6204] BLM — Joshua Tree NP North (campsite)",
+          "[6205] BLM — Saline Valley (campsite)"
+        ]
+      }
+    ],
+    "info": [
+      {
+        "check": "High scenery locations with minimal description",
+        "count": 1,
+        "examples": [
+          "[6873] Example Campground (9/10)"
+        ]
+      },
+      {
+        "check": "Trails with extreme distances (> 1000 miles)",
+        "count": 4,
+        "examples": [
+          "[5542] Mid-Atlantic BDR (MABDR) (1050mi)",
+          "[5543] Appalachian BDR (APBDR) (1500mi)",
+          "[6068] Trans America Trail (TAT) — Tennessee Start (5000mi)",
+          "[6084] Mid-Atlantic BDR (MABDR) (1080mi)"
+        ]
+      },
+      {
+        "check": "Locations with identical names",
+        "count": 60,
+        "examples": [
+          "\"Windy Point Campground\" (2 instances)",
+          "\"Windrock Park\" (2 instances)",
+          "\"Weston Pass\" (2 instances)",
+          "\"Washington BDR (WABDR)\" (2 instances)",
+          "\"Tsali Recreation Area\" (2 instances)"
+        ]
+      }
+    ]
+  }
+}
