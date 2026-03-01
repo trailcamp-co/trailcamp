@@ -21,8 +21,9 @@ export function getExternalUrl(location: Location): { url: string; label: string
     }
   }
 
-  // Fallback: Google search for campsites with city/state info
-  if (location.category === 'campsite' && (location.city || location.state)) {
+  // Fallback: Google search for campsites, riding areas, and scenic viewpoints
+  const searchableCategories = ['campsite', 'riding', 'scenic'];
+  if (searchableCategories.includes(location.category) && (location.city || location.state)) {
     const parts = [location.name, location.city, location.state].filter(Boolean);
     const query = encodeURIComponent(parts.join(', '));
     return {
