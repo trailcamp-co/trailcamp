@@ -1,0 +1,30 @@
+{
+  "measurements": [
+    {
+      "timestamp": "2026-03-01T01:20:51.136Z",
+      "size": {
+        "bytes": 10395648,
+        "megabytes": 9.91,
+        "human": "9.91 MB"
+      },
+      "tables": {
+        "locations": 6148,
+        "trips": 1,
+        "trip_stops": 8
+      },
+      "indexes": 18,
+      "categories": {
+        "campsite": 4582,
+        "dump": 3,
+        "riding": 1554,
+        "scenic": 8,
+        "water": 1
+      },
+      "totals": {
+        "locations": 6148,
+        "trips": 1,
+        "tripStops": 8
+      }
+    }
+  ]
+}
