@@ -462,10 +462,21 @@ export default function RightPanel({
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => {
+              onClick={async () => {
                 const url = `${window.location.origin}?loc=${location.id}`;
-                navigator.clipboard.writeText(url);
-                showToast?.('Link copied to clipboard!', 'success');
+                try {
+                  await navigator.clipboard.writeText(url);
+                  showToast?.('Link copied to clipboard!', 'success');
+                } catch {
+                  // Fallback for non-HTTPS contexts
+                  const input = document.createElement('input');
+                  input.value = url;
+                  document.body.appendChild(input);
+                  input.select();
+                  document.execCommand('copy');
+                  document.body.removeChild(input);
+                  showToast?.('Link copied to clipboard!', 'success');
+                }
               }}
               className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-dark-800 hover:bg-dark-700 text-gray-300 text-xs font-medium transition-colors border border-dark-700/50 [.light_&]:bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-700 [.light_&]:border-gray-200"
               title="Copy link to location"
@@ -493,21 +504,7 @@ export default function RightPanel({
           </div>
         </div>
 
-        {/* Star Rating */}
-        <div className={`p-5 ${sectionDivider}`}>
-          <div className={labelStyle}>Your Rating</div>
-          <div className="flex items-center gap-1 star-rating mt-2">
-            {[1, 2, 3, 4, 5].map((star) => {
-              const filled = hoverRating > 0 ? star <= hoverRating : star <= (effectiveRating ?? 0);
-              return (
-                <button key={star} onClick={() => handleRating(star)} onMouseEnter={() => setHoverRating(star)} onMouseLeave={() => setHoverRating(0)} className="p-0.5 transition-transform hover:scale-110">
-                  <Star className={`w-6 h-6 transition-colors ${filled ? 'fill-yellow-400 text-yellow-400' : darkMode ? 'text-gray-600 hover:text-yellow-400/50' : 'text-gray-300 hover:text-yellow-400/50'}`} />
-                </button>
-              );
-            })}
-            {effectiveRating && <span className={`ml-2 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'} [.light_&]:text-gray-500`}>{effectiveRating}/5</span>}
-          </div>
-        </div>
+        {/* Star Rating removed — replaced by public Reviews section below */}
 
         {/* Details Grid */}
         {hasDetails() && (

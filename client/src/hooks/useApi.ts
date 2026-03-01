@@ -129,6 +129,18 @@ export function useLocations() {
     try {
       const query = params ? '?' + new URLSearchParams(params).toString() : '';
       const data = await apiFetch<Location[]>(`/locations${query}`);
+
+      // Fetch user's favorites and merge
+      try {
+        const favs = await apiFetch<{ id: number; location_id: number }[]>('/favorites');
+        const favSet = new Set(favs.map(f => f.location_id));
+        for (const loc of data) {
+          loc.favorited = favSet.has(loc.id) ? 1 : 0;
+        }
+      } catch {
+        // Not authenticated or favorites fetch failed — continue without
+      }
+
       setLocations(data);
     } catch {
       // fetch failed silently
