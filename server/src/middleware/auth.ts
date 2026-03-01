@@ -13,16 +13,20 @@ declare global {
   }
 }
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+let _supabaseAdmin: ReturnType<typeof createClient> | null = null;
 
 function getSupabaseAdmin() {
-  if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required');
+  if (!_supabaseAdmin) {
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) {
+      throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required');
+    }
+    _supabaseAdmin = createClient(url, key, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
   }
-  return createClient(supabaseUrl, supabaseServiceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
+  return _supabaseAdmin;
 }
 
 function extractToken(req: Request): string | null {
@@ -65,6 +69,7 @@ export async function requireAuth(
 
     next();
   } catch (err) {
+    console.error('Auth middleware error:', err);
     res.status(500).json({ error: 'Authentication service error', code: 'AUTH_ERROR' });
   }
 }
