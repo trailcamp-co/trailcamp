@@ -152,6 +152,11 @@ export function setupClickPopup(
     const loc = locationsRef.current.find((l) => l.id === locationId);
     if (loc && geo.type === 'Point') {
       hoverPopup.remove();
+      // On mobile, skip the popup — the bottom sheet handles details
+      if (window.innerWidth < 1024) {
+        onLocationClick(loc);
+        return;
+      }
       clickPopup
         .setLngLat(geo.coordinates as [number, number])
         .setHTML(buildClickPopupHTML(p as Record<string, string | number>, locationId, loc.latitude, loc.longitude))

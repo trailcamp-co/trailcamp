@@ -26,6 +26,7 @@ interface MapContainerProps {
   routeGeoJSON: GeoJSON.GeoJsonObject | null;
   onLocationClick: (location: Location) => void;
   onMapClick: (e: { lng: number; lat: number }) => void;
+  onMapBackgroundTap?: () => void;
   visibleLayers: Set<LocationCategory>;
   onToggleLayer: (category: LocationCategory) => void;
   flyToLocation: { lng: number; lat: number } | null;
@@ -47,6 +48,7 @@ export default function MapContainer({
   routeGeoJSON,
   onLocationClick,
   onMapClick,
+  onMapBackgroundTap,
   visibleLayers,
   onToggleLayer,
   flyToLocation,
@@ -144,8 +146,15 @@ export default function MapContainer({
       setContextMenu({ x: e.point.x, y: e.point.y, lng, lat });
     });
 
-    // Close context menu on click
-    map.on('click', () => setContextMenu(null));
+    // Close context menu on click + notify parent for mobile bottom sheet
+    map.on('click', (e: any) => {
+      setContextMenu(null);
+      // Check if the click was on a pin/cluster — if not, it's a background tap
+      const features = map.queryRenderedFeatures(e.point, { layers: ['unclustered-point', 'clusters'] });
+      if (features.length === 0) {
+        onMapBackgroundTap?.();
+      }
+    });
 
     // Emoji markers removed — dots render natively via Mapbox layers
     const reportBounds = () => {

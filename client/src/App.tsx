@@ -17,6 +17,9 @@ import AddLocationModal from './components/AddLocationModal';
 import ToastContainer from './components/ToastContainer';
 import MobileBottomTabs from './components/MobileBottomTabs';
 import MobileFAB from './components/MobileFAB';
+import BottomSheet from './components/BottomSheet';
+import type { SnapPoint } from './components/BottomSheet';
+import MobileLocationDetail from './components/MobileLocationDetail';
 import type { MobileTab } from './components/MobileBottomTabs';
 import type { Location, MapStyle, Filters } from './types';
 import { MAP_STYLES } from './types';
@@ -37,7 +40,11 @@ export default function App() {
   const [showAddLocation, setShowAddLocation] = useState(false);
   const [addLocationCoords, setAddLocationCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [mobileTab, setMobileTab] = useState<MobileTab>('map');
+  const [mobileSheetSnap, setMobileSheetSnap] = useState<SnapPoint>('half');
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
   const navigate = useNavigate();
+
+  const isMobile = useCallback(() => window.innerWidth < 1024, []);
 
   const handleMobileTabChange = useCallback((tab: MobileTab) => {
     if (tab === 'profile') {
@@ -45,6 +52,10 @@ export default function App() {
       return;
     }
     setMobileTab(tab);
+    // Dismiss bottom sheet when switching away from map
+    if (tab !== 'map') {
+      setMobileSheetOpen(false);
+    }
   }, [navigate]);
 
   const { trips, createTrip, updateTrip, deleteTrip } = useTrips();
@@ -119,10 +130,34 @@ export default function App() {
     });
   }, [selectedTrip, addStop]);
 
+  // Wrap handleLocationClick to open bottom sheet on mobile
+  const handleLocationClickWrapped = useCallback((location: Location) => {
+    handleLocationClick(location);
+    if (isMobile()) {
+      setMobileSheetSnap('half');
+      setMobileSheetOpen(true);
+      // Ensure we're on map tab
+      setMobileTab('map');
+    }
+  }, [handleLocationClick, isMobile]);
+
+  const handleDismissMobileSheet = useCallback(() => {
+    setMobileSheetOpen(false);
+    handleCloseRightPanel();
+  }, [handleCloseRightPanel]);
+
+  // Tap on map background when sheet is expanded → snap to peek
+  const handleMapBackgroundTap = useCallback(() => {
+    if (mobileSheetOpen && (mobileSheetSnap === 'half' || mobileSheetSnap === 'full')) {
+      setMobileSheetSnap('peek');
+    }
+  }, [mobileSheetOpen, mobileSheetSnap]);
+
   // Global keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        if (mobileSheetOpen) { handleDismissMobileSheet(); return; }
         if (showRightPanel) { handleCloseRightPanel(); return; }
         if (showStats) { setShowStats(false); return; }
         if (showAddLocation) { setShowAddLocation(false); return; }
@@ -130,7 +165,7 @@ export default function App() {
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [showRightPanel, showStats, showAddLocation, handleCloseRightPanel, setShowStats]);
+  }, [showRightPanel, showStats, showAddLocation, handleCloseRightPanel, setShowStats, mobileSheetOpen, handleDismissMobileSheet]);
 
   const handleMapClick = useCallback((e: { lng: number; lat: number }) => {
     setAddLocationCoords({ lat: e.lat, lng: e.lng });
@@ -171,7 +206,7 @@ export default function App() {
         fetchWeather={fetchWeather}
         routeGeoJSON={routeGeoJSON}
         mapBounds={mapBounds}
-        onLocationClick={(loc) => { handleLocationClick(loc); setMobileTab('map'); }}
+        onLocationClick={(loc) => { handleLocationClickWrapped(loc); setMobileTab('map'); }}
         onToggleFavorite={toggleFavorite}
         filterMode={filters.visitedStatus}
         onFilterMode={(mode: Filters['visitedStatus']) =>
@@ -194,7 +229,7 @@ export default function App() {
           onSearch={handleSearch}
           searchResults={searchResults}
           onSelectSearchResult={(loc) => {
-            handleLocationClick(loc);
+            handleLocationClickWrapped(loc);
             handleFlyTo(loc.longitude, loc.latitude);
             clearSearch();
           }}
@@ -225,8 +260,9 @@ export default function App() {
             locations={filteredLocations}
             stops={stops}
             routeGeoJSON={routeGeoJSON}
-            onLocationClick={handleLocationClick}
+            onLocationClick={handleLocationClickWrapped}
             onMapClick={handleMapClick}
+            onMapBackgroundTap={handleMapBackgroundTap}
             visibleLayers={filters.categories}
             onToggleLayer={handleToggleLayer}
             flyToLocation={flyToLocation}
@@ -306,7 +342,7 @@ export default function App() {
                 fetchWeather={fetchWeather}
                 routeGeoJSON={routeGeoJSON}
                 mapBounds={mapBounds}
-                onLocationClick={(loc) => { handleLocationClick(loc); setMobileTab('map'); }}
+                onLocationClick={(loc) => { handleLocationClickWrapped(loc); setMobileTab('map'); }}
                 onToggleFavorite={toggleFavorite}
                 filterMode={filters.visitedStatus}
                 onFilterMode={(mode: Filters['visitedStatus']) =>
@@ -343,7 +379,7 @@ export default function App() {
                 fetchWeather={fetchWeather}
                 routeGeoJSON={routeGeoJSON}
                 mapBounds={mapBounds}
-                onLocationClick={(loc) => { handleLocationClick(loc); setMobileTab('map'); }}
+                onLocationClick={(loc) => { handleLocationClickWrapped(loc); setMobileTab('map'); }}
                 onToggleFavorite={toggleFavorite}
                 filterMode="favorites"
                 onFilterMode={(mode: Filters['visitedStatus']) =>
@@ -357,6 +393,30 @@ export default function App() {
           </div>
         )}
       </div>
+
+      {/* Mobile Bottom Sheet for location details */}
+      {selectedLocation && (
+        <BottomSheet
+          open={mobileSheetOpen}
+          snapPoint={mobileSheetSnap}
+          onSnapChange={setMobileSheetSnap}
+          onDismiss={handleDismissMobileSheet}
+        >
+          <MobileLocationDetail
+            location={selectedLocation}
+            snapPoint={mobileSheetSnap}
+            onAddToTrip={handleAddStopFromLocation}
+            hasActiveTrip={!!selectedTrip}
+            showToast={showToast}
+            getUserData={getLocationData}
+            onUpdateUserData={updateLocationData}
+            isFavorited={isFavorited}
+            onToggleFavorite={toggleFav}
+            homeLat={homeLat}
+            homeLon={homeLon}
+          />
+        </BottomSheet>
+      )}
 
       {/* Mobile FAB — only on map tab */}
       {mobileTab === 'map' && (
