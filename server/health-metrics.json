@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-03-01T03:12:36.403Z",
+  "health": {
+    "status": "healthy",
+    "qualityScore": 100,
+    "integrityCheck": "ok",
+    "issues": [],
+    "warnings": []
+  },
+  "database": {
+    "sizeBytes": 10395648,
+    "sizeHuman": "9.9MB",
+    "totalLocations": 6148,
+    "riding": 1554,
+    "campsites": 4582,
+    "trips": 1,
+    "tripStops": 0
+  },
+  "dataQuality": {
+    "score": 100,
+    "missingCoordinates": 0,
+    "missingScenery": 12,
+    "missingNames": 0,
+    "invalidCoordinates": 0,
+    "orphanedTripStops": 0
+  },
+  "performance": {
+    "timestamp": "2026-02-28 22:11:09",
+    "avgMs": 7,
+    "slowestMs": 25,
+    "fastestMs": 3
+  },
+  "backups": {
+    "count": 2,
+    "latest": "2026-03-01T02:20:37.758Z",
+    "oldestDays": 0
+  }
+}
