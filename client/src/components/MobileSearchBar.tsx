@@ -97,11 +97,12 @@ export default function MobileSearchBar({
           <Search size={16} className="text-orange-400 flex-shrink-0" />
           <input
             ref={inputRef}
-            type="text"
+            type="search"
+            inputMode="search"
             value={searchQuery}
             onChange={(e) => onSearch(e.target.value)}
             placeholder={`Search ${locationCount.toLocaleString()} locations...`}
-            className="w-full bg-transparent text-sm outline-none text-gray-100 placeholder-gray-500"
+            className="w-full bg-transparent text-base lg:text-sm outline-none text-gray-100 placeholder-gray-500"
             autoComplete="off"
             autoCorrect="off"
           />

@@ -166,7 +166,7 @@ export function SortableStopCard({
         `}
       >
         <div
-          className="flex items-start gap-2 p-3"
+          className="flex items-start gap-2 p-3 lg:p-3"
           onClick={() => onFlyTo(stop.longitude, stop.latitude)}
         >
           {/* Drag handle */}
@@ -200,10 +200,11 @@ export function SortableStopCard({
                   e.stopPropagation();
                   onDeleteStop(stop.id);
                 }}
-                className="opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-400 transition-all flex-shrink-0"
+                className="lg:opacity-0 lg:group-hover:opacity-100 p-2 lg:p-1 text-gray-500 hover:text-red-400 transition-all flex-shrink-0 min-w-[44px] lg:min-w-0 min-h-[44px] lg:min-h-0 flex items-center justify-center -mr-1"
                 title="Remove stop"
               >
-                <Trash2 size={12} />
+                <Trash2 size={14} className="lg:hidden" />
+                <Trash2 size={12} className="hidden lg:block" />
               </button>
             </div>
 
@@ -258,9 +259,10 @@ export function SortableStopCard({
               e.stopPropagation();
               onToggleExpand();
             }}
-            className="mt-0.5 p-1 text-gray-500 hover:text-gray-300 [.light_&]:hover:text-gray-600 transition-colors"
+            className="mt-0.5 p-2 lg:p-1 text-gray-500 hover:text-gray-300 [.light_&]:hover:text-gray-600 transition-colors min-w-[44px] lg:min-w-0 min-h-[44px] lg:min-h-0 flex items-center justify-center -mr-1"
           >
-            {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            {isExpanded ? <ChevronUp size={16} className="lg:hidden" /> : <ChevronDown size={16} className="lg:hidden" />}
+            {isExpanded ? <ChevronUp size={14} className="hidden lg:block" /> : <ChevronDown size={14} className="hidden lg:block" />}
           </button>
         </div>
 
@@ -277,20 +279,29 @@ export function SortableStopCard({
                 placeholder="Add notes for this stop..."
                 rows={3}
                 onClick={(e) => e.stopPropagation()}
-                className="w-full bg-dark-900 [.light_&]:bg-gray-50 border border-gray-700 [.light_&]:border-gray-200 rounded px-2 py-1.5 text-xs text-gray-300 [.light_&]:text-gray-700 placeholder-gray-600 [.light_&]:placeholder-gray-400 resize-none focus:outline-none focus:border-orange-500 transition-colors"
+                className="w-full bg-dark-900 [.light_&]:bg-gray-50 border border-gray-700 [.light_&]:border-gray-200 rounded px-3 lg:px-2 py-2 lg:py-1.5 text-sm lg:text-xs text-gray-300 [.light_&]:text-gray-700 placeholder-gray-600 [.light_&]:placeholder-gray-400 resize-none focus:outline-none focus:border-orange-500 transition-colors"
               />
               <div className="flex gap-1.5 mt-2">
                 <button
-                  onClick={(e) => { e.stopPropagation(); window.open(`https://www.google.com/maps/dir/?api=1&destination=${stop.latitude},${stop.longitude}`, '_blank'); }}
-                  className="text-[10px] font-medium px-2.5 py-1.5 rounded-lg bg-orange-500/10 text-orange-400 border border-orange-500/20 hover:bg-orange-500/20 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                    const url = isIOS
+                      ? `https://maps.apple.com/?daddr=${stop.latitude},${stop.longitude}`
+                      : `https://www.google.com/maps/dir/?api=1&destination=${stop.latitude},${stop.longitude}`;
+                    window.open(url, '_blank');
+                  }}
+                  className="text-xs lg:text-[10px] font-medium px-3 lg:px-2.5 py-2 lg:py-1.5 rounded-lg bg-orange-500/10 text-orange-400 border border-orange-500/20 hover:bg-orange-500/20 transition-colors min-h-[44px] lg:min-h-0 flex items-center gap-1"
                 >
-                  📍 Navigate
+                  <Navigation size={12} />
+                  Navigate
                 </button>
               </div>
               <div className="flex items-center gap-2 mt-2">
-                <label className="text-[11px] text-gray-500">Nights:</label>
+                <label className="text-xs lg:text-[11px] text-gray-500">Nights:</label>
                 <input
                   type="number"
+                  inputMode="numeric"
                   min={0}
                   value={stop.nights ?? 0}
                   onClick={(e) => e.stopPropagation()}
@@ -299,7 +310,7 @@ export function SortableStopCard({
                       nights: parseInt(e.target.value) || 0,
                     })
                   }
-                  className="w-16 bg-dark-900 [.light_&]:bg-gray-50 border border-gray-700 [.light_&]:border-gray-200 rounded px-2 py-1 text-xs text-gray-300 [.light_&]:text-gray-700 focus:outline-none focus:border-orange-500 transition-colors"
+                  className="w-20 lg:w-16 bg-dark-900 [.light_&]:bg-gray-50 border border-gray-700 [.light_&]:border-gray-200 rounded px-3 lg:px-2 py-2 lg:py-1 text-sm lg:text-xs text-gray-300 [.light_&]:text-gray-700 focus:outline-none focus:border-orange-500 transition-colors min-h-[44px] lg:min-h-0"
                 />
               </div>
             </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
 import { useTrips, useTripStops, useLocations, getMapboxToken } from './hooks/useApi';
 import { useFilters } from './hooks/useFilters';
 import { useSearch } from './hooks/useSearch';
@@ -10,10 +10,7 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import Map from './components/map';
 import TopBar from './components/TopBar';
 import LeftSidebar from './components/sidebar';
-import RightPanel from './components/RightPanel';
-import StatsPanel from './components/StatsPanel';
 import ErrorBoundary from './components/ErrorBoundary';
-import AddLocationModal from './components/AddLocationModal';
 import ToastContainer from './components/ToastContainer';
 import MobileBottomTabs from './components/MobileBottomTabs';
 import MobileFAB from './components/MobileFAB';
@@ -21,6 +18,7 @@ import MobileSearchBar from './components/MobileSearchBar';
 import BottomSheet from './components/BottomSheet';
 import type { SnapPoint } from './components/BottomSheet';
 import MobileLocationDetail from './components/MobileLocationDetail';
+import LoadingSpinner from './components/LoadingSpinner';
 import type { MobileTab } from './components/MobileBottomTabs';
 import type { Location, MapStyle, Filters } from './types';
 import { MAP_STYLES } from './types';
@@ -28,6 +26,11 @@ import { useUserData } from './hooks/useUserData';
 import { useFavorites } from './hooks/useFavorites';
 import { useProfile } from './hooks/useProfile';
 import { useNavigate } from 'react-router-dom';
+
+// Lazy-loaded heavy components
+const RightPanel = lazy(() => import('./components/RightPanel'));
+const StatsPanel = lazy(() => import('./components/StatsPanel'));
+const AddLocationModal = lazy(() => import('./components/AddLocationModal'));
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -285,43 +288,47 @@ export default function App() {
           }`}
         >
           {selectedLocation && (
-            <RightPanel
-              location={selectedLocation}
-              onClose={handleCloseRightPanel}
-              onUpdate={updateLocation}
-              onDelete={deleteLocation}
-              onAddToTrip={handleAddStopFromLocation}
-              hasActiveTrip={!!selectedTrip}
-              darkMode={darkMode}
-              onFlyTo={handleFlyTo}
-              onLocationClick={handleLocationClick}
-              showToast={showToast}
-              getUserData={getLocationData}
-              onUpdateUserData={updateLocationData}
-              isFavorited={isFavorited}
-              onToggleFavorite={toggleFav}
-              homeLat={homeLat}
-              homeLon={homeLon}
-            />
+            <Suspense fallback={<div className="w-96 h-full flex items-center justify-center bg-dark-950"><LoadingSpinner text="Loading..." /></div>}>
+              <RightPanel
+                location={selectedLocation}
+                onClose={handleCloseRightPanel}
+                onUpdate={updateLocation}
+                onDelete={deleteLocation}
+                onAddToTrip={handleAddStopFromLocation}
+                hasActiveTrip={!!selectedTrip}
+                darkMode={darkMode}
+                onFlyTo={handleFlyTo}
+                onLocationClick={handleLocationClick}
+                showToast={showToast}
+                getUserData={getLocationData}
+                onUpdateUserData={updateLocationData}
+                isFavorited={isFavorited}
+                onToggleFavorite={toggleFav}
+                homeLat={homeLat}
+                homeLon={homeLon}
+              />
+            </Suspense>
           )}
         </div>
 
         {/* ===== DESKTOP: Stats Panel ===== */}
         {showStats && (
           <div className="absolute right-0 top-0 bottom-0 z-20 hidden lg:block">
-            <StatsPanel onClose={() => setShowStats(false)} darkMode={darkMode} selectedTrip={selectedTrip} stops={stops} />
+            <Suspense fallback={<div className="w-96 h-full flex items-center justify-center bg-dark-950"><LoadingSpinner text="Loading stats..." /></div>}>
+              <StatsPanel onClose={() => setShowStats(false)} darkMode={darkMode} selectedTrip={selectedTrip} stops={stops} />
+            </Suspense>
           </div>
         )}
 
         {/* ===== MOBILE: Full-screen overlay panels ===== */}
         {mobileTab === 'explore' && (
-          <div className="mobile-panel-overlay bg-dark-950 lg:hidden animate-fade-in">
+          <div className="mobile-panel-overlay bg-dark-950 lg:hidden animate-fade-in pb-20">
             {sidebarContent}
           </div>
         )}
 
         {mobileTab === 'trips' && (
-          <div className="mobile-panel-overlay bg-dark-950 lg:hidden animate-fade-in">
+          <div className="mobile-panel-overlay bg-dark-950 lg:hidden animate-fade-in pb-20">
             <ErrorBoundary fallbackLabel="Trips error">
               <LeftSidebar
                 selectedTrip={selectedTrip}
@@ -358,7 +365,7 @@ export default function App() {
         )}
 
         {mobileTab === 'saved' && (
-          <div className="mobile-panel-overlay bg-dark-950 lg:hidden animate-fade-in">
+          <div className="mobile-panel-overlay bg-dark-950 lg:hidden animate-fade-in pb-20">
             <ErrorBoundary fallbackLabel="Saved error">
               <LeftSidebar
                 selectedTrip={selectedTrip}
@@ -450,16 +457,18 @@ export default function App() {
 
       {/* Add Location Modal */}
       {showAddLocation && addLocationCoords && (
-        <AddLocationModal
-          coords={addLocationCoords}
-          onClose={() => { setShowAddLocation(false); setAddLocationCoords(null); }}
-          onCreate={async (loc) => {
-            await createLocation(loc);
-            setShowAddLocation(false);
-            setAddLocationCoords(null);
-          }}
-          darkMode={darkMode}
-        />
+        <Suspense fallback={<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"><LoadingSpinner text="Loading..." /></div>}>
+          <AddLocationModal
+            coords={addLocationCoords}
+            onClose={() => { setShowAddLocation(false); setAddLocationCoords(null); }}
+            onCreate={async (loc) => {
+              await createLocation(loc);
+              setShowAddLocation(false);
+              setAddLocationCoords(null);
+            }}
+            darkMode={darkMode}
+          />
+        </Suspense>
       )}
 
       {/* Toast Notifications */}

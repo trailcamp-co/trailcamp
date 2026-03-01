@@ -579,15 +579,15 @@ export default function TripTab({
                 <button
                   key={trip.id}
                   onClick={() => onSelectTrip(trip)}
-                  className="w-full text-left rounded-xl bg-dark-800/50 [.light_&]:bg-gray-50 border border-dark-700/30 [.light_&]:border-gray-200 hover:border-orange-500/30 hover:bg-dark-800 [.light_&]:hover:bg-gray-100 transition-all group p-3"
+                  className="w-full text-left rounded-xl bg-dark-800/50 [.light_&]:bg-gray-50 border border-dark-700/30 [.light_&]:border-gray-200 hover:border-orange-500/30 hover:bg-dark-800 [.light_&]:hover:bg-gray-100 transition-all group p-3 lg:p-3 min-h-[44px]"
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-semibold text-gray-200 [.light_&]:text-gray-800 group-hover:text-white [.light_&]:group-hover:text-gray-900 transition-colors truncate">
+                      <h4 className="text-base lg:text-sm font-semibold text-gray-200 [.light_&]:text-gray-800 group-hover:text-white [.light_&]:group-hover:text-gray-900 transition-colors truncate">
                         {trip.name}
                       </h4>
                       {(trip.start_date || trip.end_date) && (
-                        <div className="text-[10px] text-gray-500 mt-0.5">
+                        <div className="text-xs lg:text-[10px] text-gray-500 mt-0.5">
                           {formatDateShort(trip.start_date)}
                           {trip.start_date && trip.end_date && ' — '}
                           {formatDateShort(trip.end_date)}
@@ -603,7 +603,7 @@ export default function TripTab({
                   </div>
 
                   {/* Stats row */}
-                  <div className="flex items-center gap-3 text-[10px] text-gray-500 mb-2">
+                  <div className="flex items-center gap-3 text-xs lg:text-[10px] text-gray-500 mb-2">
                     {trip.stop_count != null && (
                       <span className="flex items-center gap-1">
                         <MapPin size={9} className="text-orange-400" /> {trip.stop_count} stops
@@ -622,11 +622,11 @@ export default function TripTab({
                   </div>
 
                   {/* Actions row */}
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2 lg:gap-1.5">
                     {STATUS_TRANSITIONS[trip.status] && (
                       <button
                         onClick={(e) => handleStatusChange(trip.id, STATUS_TRANSITIONS[trip.status], e)}
-                        className="text-[10px] px-2 py-0.5 rounded-md bg-orange-500/15 text-orange-400 hover:bg-orange-500/25 transition-colors flex items-center gap-1"
+                        className="text-xs lg:text-[10px] px-3 lg:px-2 py-1.5 lg:py-0.5 rounded-md bg-orange-500/15 text-orange-400 hover:bg-orange-500/25 transition-colors flex items-center gap-1 min-h-[44px] lg:min-h-0"
                       >
                         <ArrowRight size={9} />
                         {STATUS_TRANSITION_LABELS[trip.status]}
@@ -635,24 +635,26 @@ export default function TripTab({
                     {trip.status === 'completed' && (
                       <button
                         onClick={(e) => handleStatusChange(trip.id, 'planning', e)}
-                        className="text-[10px] px-2 py-0.5 rounded-md bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 transition-colors"
+                        className="text-xs lg:text-[10px] px-3 lg:px-2 py-1.5 lg:py-0.5 rounded-md bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 transition-colors min-h-[44px] lg:min-h-0"
                       >
                         Replan
                       </button>
                     )}
                     <button
                       onClick={(e) => handleDuplicateTrip(trip.id, e)}
-                      className="text-[10px] px-2 py-0.5 rounded-md text-gray-500 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
+                      className="text-xs lg:text-[10px] p-2 lg:px-2 lg:py-0.5 rounded-md text-gray-500 hover:text-blue-400 hover:bg-blue-500/10 transition-colors min-h-[44px] lg:min-h-0 min-w-[44px] lg:min-w-0 flex items-center justify-center"
                       title="Duplicate trip"
                     >
-                      <Copy size={10} />
+                      <Copy size={14} className="lg:hidden" />
+                      <Copy size={10} className="hidden lg:block" />
                     </button>
                     <button
                       onClick={(e) => handleDeleteTrip(trip.id, trip.name, e)}
-                      className="text-[10px] px-2 py-0.5 rounded-md text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors ml-auto"
+                      className="text-xs lg:text-[10px] p-2 lg:px-2 lg:py-0.5 rounded-md text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors ml-auto min-h-[44px] lg:min-h-0 min-w-[44px] lg:min-w-0 flex items-center justify-center"
                       title="Delete trip"
                     >
-                      <Trash2 size={10} />
+                      <Trash2 size={14} className="lg:hidden" />
+                      <Trash2 size={10} className="hidden lg:block" />
                     </button>
                   </div>
                 </button>
@@ -677,7 +679,7 @@ export default function TripTab({
                     const trip = await onCreateTrip({ name: tmpl.name, status: 'planning' });
                     onSelectTrip(trip);
                   }}
-                  className="w-full text-left px-3 py-2.5 rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 border border-dark-700/30 [.light_&]:border-gray-200 hover:border-orange-500/30 hover:bg-dark-800 [.light_&]:hover:bg-gray-100 transition-all group"
+                  className="w-full text-left px-3 py-3 lg:py-2.5 rounded-lg bg-dark-800/50 [.light_&]:bg-gray-50 border border-dark-700/30 [.light_&]:border-gray-200 hover:border-orange-500/30 hover:bg-dark-800 [.light_&]:hover:bg-gray-100 transition-all group min-h-[44px]"
                 >
                   <div className="flex items-center gap-2.5">
                     <span className="text-xl">{tmpl.emoji}</span>
@@ -1080,12 +1082,13 @@ export default function TripTab({
               <div className="p-3 space-y-2">
                 {/* Search */}
                 <input
-                  type="text"
+                  type="search"
+                  inputMode="search"
                   value={addStopSearch}
                   onChange={(e) => setAddStopSearch(e.target.value)}
                   placeholder="Search locations..."
                   autoFocus
-                  className="w-full bg-dark-900 [.light_&]:bg-gray-50 border border-dark-700/50 [.light_&]:border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-200 [.light_&]:text-gray-800 placeholder-gray-600 [.light_&]:placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors"
+                  className="w-full bg-dark-900 [.light_&]:bg-gray-50 border border-dark-700/50 [.light_&]:border-gray-200 rounded-lg px-3 py-2.5 lg:py-2 text-base lg:text-sm text-gray-200 [.light_&]:text-gray-800 placeholder-gray-600 [.light_&]:placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors min-h-[44px] lg:min-h-0"
                 />
 
                 {/* Category filter chips */}
@@ -1165,8 +1168,8 @@ export default function TripTab({
                       <button
                         key={loc.id}
                         onClick={() => handleAddStopFromLocation(loc)}
-                        className="w-full text-left flex items-start gap-2.5 px-2.5 py-2 rounded-lg
-                          hover:bg-dark-700 [.light_&]:hover:bg-gray-100 transition-colors group/loc"
+                        className="w-full text-left flex items-start gap-2.5 px-2.5 py-3 lg:py-2 rounded-lg
+                          hover:bg-dark-700 [.light_&]:hover:bg-gray-100 transition-colors group/loc min-h-[44px]"
                       >
                         <div
                           className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-sm mt-0.5"
@@ -1202,11 +1205,11 @@ export default function TripTab({
           ) : (
             <button
               onClick={() => setShowAddStop(true)}
-              className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-3 lg:py-2.5 rounded-xl text-sm lg:text-xs font-medium
                 border border-dashed border-dark-700/50 [.light_&]:border-gray-300
                 text-gray-500 hover:text-orange-400 hover:border-orange-500/40
                 [.light_&]:text-gray-400 [.light_&]:hover:text-orange-500
-                transition-all press-scale"
+                transition-all press-scale min-h-[44px]"
             >
               <Plus size={14} />
               Add Stop
@@ -1222,7 +1225,7 @@ export default function TripTab({
             if (!journalOpen) handleJournalOpen();
             else setJournalOpen(false);
           }}
-          className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-400 [.light_&]:text-gray-600 hover:text-gray-200 [.light_&]:hover:text-gray-800 transition-colors"
+          className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-400 [.light_&]:text-gray-600 hover:text-gray-200 [.light_&]:hover:text-gray-800 transition-colors min-h-[48px]"
         >
           <span className="font-medium">Trip Journal</span>
           <div className="flex items-center gap-2">
@@ -1244,35 +1247,39 @@ export default function TripTab({
                 onChange={(e) => setJournalContent(e.target.value)}
                 placeholder="Write a journal entry..."
                 rows={3}
-                className="w-full bg-dark-800 [.light_&]:bg-white border border-dark-700/50 [.light_&]:border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-300 [.light_&]:text-gray-700 placeholder-gray-600 [.light_&]:placeholder-gray-400 resize-none focus:outline-none focus:border-orange-500 transition-colors"
+                className="w-full bg-dark-800 [.light_&]:bg-white border border-dark-700/50 [.light_&]:border-gray-200 rounded-lg px-3 py-3 lg:py-2 text-base lg:text-sm text-gray-300 [.light_&]:text-gray-700 placeholder-gray-600 [.light_&]:placeholder-gray-400 resize-none focus:outline-none focus:border-orange-500 transition-colors"
               />
-              <div className="flex items-center gap-2">
-                <input
-                  type="date"
-                  value={journalDate}
-                  onChange={(e) => setJournalDate(e.target.value)}
-                  className="bg-dark-800 [.light_&]:bg-white border border-dark-700/50 [.light_&]:border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-400 [.light_&]:text-gray-600 focus:outline-none focus:border-orange-500 transition-colors w-[130px]"
-                />
-                <select
-                  value={journalStopId ?? ''}
-                  onChange={(e) => setJournalStopId(e.target.value ? Number(e.target.value) : null)}
-                  className="flex-1 bg-dark-800 [.light_&]:bg-white border border-dark-700/50 [.light_&]:border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-400 [.light_&]:text-gray-600 focus:outline-none focus:border-orange-500 transition-colors"
-                >
-                  <option value="">General</option>
-                  {sortedStops.map((s) => (
-                    <option key={s.id} value={s.id}>{s.name || s.location_name || `Stop ${s.sort_order + 1}`}</option>
-                  ))}
-                </select>
+              <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="date"
+                    value={journalDate}
+                    onChange={(e) => setJournalDate(e.target.value)}
+                    className="bg-dark-800 [.light_&]:bg-white border border-dark-700/50 [.light_&]:border-gray-200 rounded-lg px-3 lg:px-2 py-2.5 lg:py-1.5 text-sm lg:text-xs text-gray-400 [.light_&]:text-gray-600 focus:outline-none focus:border-orange-500 transition-colors w-[140px] lg:w-[130px] min-h-[44px] lg:min-h-0"
+                  />
+                  <select
+                    value={journalStopId ?? ''}
+                    onChange={(e) => setJournalStopId(e.target.value ? Number(e.target.value) : null)}
+                    className="flex-1 bg-dark-800 [.light_&]:bg-white border border-dark-700/50 [.light_&]:border-gray-200 rounded-lg px-3 lg:px-2 py-2.5 lg:py-1.5 text-sm lg:text-xs text-gray-400 [.light_&]:text-gray-600 focus:outline-none focus:border-orange-500 transition-colors min-h-[44px] lg:min-h-0"
+                  >
+                    <option value="">General</option>
+                    {sortedStops.map((s) => (
+                      <option key={s.id} value={s.id}>{s.name || s.location_name || `Stop ${s.sort_order + 1}`}</option>
+                    ))}
+                  </select>
+                </div>
                 <button
                   onClick={handleAddJournalEntry}
                   disabled={!journalContent.trim() || journalSubmitting}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium
+                  className="flex items-center justify-center gap-1 px-4 lg:px-3 py-2.5 lg:py-1.5 rounded-lg text-sm lg:text-xs font-medium
                     bg-orange-500/20 text-orange-400 border border-orange-500/30
                     hover:bg-orange-500/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed
-                    [.light_&]:bg-orange-100 [.light_&]:text-orange-600 [.light_&]:border-orange-200 [.light_&]:hover:bg-orange-200"
+                    [.light_&]:bg-orange-100 [.light_&]:text-orange-600 [.light_&]:border-orange-200 [.light_&]:hover:bg-orange-200
+                    min-h-[44px] lg:min-h-0"
                 >
-                  <Plus size={12} />
-                  Add
+                  <Plus size={14} className="lg:hidden" />
+                  <Plus size={12} className="hidden lg:block" />
+                  Add Entry
                 </button>
               </div>
             </div>

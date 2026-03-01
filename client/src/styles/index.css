@@ -15,12 +15,14 @@
 
   html, body, #root {
     @apply h-full w-full m-0 p-0;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-dark-950 text-gray-100 font-sans;
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
   }
 
   /* Focus rings */
@@ -462,7 +464,7 @@ input:focus, textarea:focus, select:focus {
   touch-action: manipulation;
 }
 
-button, a, input, [role="button"] {
+button, a, input, select, textarea, [role="button"], label {
   touch-action: manipulation;
 }
 
@@ -474,4 +476,47 @@ button, a, input, [role="button"] {
   .map-controls-bottom {
     bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
+}
+
+/* ============================================
+   iOS SAFARI FIXES
+   ============================================ */
+
+/* Prevent rubber banding on overlay panels */
+.mobile-panel-overlay {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iOS input zoom prevention — 16px minimum font size */
+@supports (-webkit-touch-callout: none) {
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  @media (min-width: 1024px) {
+    input[type="text"],
+    input[type="search"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      font-size: inherit;
+    }
+  }
+}
+
+/* Fix iOS momentum scrolling on overlays */
+.mobile-panel-overlay,
+.bottom-sheet-content {
+  -webkit-overflow-scrolling: touch;
 }
