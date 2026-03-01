@@ -18,6 +18,7 @@ export default function AddLocationModal({ coords, onClose, onCreate, darkMode }
   const [description, setDescription] = useState('');
   const [subType, setSubType] = useState('');
   const [notes, setNotes] = useState('');
+  const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +35,8 @@ export default function AddLocationModal({ coords, onClose, onCreate, darkMode }
         description: description || null,
         notes: notes || null,
         source: 'user',
-      });
+        visibility,
+      } as Partial<Location>);
     } finally {
       setSaving(false);
     }
@@ -141,6 +143,42 @@ export default function AddLocationModal({ coords, onClose, onCreate, darkMode }
               rows={2}
               className={inputClass}
             />
+          </div>
+
+          {/* Visibility */}
+          <div>
+            <label className={labelClass}>Visibility</label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setVisibility('public')}
+                className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${
+                  visibility === 'public'
+                    ? 'bg-green-500/20 text-green-400 border border-green-500/50'
+                    : darkMode
+                      ? 'bg-dark-800 text-gray-400 border border-gray-700'
+                      : 'bg-gray-50 text-gray-600 border border-gray-200'
+                }`}
+              >
+                🌍 Public
+              </button>
+              <button
+                type="button"
+                onClick={() => setVisibility('private')}
+                className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${
+                  visibility === 'private'
+                    ? 'bg-purple-500/20 text-purple-400 border border-purple-500/50'
+                    : darkMode
+                      ? 'bg-dark-800 text-gray-400 border border-gray-700'
+                      : 'bg-gray-50 text-gray-600 border border-gray-200'
+                }`}
+              >
+                🔒 Private
+              </button>
+            </div>
+            <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              {visibility === 'private' ? 'Only you can see this location' : 'Visible to all users'}
+            </p>
           </div>
 
           {/* Actions */}

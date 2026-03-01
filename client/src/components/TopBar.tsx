@@ -13,6 +13,7 @@ import {
   User,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import type { Trip, Location } from '../types';
 import { CATEGORY_ICONS, CATEGORY_COLORS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
 
@@ -452,6 +453,7 @@ export default function TopBar({
 
 function UserMenu() {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -484,8 +486,15 @@ function UserMenu() {
             <p className="text-xs text-gray-400 [.light_&]:text-gray-500 truncate">{user.email}</p>
           </div>
           <button
-            onClick={() => { signOut(); setOpen(false); }}
+            onClick={() => { navigate('/settings'); setOpen(false); }}
             className="w-full text-left px-4 py-2.5 text-sm text-gray-300 [.light_&]:text-gray-600 hover:bg-dark-600 [.light_&]:hover:bg-gray-50 transition-colors flex items-center gap-2"
+          >
+            <User size={14} />
+            Settings
+          </button>
+          <button
+            onClick={() => { signOut(); setOpen(false); }}
+            className="w-full text-left px-4 py-2.5 text-sm text-gray-300 [.light_&]:text-gray-600 hover:bg-dark-600 [.light_&]:hover:bg-gray-50 transition-colors flex items-center gap-2 border-t border-dark-700 [.light_&]:border-gray-200"
           >
             <LogOut size={14} />
             Sign out
