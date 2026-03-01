@@ -71,7 +71,11 @@ export function useFilters(
       const next = new Set(prev.campsiteSubTypes);
       if (next.has(subType)) next.delete(subType);
       else next.add(subType);
-      return { ...prev, campsiteSubTypes: next };
+      // Keep 'campsite' category in sync — on if any sub-type is on
+      const nextCategories = new Set(prev.categories);
+      if (next.size > 0) nextCategories.add('campsite');
+      else nextCategories.delete('campsite');
+      return { ...prev, campsiteSubTypes: next, categories: nextCategories };
     });
   }, []);
 
