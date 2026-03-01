@@ -24,6 +24,7 @@ import {
 import type { Location } from '../types';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
 import { fetchNearbyRiding, fetchGroupMembers } from '../hooks/useApi';
+import ReviewsSection from './ReviewsSection';
 import type { UserLocationData } from '../hooks/useUserData';
 
 interface RightPanelProps {
@@ -143,12 +144,17 @@ export default function RightPanel({
       .catch(() => {});
   }, [location.id, location.latitude, location.longitude]);
 
+  // Per-user favorite state (local)
+  const [isFavorited, setIsFavorited] = useState(!!location.favorited);
+
   // Effective user interaction values (from user_location_data, falling back to location fields)
   const effectiveRating = userData?.user_rating ?? location.user_rating;
   const effectiveVisited = userData?.visited ?? location.visited;
   const effectiveWantToVisit = userData?.want_to_visit ?? location.want_to_visit;
-  const effectiveFavorited = location.favorited; // Favorites use the separate user_favorites table
   const effectiveNotes = userData?.user_notes ?? location.user_notes;
+
+  // Reset favorite when location changes
+  useEffect(() => { setIsFavorited(!!location.favorited); }, [location.id, location.favorited]);
 
   const handleRating = useCallback(async (rating: number) => {
     if (onUpdateUserData) {
@@ -157,32 +163,29 @@ export default function RightPanel({
   }, [location.id, effectiveRating, onUpdateUserData]);
 
   const handleToggleFavorite = useCallback(async () => {
+    const newState = !isFavorited;
+    setIsFavorited(newState); // Optimistic update
     setHeartKey((k) => k + 1);
-    // Use the favorites API
     try {
       const { getSupabase } = await import('../lib/supabase');
       const supabase = getSupabase();
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) return;
+      if (!session?.access_token) { setIsFavorited(!newState); return; }
 
       const API_BASE = import.meta.env.VITE_API_URL || '/api';
-      if (effectiveFavorited) {
-        await fetch(`${API_BASE}/favorites/${location.id}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
-      } else {
-        await fetch(`${API_BASE}/favorites/${location.id}`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
+      const res = await fetch(`${API_BASE}/favorites/${location.id}`, {
+        method: newState ? 'POST' : 'DELETE',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (!res.ok) {
+        setIsFavorited(!newState); // Revert on failure
+        showToast?.('Failed to update favorite', 'error');
       }
-      // Toggle local state via onUpdate
-      await onUpdate(location.id, { favorited: effectiveFavorited ? 0 : 1 });
     } catch {
+      setIsFavorited(!newState);
       showToast?.('Failed to update favorite', 'error');
     }
-  }, [location.id, effectiveFavorited, onUpdate, showToast]);
+  }, [location.id, isFavorited, showToast]);
 
   const handleToggleWantToVisit = useCallback(async () => {
     if (onUpdateUserData) {
@@ -475,9 +478,9 @@ export default function RightPanel({
                 <Plus className="w-3.5 h-3.5" />{addingToTrip ? 'Adding...' : 'Add to Trip'}
               </button>
             )}
-            <button onClick={handleToggleFavorite} title={effectiveFavorited ? 'Remove from favorites' : 'Add to favorites'}
-              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${effectiveFavorited ? 'bg-red-500/20 text-red-400 border border-red-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${effectiveFavorited ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
-              <Heart key={heartKey} className={`w-4 h-4 ${effectiveFavorited ? 'fill-red-400 animate-heart-bounce' : ''}`} />
+            <button onClick={handleToggleFavorite} title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${isFavorited ? 'bg-red-500/20 text-red-400 border border-red-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${isFavorited ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
+              <Heart key={heartKey} className={`w-4 h-4 ${isFavorited ? 'fill-red-400 animate-heart-bounce' : ''}`} />
             </button>
             <button onClick={handleToggleWantToVisit} title={effectiveWantToVisit ? 'Remove from wishlist' : 'Want to visit'}
               className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${effectiveWantToVisit ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${effectiveWantToVisit ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
@@ -657,6 +660,11 @@ export default function RightPanel({
           </div>
         )}
 
+        {/* Public Reviews */}
+        <div className={`p-5 ${sectionDivider}`}>
+          <ReviewsSection locationId={location.id} darkMode={darkMode} showToast={showToast} />
+        </div>
+
         {/* GPS Coordinates */}
         <div className={`p-5 ${sectionDivider}`}>
           <div className={`${labelStyle} mb-2`}>GPS Coordinates</div>
@@ -668,7 +676,8 @@ export default function RightPanel({
           </button>
         </div>
 
-        {/* Delete */}
+        {/* Delete — only show for user-owned locations */}
+        {location.user_id && (
         <div className="p-5">
           {confirmDelete ? (
             <div className={`rounded-xl p-4 ${darkMode ? 'bg-red-900/20 border border-red-800/40' : 'bg-red-50 border border-red-200'} [.light_&]:bg-red-50 [.light_&]:border-red-200`}>
@@ -684,6 +693,7 @@ export default function RightPanel({
             </button>
           )}
         </div>
+        )}
       </div>
     </div>
   );

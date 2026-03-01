@@ -80,6 +80,8 @@ export interface Location {
   group_id?: number | null;
   is_group_primary?: number;
   group_count?: number;
+  user_id?: string | null;
+  visibility?: string;
 }
 
 export type LocationCategory = 'campsite' | 'riding' | 'water' | 'dump' | 'gas' | 'grocery' | 'scenic' | 'laundromat';

@@ -209,6 +209,32 @@ export const userFavorites = pgTable(
   ]
 );
 
+// ─── Location Reviews (public, visible to all) ──────────────────────────────
+
+export const locationReviews = pgTable(
+  'location_reviews',
+  {
+    id: serial('id').primaryKey(),
+    locationId: integer('location_id')
+      .notNull()
+      .references(() => locations.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    rating: integer('rating').notNull(), // 1-5 stars
+    title: text('title'),
+    content: text('content'),
+    visitedDate: text('visited_date'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique('uq_review_user_location').on(table.userId, table.locationId),
+    index('idx_reviews_location').on(table.locationId),
+    index('idx_reviews_user').on(table.userId),
+  ]
+);
+
 // ─── User Location Data (per-user annotations on any location) ───────────────
 
 export const userLocationData = pgTable(
