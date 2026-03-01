@@ -33,7 +33,15 @@ import {
   Copy,
   ArrowRight,
 } from 'lucide-react';
-import type { Location, Trip, TripStop, WeatherData, JournalEntry } from '../../types';
+import type { Location, Trip, TripStop, WeatherData, JournalEntry, LocationCategory, CampsiteSubType } from '../../types';
+import {
+  CATEGORY_ICONS,
+  CATEGORY_COLORS,
+  CATEGORY_LABELS,
+  CAMPSITE_SUBTYPE_ICONS,
+  CAMPSITE_SUBTYPE_COLORS,
+  CAMPSITE_SUBTYPE_LABELS,
+} from '../../types';
 import { SortableStopCard, OverlayStopCard } from './StopCard';
 import { optimizeTrip, fetchJournal, createJournalEntry, updateJournalEntry, deleteJournalEntry, duplicateTrip } from '../../hooks/useApi';
 import { TRIP_TEMPLATES } from '../../data/tripTemplates';
@@ -91,6 +99,49 @@ function daysBetween(dateA: string, dateB: string): number {
   const a = new Date(dateA + 'T00:00:00');
   const b = new Date(dateB + 'T00:00:00');
   return Math.floor((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 3959; // Earth radius in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function getStopIcon(stop: TripStop): string {
+  if (stop.location_category === 'campsite' && stop.location_sub_type) {
+    return CAMPSITE_SUBTYPE_ICONS[stop.location_sub_type as CampsiteSubType] || CATEGORY_ICONS.campsite;
+  }
+  if (stop.location_category) {
+    return CATEGORY_ICONS[stop.location_category as LocationCategory] || '📍';
+  }
+  return '📍';
+}
+
+function getStopColor(stop: TripStop): string {
+  if (stop.location_category === 'campsite' && stop.location_sub_type) {
+    return CAMPSITE_SUBTYPE_COLORS[stop.location_sub_type as CampsiteSubType] || CATEGORY_COLORS.campsite;
+  }
+  if (stop.location_category) {
+    return CATEGORY_COLORS[stop.location_category as LocationCategory] || '#f97316';
+  }
+  return '#f97316';
+}
+
+function getStopSubtitle(stop: TripStop): string {
+  if (stop.location_category === 'campsite' && stop.location_sub_type) {
+    return CAMPSITE_SUBTYPE_LABELS[stop.location_sub_type as CampsiteSubType] || stop.location_sub_type;
+  }
+  if (stop.location_category === 'riding') {
+    return stop.location_difficulty || 'Riding Area';
+  }
+  if (stop.location_category) {
+    return CATEGORY_LABELS[stop.location_category as LocationCategory] || stop.location_category;
+  }
+  return '';
 }
 
 function getWeatherCacheKey(lat: number, lng: number, date: string): string {
@@ -183,6 +234,7 @@ export default function TripTab({
   const [showAddStop, setShowAddStop] = useState(false);
   const [addStopSearch, setAddStopSearch] = useState('');
   const [activeDragId, setActiveDragId] = useState<number | null>(null);
+  const [addStopCategoryFilter, setAddStopCategoryFilter] = useState<Set<string>>(new Set());
   const [editingStartDate, setEditingStartDate] = useState(false);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [journalContent, setJournalContent] = useState('');
@@ -204,6 +256,22 @@ export default function TripTab({
   const stopDates = useMemo(
     () => calculateStopDates(sortedStops, selectedTrip?.start_date ?? null),
     [sortedStops, selectedTrip?.start_date],
+  );
+
+  // Calculate distances between consecutive stops using haversine
+  const stopDistances = useMemo(() => {
+    const distances: number[] = [0]; // first stop has 0 distance
+    for (let i = 1; i < sortedStops.length; i++) {
+      const prev = sortedStops[i - 1];
+      const curr = sortedStops[i];
+      distances.push(haversineDistance(prev.latitude, prev.longitude, curr.latitude, curr.longitude));
+    }
+    return distances;
+  }, [sortedStops]);
+
+  const totalDistance = useMemo(() =>
+    stopDistances.reduce((sum, d) => sum + d, 0),
+    [stopDistances],
   );
 
   const todayStr = useMemo(() => todayDateStr(), []);
@@ -272,11 +340,45 @@ export default function TripTab({
     [sortedStops, onReorderStops],
   );
 
-  const filteredLocations = addStopSearch.trim()
-    ? locations.filter((l) =>
-        l.name.toLowerCase().includes(addStopSearch.toLowerCase()),
-      )
-    : locations.slice(0, 20);
+  const filteredLocations = useMemo(() => {
+    // Map category filter keys to actual category/sub_type
+    const filterMap: Record<string, (l: Location) => boolean> = {
+      campground: (l) => l.category === 'campsite' && l.sub_type === 'campground',
+      boondocking: (l) => l.category === 'campsite' && l.sub_type === 'boondocking',
+      parking: (l) => l.category === 'campsite' && l.sub_type === 'parking',
+      riding: (l) => l.category === 'riding',
+      water: (l) => l.category === 'water',
+      dump: (l) => l.category === 'dump',
+      scenic: (l) => l.category === 'scenic',
+    };
+
+    let results = locations.filter((l) => {
+      // Name search
+      if (addStopSearch.trim() && !l.name.toLowerCase().includes(addStopSearch.toLowerCase())) return false;
+      // Category filter
+      if (addStopCategoryFilter.size > 0) {
+        const matchesAny = Array.from(addStopCategoryFilter).some((key) => filterMap[key]?.(l));
+        if (!matchesAny) return false;
+      }
+      // Exclude already-added stops
+      const alreadyAdded = stops.some((s) => s.location_id === l.id);
+      if (alreadyAdded) return false;
+      return true;
+    });
+
+    // Sort by distance from last stop if trip has stops
+    const lastStop = sortedStops[sortedStops.length - 1];
+    if (lastStop) {
+      results = results.map((l) => ({
+        ...l,
+        distance_from: haversineDistance(lastStop.latitude, lastStop.longitude, l.latitude, l.longitude),
+      })).sort((a, b) => (a.distance_from ?? Infinity) - (b.distance_from ?? Infinity));
+    } else {
+      results.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    return results.slice(0, 50);
+  }, [locations, addStopSearch, addStopCategoryFilter, stops, sortedStops]);
 
   const handleAddStopFromLocation = useCallback(
     async (loc: Location) => {
@@ -407,8 +509,7 @@ export default function TripTab({
     lines.push(`🗺️ ${selectedTrip.name}`);
     if (selectedTrip.start_date) lines.push(`📅 Starting ${formatDate(selectedTrip.start_date)}`);
     const nights = sortedStops.reduce((s, st) => s + (st.nights ?? 0), 0);
-    const miles = sortedStops.reduce((s, st) => s + (st.drive_distance_miles ?? 0), 0);
-    lines.push(`📍 ${sortedStops.length} stops · ${nights} nights · ${Math.round(miles)} mi`);
+    lines.push(`📍 ${sortedStops.length} stops · ${nights} nights · ~${Math.round(totalDistance)} mi`);
     lines.push('');
     let currentDate = selectedTrip.start_date || '';
     sortedStops.forEach((stop, i) => {
@@ -420,8 +521,8 @@ export default function TripTab({
         currentDate = addDays(currentDate, stop.nights || 1);
       }
       lines.push(line);
-      if (stop.drive_distance_miles && i < sortedStops.length - 1) {
-        lines.push(`   ↳ ${Math.round(stop.drive_distance_miles)} mi drive to next stop`);
+      if (stopDistances[i + 1] && i < sortedStops.length - 1) {
+        lines.push(`   ↳ ~${Math.round(stopDistances[i + 1])} mi to next stop`);
       }
     });
     lines.push('');
@@ -430,10 +531,9 @@ export default function TripTab({
       setShareCopied(true);
       setTimeout(() => setShareCopied(false), 2000);
     });
-  }, [selectedTrip, sortedStops]);
+  }, [selectedTrip, sortedStops, totalDistance, stopDistances]);
 
   const totalNights = sortedStops.reduce((sum, s) => sum + (s.nights ?? 0), 0);
-  const totalDistance = sortedStops.reduce((sum, s) => sum + (s.drive_distance_miles ?? 0), 0);
 
   const activeDragStop = useMemo(() => {
     if (activeDragId == null) return null;
@@ -762,17 +862,17 @@ export default function TripTab({
 
         {/* Trip stats pills */}
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-gray-300" title="Total stops">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-gray-300 [.light_&]:bg-gray-50 [.light_&]:border-gray-200 [.light_&]:text-gray-700" title="Total stops">
             <MapPin size={11} className="text-orange-400" />
             <span className="font-medium">{sortedStops.length}</span> stops
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-gray-300" title="Total nights">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-gray-300 [.light_&]:bg-gray-50 [.light_&]:border-gray-200 [.light_&]:text-gray-700" title="Total nights">
             <Clock size={11} className="text-orange-400" />
             <span className="font-medium">{totalNights}</span> nights
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-gray-300" title="Total distance">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700/50 text-xs text-gray-300 [.light_&]:bg-gray-50 [.light_&]:border-gray-200 [.light_&]:text-gray-700" title="Approximate total distance">
             <Route size={11} className="text-orange-400" />
-            <span className="font-medium">{formatDistance(totalDistance) || '0 mi'}</span>
+            <span className="font-medium">{totalDistance > 0 ? `~${Math.round(totalDistance)} mi` : '0 mi'}</span>
           </div>
           {sortedStops.length >= 3 && (
             <button
@@ -834,6 +934,50 @@ export default function TripTab({
         {savedMiles !== null && savedMiles > 0 && (
           <div className="text-xs text-emerald-400 mt-1.5 animate-fade-in">Saved {savedMiles} miles!</div>
         )}
+
+        {/* Category breakdown */}
+        {sortedStops.length > 0 && (() => {
+          const breakdown: { key: string; label: string; icon: string; color: string; count: number }[] = [];
+          // Count campsite sub-types
+          const subTypeCounts: Record<string, number> = {};
+          let ridingCount = 0, waterCount = 0, dumpCount = 0, scenicCount = 0;
+          for (const stop of sortedStops) {
+            const cat = stop.location_category;
+            if (cat === 'campsite') {
+              const st = (stop.location_sub_type || 'other') as CampsiteSubType;
+              subTypeCounts[st] = (subTypeCounts[st] || 0) + 1;
+            } else if (cat === 'riding') ridingCount++;
+            else if (cat === 'water') waterCount++;
+            else if (cat === 'dump') dumpCount++;
+            else if (cat === 'scenic') scenicCount++;
+          }
+          for (const st of ['campground', 'boondocking', 'parking'] as CampsiteSubType[]) {
+            if (subTypeCounts[st]) {
+              breakdown.push({ key: st, label: CAMPSITE_SUBTYPE_LABELS[st], icon: CAMPSITE_SUBTYPE_ICONS[st], color: CAMPSITE_SUBTYPE_COLORS[st], count: subTypeCounts[st] });
+            }
+          }
+          if (ridingCount) breakdown.push({ key: 'riding', label: 'Riding Areas', icon: CATEGORY_ICONS.riding, color: CATEGORY_COLORS.riding, count: ridingCount });
+          if (waterCount) breakdown.push({ key: 'water', label: 'Water Stations', icon: CATEGORY_ICONS.water, color: CATEGORY_COLORS.water, count: waterCount });
+          if (dumpCount) breakdown.push({ key: 'dump', label: 'Dump Stations', icon: CATEGORY_ICONS.dump, color: CATEGORY_COLORS.dump, count: dumpCount });
+          if (scenicCount) breakdown.push({ key: 'scenic', label: 'Scenic Viewpoints', icon: CATEGORY_ICONS.scenic, color: CATEGORY_COLORS.scenic, count: scenicCount });
+
+          if (breakdown.length === 0) return null;
+          return (
+            <div className="flex items-center gap-1.5 flex-wrap mt-2">
+              {breakdown.map((b) => (
+                <div
+                  key={b.key}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium"
+                  style={{ background: `${b.color}15`, color: b.color, border: `1px solid ${b.color}30` }}
+                >
+                  <span>{b.icon}</span>
+                  <span>{b.count}</span>
+                  <span className="opacity-70">{b.label}</span>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       {/* ===== Stops List ===== */}
@@ -901,6 +1045,7 @@ export default function TripTab({
                       driveDistanceMiles={stop.drive_distance_miles}
                       showDriveConnector={index > 0 && !!(stop.drive_time_mins || stop.drive_distance_miles)}
                       nearbyRidingCount={nearbyRidingCount}
+                      distanceFromPrev={stopDistances[index]}
                     />
                   );
                 })}
@@ -918,51 +1063,146 @@ export default function TripTab({
         {/* Add Stop */}
         <div className="px-3 pb-3">
           {showAddStop ? (
-            <div className="bg-dark-800 [.light_&]:bg-white rounded-lg border border-gray-700 [.light_&]:border-gray-200 p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-gray-400 [.light_&]:text-gray-600 uppercase tracking-wider">
+            <div className="bg-dark-800 [.light_&]:bg-white rounded-xl border border-dark-700/50 [.light_&]:border-gray-200 overflow-hidden">
+              {/* Header */}
+              <div className="flex items-center justify-between px-3 py-2.5 border-b border-dark-700/30 [.light_&]:border-gray-200">
+                <span className="text-xs font-semibold text-gray-300 [.light_&]:text-gray-700 uppercase tracking-wider">
                   Add a Stop
                 </span>
                 <button
-                  onClick={() => { setShowAddStop(false); setAddStopSearch(''); }}
+                  onClick={() => { setShowAddStop(false); setAddStopSearch(''); setAddStopCategoryFilter(new Set()); }}
                   className="text-gray-500 hover:text-gray-300 [.light_&]:hover:text-gray-600 transition-colors"
                 >
                   <X size={14} />
                 </button>
               </div>
-              <input
-                type="text"
-                value={addStopSearch}
-                onChange={(e) => setAddStopSearch(e.target.value)}
-                placeholder="Search locations..."
-                autoFocus
-                className="w-full bg-dark-900 [.light_&]:bg-gray-50 border border-gray-700 [.light_&]:border-gray-200 rounded px-2 py-1.5 text-sm text-gray-200 [.light_&]:text-gray-800 placeholder-gray-600 [.light_&]:placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors mb-2"
-              />
-              <div className="max-h-48 overflow-y-auto space-y-1">
-                {filteredLocations.length === 0 && (
-                  <p className="text-xs text-gray-500 text-center py-2">No locations found.</p>
-                )}
-                {filteredLocations.map((loc) => (
-                  <button
-                    key={loc.id}
-                    onClick={() => handleAddStopFromLocation(loc)}
-                    className="w-full text-left flex items-center gap-2 px-2 py-1.5 rounded text-sm
-                      text-gray-300 [.light_&]:text-gray-700
-                      hover:bg-dark-700 [.light_&]:hover:bg-gray-100 transition-colors"
-                  >
-                    <MapPin size={12} className="text-orange-400 flex-shrink-0" />
-                    <span className="truncate">{loc.name}</span>
-                    <span className="text-[10px] text-gray-500 capitalize ml-auto flex-shrink-0">
-                      {loc.category}
-                    </span>
-                  </button>
-                ))}
+
+              <div className="p-3 space-y-2">
+                {/* Search */}
+                <input
+                  type="text"
+                  value={addStopSearch}
+                  onChange={(e) => setAddStopSearch(e.target.value)}
+                  placeholder="Search locations..."
+                  autoFocus
+                  className="w-full bg-dark-900 [.light_&]:bg-gray-50 border border-dark-700/50 [.light_&]:border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-200 [.light_&]:text-gray-800 placeholder-gray-600 [.light_&]:placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors"
+                />
+
+                {/* Category filter chips */}
+                <div className="flex flex-wrap gap-1">
+                  {([
+                    { key: 'campground', label: 'Campgrounds', icon: CAMPSITE_SUBTYPE_ICONS.campground, color: CAMPSITE_SUBTYPE_COLORS.campground },
+                    { key: 'boondocking', label: 'Boondocking', icon: CAMPSITE_SUBTYPE_ICONS.boondocking, color: CAMPSITE_SUBTYPE_COLORS.boondocking },
+                    { key: 'parking', label: 'Parking', icon: CAMPSITE_SUBTYPE_ICONS.parking, color: CAMPSITE_SUBTYPE_COLORS.parking },
+                    { key: 'riding', label: 'Riding', icon: CATEGORY_ICONS.riding, color: CATEGORY_COLORS.riding },
+                    { key: 'water', label: 'Water', icon: CATEGORY_ICONS.water, color: CATEGORY_COLORS.water },
+                    { key: 'dump', label: 'Dump', icon: CATEGORY_ICONS.dump, color: CATEGORY_COLORS.dump },
+                    { key: 'scenic', label: 'Scenic', icon: CATEGORY_ICONS.scenic, color: CATEGORY_COLORS.scenic },
+                  ] as const).map((chip) => {
+                    const isActive = addStopCategoryFilter.has(chip.key);
+                    return (
+                      <button
+                        key={chip.key}
+                        onClick={() => {
+                          setAddStopCategoryFilter((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(chip.key)) next.delete(chip.key);
+                            else next.add(chip.key);
+                            return next;
+                          });
+                        }}
+                        className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium transition-all"
+                        style={{
+                          background: isActive ? `${chip.color}25` : 'transparent',
+                          color: isActive ? chip.color : '#9ca3af',
+                          border: `1px solid ${isActive ? `${chip.color}50` : '#374151'}`,
+                        }}
+                      >
+                        <span className="text-xs">{chip.icon}</span>
+                        {chip.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Pick from Map hint */}
+                <button
+                  onClick={() => {
+                    setShowAddStop(false);
+                    setAddStopSearch('');
+                    setAddStopCategoryFilter(new Set());
+                    // Fly to last stop so user can see nearby locations
+                    const lastStop = sortedStops[sortedStops.length - 1];
+                    if (lastStop) onFlyTo(lastStop.longitude, lastStop.latitude);
+                  }}
+                  className="w-full flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-[10px] font-medium
+                    bg-dark-700/50 [.light_&]:bg-gray-50 text-gray-400 [.light_&]:text-gray-500
+                    hover:text-orange-400 hover:bg-orange-500/10 transition-all border border-dark-700/30 [.light_&]:border-gray-200"
+                >
+                  <MapPin size={11} />
+                  Pick from Map — click a location to add it
+                </button>
+
+                {/* Results */}
+                <div className="max-h-64 overflow-y-auto space-y-1">
+                  {filteredLocations.length === 0 && (
+                    <p className="text-xs text-gray-500 text-center py-4">No locations found.</p>
+                  )}
+                  {filteredLocations.map((loc) => {
+                    const locIcon = loc.category === 'campsite' && loc.sub_type
+                      ? CAMPSITE_SUBTYPE_ICONS[loc.sub_type as CampsiteSubType] || CATEGORY_ICONS.campsite
+                      : CATEGORY_ICONS[loc.category as LocationCategory] || '📍';
+                    const locColor = loc.category === 'campsite' && loc.sub_type
+                      ? CAMPSITE_SUBTYPE_COLORS[loc.sub_type as CampsiteSubType] || CATEGORY_COLORS.campsite
+                      : CATEGORY_COLORS[loc.category as LocationCategory] || '#f97316';
+                    const locSubLabel = loc.category === 'campsite' && loc.sub_type
+                      ? CAMPSITE_SUBTYPE_LABELS[loc.sub_type as CampsiteSubType]
+                      : loc.category === 'riding'
+                      ? loc.difficulty || 'Riding Area'
+                      : CATEGORY_LABELS[loc.category as LocationCategory] || loc.category;
+
+                    return (
+                      <button
+                        key={loc.id}
+                        onClick={() => handleAddStopFromLocation(loc)}
+                        className="w-full text-left flex items-start gap-2.5 px-2.5 py-2 rounded-lg
+                          hover:bg-dark-700 [.light_&]:hover:bg-gray-100 transition-colors group/loc"
+                      >
+                        <div
+                          className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-sm mt-0.5"
+                          style={{ background: `${locColor}15`, border: `1px solid ${locColor}30` }}
+                        >
+                          {locIcon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-gray-200 [.light_&]:text-gray-800 truncate group-hover/loc:text-white [.light_&]:group-hover/loc:text-gray-900 transition-colors">
+                            {loc.name}
+                          </div>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[10px]" style={{ color: locColor }}>{locSubLabel}</span>
+                            {loc.cost_per_night != null && loc.cost_per_night > 0 && (
+                              <span className="text-[10px] text-gray-500">${loc.cost_per_night}/night</span>
+                            )}
+                            {loc.cost_per_night != null && loc.cost_per_night === 0 && (
+                              <span className="text-[10px] text-emerald-500">Free</span>
+                            )}
+                          </div>
+                        </div>
+                        {loc.distance_from != null && (
+                          <span className="text-[10px] text-gray-500 flex-shrink-0 mt-1.5">
+                            {Math.round(loc.distance_from)} mi
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           ) : (
             <button
               onClick={() => setShowAddStop(true)}
-              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium
                 border border-dashed border-dark-700/50 [.light_&]:border-gray-300
                 text-gray-500 hover:text-orange-400 hover:border-orange-500/40
                 [.light_&]:text-gray-400 [.light_&]:hover:text-orange-500

@@ -250,6 +250,8 @@ router.get('/:id/stops', requireAuth, async (req: Request, res: Response) => {
         stop: tripStops,
         locationName: locations.name,
         locationCategory: locations.category,
+        locationSubType: locations.subType,
+        locationDifficulty: locations.difficulty,
       })
       .from(tripStops)
       .leftJoin(locations, eq(tripStops.locationId, locations.id))
@@ -260,6 +262,8 @@ router.get('/:id/stops', requireAuth, async (req: Request, res: Response) => {
       ...toSnakeCase(r.stop as unknown as Record<string, unknown>),
       location_name: r.locationName,
       location_category: r.locationCategory,
+      location_sub_type: r.locationSubType,
+      location_difficulty: r.locationDifficulty,
     })));
   } catch (err) {
     console.error('Error fetching stops:', err);

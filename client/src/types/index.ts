@@ -31,6 +31,8 @@ export interface TripStop {
   drive_distance_miles: number | null;
   location_name?: string;
   location_category?: string;
+  location_sub_type?: string;
+  location_difficulty?: string;
 }
 
 export interface Location {

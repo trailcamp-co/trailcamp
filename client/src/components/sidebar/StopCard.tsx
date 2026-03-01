@@ -10,7 +10,15 @@ import {
   Calendar,
   CloudSun,
 } from 'lucide-react';
-import type { TripStop, WeatherData } from '../../types';
+import type { TripStop, WeatherData, LocationCategory, CampsiteSubType } from '../../types';
+import {
+  CATEGORY_ICONS,
+  CATEGORY_COLORS,
+  CATEGORY_LABELS,
+  CAMPSITE_SUBTYPE_ICONS,
+  CAMPSITE_SUBTYPE_COLORS,
+  CAMPSITE_SUBTYPE_LABELS,
+} from '../../types';
 
 interface StopDateInfo {
   arrivalDate: string;
@@ -35,6 +43,39 @@ function formatShortDate(dateStr: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
+function getStopIcon(stop: TripStop): string {
+  if (stop.location_category === 'campsite' && stop.location_sub_type) {
+    return CAMPSITE_SUBTYPE_ICONS[stop.location_sub_type as CampsiteSubType] || CATEGORY_ICONS.campsite;
+  }
+  if (stop.location_category) {
+    return CATEGORY_ICONS[stop.location_category as LocationCategory] || '📍';
+  }
+  return '📍';
+}
+
+function getStopColor(stop: TripStop): string {
+  if (stop.location_category === 'campsite' && stop.location_sub_type) {
+    return CAMPSITE_SUBTYPE_COLORS[stop.location_sub_type as CampsiteSubType] || CATEGORY_COLORS.campsite;
+  }
+  if (stop.location_category) {
+    return CATEGORY_COLORS[stop.location_category as LocationCategory] || '#f97316';
+  }
+  return '#f97316';
+}
+
+function getStopSubtitle(stop: TripStop): string {
+  if (stop.location_category === 'campsite' && stop.location_sub_type) {
+    return CAMPSITE_SUBTYPE_LABELS[stop.location_sub_type as CampsiteSubType] || stop.location_sub_type;
+  }
+  if (stop.location_category === 'riding') {
+    return stop.location_difficulty || 'Riding Area';
+  }
+  if (stop.location_category) {
+    return CATEGORY_LABELS[stop.location_category as LocationCategory] || stop.location_category;
+  }
+  return '';
+}
+
 export interface StopCardProps {
   stop: TripStop;
   index: number;
@@ -50,6 +91,7 @@ export interface StopCardProps {
   driveDistanceMiles: number | null;
   showDriveConnector: boolean;
   nearbyRidingCount?: number;
+  distanceFromPrev?: number;
 }
 
 export function SortableStopCard({
@@ -67,6 +109,7 @@ export function SortableStopCard({
   driveDistanceMiles,
   showDriveConnector,
   nearbyRidingCount,
+  distanceFromPrev,
 }: StopCardProps) {
   const {
     attributes,
@@ -85,22 +128,30 @@ export function SortableStopCard({
   };
 
   const stopName = stop.name || stop.location_name || 'Unnamed Stop';
+  const stopColor = getStopColor(stop);
+  const stopIcon = getStopIcon(stop);
+  const subtitle = getStopSubtitle(stop);
 
   return (
     <div ref={setNodeRef} style={style}>
-      {/* Drive time connector (between stops) */}
-      {showDriveConnector && (driveTimeMins || driveDistanceMiles) && (
+      {/* Drive connector between stops */}
+      {index > 0 && (
         <div className="flex items-center gap-2 px-4 py-1">
           <div className="w-6 flex justify-center">
             <div className="w-px h-5 bg-dark-700 [.light_&]:bg-gray-300" />
           </div>
-          <div className="flex items-center gap-1.5 text-[10px] text-gray-500 bg-dark-800/50 px-2 py-0.5 rounded-full">
-            <Navigation size={9} className="text-orange-400/50" />
-            <span>
-              {formatDriveTime(driveTimeMins)}
-              {driveTimeMins && driveDistanceMiles && ' · '}
-              {formatDistance(driveDistanceMiles)}
-            </span>
+          <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
+            {(driveTimeMins || driveDistanceMiles) && showDriveConnector && (
+              <span className="flex items-center gap-1 bg-dark-800/50 px-2 py-0.5 rounded-full">
+                <Navigation size={9} className="text-orange-400/50" />
+                {formatDriveTime(driveTimeMins)}
+                {driveTimeMins && driveDistanceMiles && ' · '}
+                {formatDistance(driveDistanceMiles)}
+              </span>
+            )}
+            {distanceFromPrev != null && distanceFromPrev > 0 && (
+              <span className="text-gray-600">{Math.round(distanceFromPrev)} mi</span>
+            )}
           </div>
         </div>
       )}
@@ -127,30 +178,43 @@ export function SortableStopCard({
             <GripVertical size={16} />
           </div>
 
-          {/* Stop number */}
-          <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold shadow-sm shadow-orange-500/30">
+          {/* Stop number - colored by category */}
+          <div
+            className="flex-shrink-0 w-6 h-6 rounded-full text-white flex items-center justify-center text-xs font-bold shadow-sm"
+            style={{ backgroundColor: stopColor, boxShadow: `0 1px 3px ${stopColor}50` }}
+          >
             {index + 1}
           </div>
 
           {/* Stop info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-200 [.light_&]:text-gray-800 truncate">
-                {stopName}
-              </span>
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="text-sm flex-shrink-0">{stopIcon}</span>
+                <span className="text-sm font-medium text-gray-200 [.light_&]:text-gray-800 truncate">
+                  {stopName}
+                </span>
+              </div>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onDeleteStop(stop.id);
                 }}
-                className="opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-400 transition-all"
+                className="opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-400 transition-all flex-shrink-0"
                 title="Remove stop"
               >
                 <Trash2 size={12} />
               </button>
             </div>
 
-            {/* Nights + date info row */}
+            {/* Subtitle */}
+            {subtitle && (
+              <div className="text-[10px] mt-0.5" style={{ color: stopColor }}>
+                {subtitle}
+              </div>
+            )}
+
+            {/* Nights + date + distance row */}
             <div className="flex items-center gap-2 mt-1 flex-wrap">
               {stop.nights != null && stop.nights > 0 && (
                 <div className="flex items-center gap-1 text-xs text-gray-500">
@@ -185,13 +249,6 @@ export function SortableStopCard({
                 <CloudSun size={10} />
                 <span>Too far for forecast</span>
               </div>
-            )}
-
-            {/* Category badge */}
-            {stop.location_category && (
-              <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded-full bg-dark-700 text-gray-400 [.light_&]:bg-gray-100 [.light_&]:text-gray-500 capitalize">
-                {stop.location_category}
-              </span>
             )}
           </div>
 
@@ -229,12 +286,6 @@ export function SortableStopCard({
                 >
                   📍 Navigate
                 </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); onFlyTo(stop.longitude, stop.latitude); }}
-                  className="text-[10px] font-medium px-2.5 py-1.5 rounded-lg bg-dark-700 text-gray-400 border border-dark-600/50 hover:bg-dark-600 transition-colors"
-                >
-                  🗺️ Fly to
-                </button>
               </div>
               <div className="flex items-center gap-2 mt-2">
                 <label className="text-[11px] text-gray-500">Nights:</label>
@@ -266,19 +317,28 @@ export interface OverlayStopCardProps {
 
 export function OverlayStopCard({ stop, index }: OverlayStopCardProps) {
   const stopName = stop.name || stop.location_name || 'Unnamed Stop';
+  const stopColor = getStopColor(stop);
+  const stopIcon = getStopIcon(stop);
+
   return (
     <div className="mx-2 mb-1 rounded-xl bg-dark-800 [.light_&]:bg-white border border-orange-500 shadow-2xl shadow-orange-500/20">
       <div className="flex items-start gap-2 p-3">
         <div className="mt-0.5 text-gray-400">
           <GripVertical size={16} />
         </div>
-        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold shadow-sm shadow-orange-500/30">
+        <div
+          className="flex-shrink-0 w-6 h-6 rounded-full text-white flex items-center justify-center text-xs font-bold shadow-sm"
+          style={{ backgroundColor: stopColor, boxShadow: `0 1px 3px ${stopColor}50` }}
+        >
           {index + 1}
         </div>
         <div className="flex-1 min-w-0">
-          <span className="text-sm font-medium text-gray-200 [.light_&]:text-gray-800 truncate block">
-            {stopName}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm">{stopIcon}</span>
+            <span className="text-sm font-medium text-gray-200 [.light_&]:text-gray-800 truncate">
+              {stopName}
+            </span>
+          </div>
           {stop.nights != null && stop.nights > 0 && (
             <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
               <Clock size={10} />
