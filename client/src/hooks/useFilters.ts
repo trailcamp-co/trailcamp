@@ -44,7 +44,7 @@ function computeSeasonalStatus(loc: Location, month: number): 'great' | 'shoulde
   return null; // couldn't determine
 }
 
-export function useFilters(locations: Location[], routeGeoJSON: GeoJSON.GeoJsonObject | null) {
+export function useFilters(locations: Location[], routeGeoJSON: GeoJSON.GeoJsonObject | null, favoriteIds?: Set<number>) {
   const [filters, setFilters] = useState<Filters>({
     ...DEFAULT_FILTERS,
     categories: new Set(DEFAULT_FILTERS.categories),
@@ -104,7 +104,7 @@ export function useFilters(locations: Location[], routeGeoJSON: GeoJSON.GeoJsonO
     if (filters.visitedStatus === 'visited' && !l.visited) return false;
     if (filters.visitedStatus === 'want_to_visit' && !l.want_to_visit) return false;
     if (filters.visitedStatus === 'highly_rated' && (!l.user_rating || l.user_rating < 4)) return false;
-    if (filters.visitedStatus === 'favorites' && !l.favorited) return false;
+    if (filters.visitedStatus === 'favorites' && !(favoriteIds?.has(l.id))) return false;
     if (filters.waterNearby && !l.water_nearby) return false;
     if (filters.dumpNearby && !l.dump_nearby) return false;
     if (filters.shade && !l.shade) return false;

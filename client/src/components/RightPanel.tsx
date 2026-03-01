@@ -40,6 +40,8 @@ interface RightPanelProps {
   onLocationClick?: (location: Location) => void;
   getUserData?: (locationId: number) => UserLocationData;
   onUpdateUserData?: (locationId: number, updates: Partial<UserLocationData>) => Promise<UserLocationData | null>;
+  isFavorited?: (locationId: number) => boolean;
+  onToggleFavorite?: (locationId: number) => Promise<boolean>;
 }
 
 const CATEGORY_LUCIDE_ICONS: Record<string, React.ReactNode> = {
@@ -64,10 +66,11 @@ function DetailBadge({ label, value, darkMode }: { label: string; value: string 
 
 export default function RightPanel({
   location, onClose, onUpdate, onDelete, onAddToTrip, hasActiveTrip, darkMode, onFlyTo, onLocationClick, showToast,
-  getUserData, onUpdateUserData,
+  getUserData, onUpdateUserData, isFavorited: isFavoritedFn, onToggleFavorite,
 }: RightPanelProps) {
   // Per-user data (overrides location fields for multi-tenant)
   const userData = getUserData?.(location.id);
+  const favorited = isFavoritedFn?.(location.id) ?? false;
   const [hoverRating, setHoverRating] = useState(0);
   const [editingNotes, setEditingNotes] = useState(false);
   const [userNotes, setUserNotes] = useState(userData?.user_notes ?? location.user_notes ?? '');
@@ -144,17 +147,10 @@ export default function RightPanel({
       .catch(() => {});
   }, [location.id, location.latitude, location.longitude]);
 
-  // Per-user favorite state (local)
-  const [isFavorited, setIsFavorited] = useState(!!location.favorited);
-
   // Effective user interaction values (from user_location_data, falling back to location fields)
   const effectiveRating = userData?.user_rating ?? location.user_rating;
   const effectiveVisited = userData?.visited ?? location.visited;
-  const effectiveWantToVisit = userData?.want_to_visit ?? location.want_to_visit;
   const effectiveNotes = userData?.user_notes ?? location.user_notes;
-
-  // Reset favorite when location changes
-  useEffect(() => { setIsFavorited(!!location.favorited); }, [location.id, location.favorited]);
 
   const handleRating = useCallback(async (rating: number) => {
     if (onUpdateUserData) {
@@ -163,35 +159,11 @@ export default function RightPanel({
   }, [location.id, effectiveRating, onUpdateUserData]);
 
   const handleToggleFavorite = useCallback(async () => {
-    const newState = !isFavorited;
-    setIsFavorited(newState); // Optimistic update
     setHeartKey((k) => k + 1);
-    try {
-      const { getSupabase } = await import('../lib/supabase');
-      const supabase = getSupabase();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) { setIsFavorited(!newState); return; }
-
-      const API_BASE = import.meta.env.VITE_API_URL || '/api';
-      const res = await fetch(`${API_BASE}/favorites/${location.id}`, {
-        method: newState ? 'POST' : 'DELETE',
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      });
-      if (!res.ok) {
-        setIsFavorited(!newState); // Revert on failure
-        showToast?.('Failed to update favorite', 'error');
-      }
-    } catch {
-      setIsFavorited(!newState);
-      showToast?.('Failed to update favorite', 'error');
+    if (onToggleFavorite) {
+      await onToggleFavorite(location.id);
     }
-  }, [location.id, isFavorited, showToast]);
-
-  const handleToggleWantToVisit = useCallback(async () => {
-    if (onUpdateUserData) {
-      await onUpdateUserData(location.id, { want_to_visit: effectiveWantToVisit ? 0 : 1 });
-    }
-  }, [location.id, effectiveWantToVisit, onUpdateUserData]);
+  }, [location.id, onToggleFavorite]);
 
   const handleToggleVisited = useCallback(async () => {
     if (onUpdateUserData) {
@@ -489,14 +461,11 @@ export default function RightPanel({
                 <Plus className="w-3.5 h-3.5" />{addingToTrip ? 'Adding...' : 'Add to Trip'}
               </button>
             )}
-            <button onClick={handleToggleFavorite} title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${isFavorited ? 'bg-red-500/20 text-red-400 border border-red-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${isFavorited ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
-              <Heart key={heartKey} className={`w-4 h-4 ${isFavorited ? 'fill-red-400 animate-heart-bounce' : ''}`} />
+            <button onClick={handleToggleFavorite} title={favorited ? 'Remove from favorites' : 'Add to favorites'}
+              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${favorited ? 'bg-red-500/20 text-red-400 border border-red-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${favorited ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
+              <Heart key={heartKey} className={`w-4 h-4 ${favorited ? 'fill-red-400 animate-heart-bounce' : ''}`} />
             </button>
-            <button onClick={handleToggleWantToVisit} title={effectiveWantToVisit ? 'Remove from wishlist' : 'Want to visit'}
-              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${effectiveWantToVisit ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${effectiveWantToVisit ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
-              {effectiveWantToVisit ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
-            </button>
+            {/* Bookmark removed — favorites only */}
             <button onClick={handleToggleVisited} title={effectiveVisited ? 'Mark as not visited' : 'Mark as visited'}
               className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${effectiveVisited ? 'bg-green-500/20 text-green-400 border border-green-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${effectiveVisited ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
               <Check className="w-4 h-4" />

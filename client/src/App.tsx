@@ -18,6 +18,7 @@ import ToastContainer from './components/ToastContainer';
 import type { Location, MapStyle } from './types';
 import { MAP_STYLES } from './types';
 import { useUserData } from './hooks/useUserData';
+import { useFavorites } from './hooks/useFavorites';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -36,10 +37,11 @@ export default function App() {
   const { locations, searchLocations, createLocation, updateLocation, deleteLocation, toggleFavorite } = useLocations();
   const { toasts, showToast, removeToast } = useToast();
   const { getLocationData, updateLocationData } = useUserData();
+  const { isFavorited, toggleFavorite: toggleFav, favoriteIds } = useFavorites();
 
   const { routeGeoJSON } = useRoute(stops, updateStop);
   const { weatherCache, fetchWeather } = useWeather();
-  const { filters, setFilters, filteredLocations, handleToggleLayer, handleToggleCampsiteSubType } = useFilters(locations, routeGeoJSON);
+  const { filters, setFilters, filteredLocations, handleToggleLayer, handleToggleCampsiteSubType } = useFilters(locations, routeGeoJSON, favoriteIds);
   const { searchQuery, searchResults, handleSearch, clearSearch } = useSearch(searchLocations);
   const {
     selectedLocation,
@@ -227,6 +229,8 @@ export default function App() {
               showToast={showToast}
               getUserData={getLocationData}
               onUpdateUserData={updateLocationData}
+              isFavorited={isFavorited}
+              onToggleFavorite={toggleFav}
             />
           )}
         </div>
