@@ -1,0 +1,156 @@
+Coordinate Drift Detection Report
+Generated: Sat Feb 28 23:39:51 EST 2026
+
+═══════════════════════════════════════════════════════
+Summary
+═══════════════════════════════════════════════════════
+
+Exact name duplicates:     61
+Similar name variations:   21
+
+═══════════════════════════════════════════════════════
+Exact Duplicates (Same name, different coordinates)
+═══════════════════════════════════════════════════════
+
+id    name                                  category  lat      lon        state
+----  ------------------------------------  --------  -------  ---------  -----
+4813  Anthracite Outdoor Adventure Area     riding    40.8234  -76.1567   NY   
+5662  Anthracite Outdoor Adventure Area     riding    40.855   -76.015    NY   
+4814  Bald Eagle State Forest OHV           riding    40.9567  -77.3234   NY   
+6255  Bald Eagle State Forest OHV           riding    40.925   -77.425    NY   
+4805  Barnwell Mountain Recreation Area     riding    33.1567  -94.8234   TX   
+5733  Barnwell Mountain Recreation Area     riding    32.615   -96.685    TX   
+5911  Beartown State Forest                 riding    42.275   -73.275    MA   
+6009  Beartown State Forest                 riding    42.2142  -73.2858   MA   
+5008  Big Meadows — Sequoia NF              riding    36.3234  -118.7567  CA   
+5827  Big Meadows — Sequoia NF              riding    36.425   -118.675   CA   
+1137  Birch Creek Campground                campsite  44.1392  -112.9     ID   
+2211  Birch Creek Campground                campsite  41.303   -111.1846  UT   
+5080  Bloody Basin Road                     riding    34.2567  -111.7234  AZ   
+6397  Bloody Basin Road                     riding    34.325   -111.825   AZ   
+4806  Bridgeport OHV                        riding    33.189   -97.7567   TX   
+6693  Bridgeport OHV                        riding    33.225   -97.775    TX   
+4761  Brimstone Recreation                  riding    36.4231  -84.5892   TN   
+5664  Brimstone Recreation                  riding    36.545   -84.625    KY   
+148   Brown Creek Campground                campsite  34.186   -109.7896  AZ   
+2549  Brown Creek Campground                campsite  47.4133  -123.3188  WA   
+4872  Carnegie SVRA                         riding    37.6456  -121.5789  CA   
+5754  Carnegie SVRA                         riding    37.625   -121.535   CA   
+2116  Chimney Rock Trail                    campsite  44.135   -120.8132  OR   
+6809  Chimney Rock Trail                    riding    34.825   -111.825   AZ   
+381   Cottonwood Campground                 campsite  32.8002  -116.3383  CA   
+2826  Cottonwood Campground                 campsite  42.3624  -107.6846  WY   
+5192  Elk City Wagon Road                   riding    45.8012  -115.4567  ID   
+5841  Elk City Wagon Road                   riding    45.825   -115.475   ID   
+4996  Gilbert OHV Park                      riding    47.489   -92.4678   MN   
+5933  Gilbert OHV Park                      riding    47.475   -92.475    MN   
+5137  Hagerman Pass                         riding    39.2234  -106.4567  CO   
+6749  Hagerman Pass                         riding    39.275   -106.425   CO   
+4780  Hard Rock Cycle Park                  riding    28.6012  -81.0345   FL   
+5655  Hard Rock Cycle Park                  riding    28.165   -81.405    FL   
+4788  Haspin Acres                          riding    40.2345  -86.0567   IN   
+5667  Haspin Acres                          riding    38.825   -85.115    IN   
+4759  Hatfield-McCoy — Bearwallow           riding    37.9012  -81.7898   VA   
+6251  Hatfield-McCoy — Bearwallow           riding    37.725   -81.825    VA   
+4758  Hatfield-McCoy — Indian Ridge         riding    37.8456  -81.9234   KY   
+5740  Hatfield-McCoy — Indian Ridge         riding    37.425   -81.625    VA   
+4757  Hatfield-McCoy — Pinnacle Creek       riding    37.6583  -81.7519   VA   
+5739  Hatfield-McCoy — Pinnacle Creek       riding    37.765   -81.885    VA   
+4804  Hidden Falls Adventure Park           riding    30.8456  -97.8901   TX   
+6328  Hidden Falls Adventure Park           riding    30.525   -98.325    TX   
+5077  Hole in the Rock Road                 riding    37.4234  -111.2567  UT   
+6757  Hole in the Rock Road                 riding    37.525   -111.275   UT   
+4874  Hungry Valley SVRA                    riding    34.789   -118.9234  CA   
+6305  Hungry Valley SVRA                    riding    34.775   -118.775   CA   
+4793  Iron Range OHV State Recreation Area  riding    47.4789  -92.6234   MN   
+5677  Iron Range OHV State Recreation Area  riding    47.525   -92.875    MN   
+4819  Jericho Mountain State Park           riding    44.4789  -71.3234   NH   
+5688  Jericho Mountain State Park           riding    44.525   -71.375    NH   
+4970  Knik Glacier Trail                    riding    61.5234  -148.8567  AK   
+5681  Knik Glacier Trail                    riding    61.685   -148.925   AK   
+5076  Lockhart Basin                        riding    38.3012  -109.6567  UT   
+5745  Lockhart Basin                        riding    38.325   -109.525   UT   
+3834  Long Cane Ranger District             campsite  33.8032  -81.9307   GA   
+6704  Long Cane Ranger District             riding    34.175   -82.325    GA   
+5622  Medicine Bow NF — Snowy Range         riding    41.3234  -106.3567  WY   
+5842  Medicine Bow NF — Snowy Range         riding    41.325   -106.325   WY   
+5542  Mid-Atlantic BDR (MABDR)              riding    39.5567  -78.5234   MD   
+6084  Mid-Atlantic BDR (MABDR)              riding    38.2542  -79.4458   MD   
+159   Mingus Mountain                       campsite  34.6912  -112.1359  AZ   
+6736  Mingus Mountain                       riding    34.725   -112.125   AZ   
+5134  Mosquito Pass                         riding    39.2789  -106.1789  CO   
+6394  Mosquito Pass                         riding    39.275   -106.175   CO   
+5528  Nevada BDR (NVBDR)                    riding    39.5567  -117.0234  CA   
+6177  Nevada BDR (NVBDR)                    riding    39.5542  -117.2258  CA   
+5526  Oregon BDR (ORBDR)                    riding    43.5567  -121.0234  OR   
+6070  Oregon BDR (ORBDR)                    riding    42.8542  -120.5258  OR   
+1467  Palisades Campground                  campsite  45.1715  -109.3086  MT   
+2126  Palisades Campground                  campsite  44.1314  -120.8235  OR   
+4876  Prairie City SVRA                     riding    38.6234  -121.1567  CA   
+5755  Prairie City SVRA                     riding    38.675   -121.025   CA   
+5143  Prescott NF — Senator Highway         riding    34.5234  -112.4567  AZ   
+6735  Prescott NF — Senator Highway         riding    34.475   -112.475   AZ   
+4826  Rampart Range                         riding    39.0567  -105.0789  CO   
+6391  Rampart Range                         riding    39.075   -105.075   CO   
+4763  Ride Royal Blue                       riding    36.3789  -84.1234   NC   
+5663  Ride Royal Blue                       riding    36.395   -84.175    NC   
+4820  Ride the Wilds — Pittsburg            riding    45.0234  -71.2567   NH   
+5689  Ride the Wilds — Pittsburg            riding    45.075   -71.375    NH   
+4928  Rollins Pass                          riding    39.9234  -105.6567  CO   
+6395  Rollins Pass                          riding    39.925   -105.675   CO   
+4949  Rowher Flat OHV                       riding    34.4789  -118.3456  CA   
+6306  Rowher Flat OHV                       riding    34.375   -117.875   CA   
+5102  Saline Valley Road                    riding    36.7567  -117.7234  CA   
+6480  Saline Valley Road                    riding    36.775   -117.825   CA   
+5035  Sand Mountain Recreation Area         riding    39.2567  -118.3234  CA   
+5710  Sand Mountain Recreation Area         campsite  39.275   -118.425   CA   
+5136  Schofield Pass                        riding    38.9789  -107.0567  CO   
+6744  Schofield Pass                        riding    39.025   -107.075   CO   
+5140  Shafer Trail — Canyonlands            riding    38.4234  -109.8567  UT   
+5635  Shafer Trail — Canyonlands            riding    38.3789  -109.8567  UT   
+5072  Shelf Road                            riding    38.5234  -105.2567  CO   
+6751  Shelf Road                            riding    38.575   -105.225   CO   
+4784  Silver Lake Sand Dunes                riding    43.6678  -86.5345   MI   
+6264  Silver Lake Sand Dunes                riding    43.675   -86.525    MI   
+4967  Skalkaho Pass                         riding    46.2567  -113.7234  ID   
+6673  Skalkaho Pass                         riding    46.275   -113.775   ID   
+4951  Spangler Hills OHV                    riding    35.4567  -117.5234  CA   
+6300  Spangler Hills OHV                    riding    35.525   -117.325   CA   
+4781  Stony Lonesome OHV                    riding    34.589   -87.2345   AL   
+5671  Stony Lonesome OHV                    riding    34.575   -87.025    AL   
+5139  Stony Pass                            riding    37.8012  -107.5234  CO   
+6806  Stony Pass                            riding    37.825   -107.575   CO   
+4871  Tahuya State Forest                   riding    47.4234  -122.7567  WA   
+6410  Tahuya State Forest                   riding    47.475   -122.775   WA   
+5632  Trail Ridge Road — Rocky Mountain NP  riding    40.4234  -105.7567  CO   
+6198  Trail Ridge Road — Rocky Mountain NP  riding    40.3842  -105.7058  CO   
+4916  Tsali Recreation Area                 riding    35.3456  -83.5567   NC   
+6705  Tsali Recreation Area                 riding    35.325   -83.525    NC   
+5527  Washington BDR (WABDR)                riding    47.0567  -120.5234  WA   
+6069  Washington BDR (WABDR)                riding    46.2542  -120.7858  OR   
+4929  Weston Pass                           riding    39.1234  -106.1567  CO   
+5835  Weston Pass                           riding    39.125   -106.175   CO   
+4762  Windrock Park                         riding    36.1678  -84.3456   TN   
+5863  Windrock Park                         riding    36.075   -84.275    NC   
+107   Windy Point Campground                campsite  35.436   -114.1601  AZ   
+2555  Windy Point Campground                campsite  46.6933  -120.9075  WA   
+
+Recommendations:
+1. Review each duplicate set manually
+2. Determine if these are:
+   - Legitimate separate locations (add distinguishing info to names)
+   - Import errors (remove duplicates)
+   - Moved locations (update coordinates, mark old as outdated)
+
+═══════════════════════════════════════════════════════
+Notes
+═══════════════════════════════════════════════════════
+
+This report identifies potential issues:
+- Duplicate imports with slightly different coordinates
+- Locations that have moved (trailhead relocations, etc.)
+- Data entry errors
+
+Not all findings are errors - some locations legitimately
+share names (e.g., multiple 'Pine Creek Trail' in different states)
+
