@@ -10,7 +10,7 @@ interface AddLocationModalProps {
   darkMode: boolean;
 }
 
-const categories: LocationCategory[] = ['campsite', 'riding', 'water', 'dump', 'gas', 'grocery', 'scenic', 'laundromat'];
+const categories: LocationCategory[] = ['campsite', 'riding', 'water', 'dump', 'scenic'];
 
 export default function AddLocationModal({ coords, onClose, onCreate, darkMode }: AddLocationModalProps) {
   const [name, setName] = useState('');
@@ -18,7 +18,7 @@ export default function AddLocationModal({ coords, onClose, onCreate, darkMode }
   const [description, setDescription] = useState('');
   const [subType, setSubType] = useState('');
   const [notes, setNotes] = useState('');
-  const [visibility, setVisibility] = useState<'public' | 'private'>('public');
+  const [visibility] = useState<'public' | 'private'>('private');
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -110,16 +110,38 @@ export default function AddLocationModal({ coords, onClose, onCreate, darkMode }
           </div>
 
           {/* Sub Type */}
-          <div>
-            <label className={labelClass}>Sub Type</label>
-            <input
-              type="text"
-              value={subType}
-              onChange={e => setSubType(e.target.value)}
-              placeholder={category === 'campsite' ? 'BLM, National Forest, State...' : category === 'riding' ? 'Single Track, Fire Road...' : 'Type...'}
-              className={inputClass}
-            />
-          </div>
+          {category === 'campsite' && (
+            <div>
+              <label className={labelClass}>Type</label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { value: 'boondocking', label: '⛺ Boondocking' },
+                  { value: 'campground', label: '🏕️ Campground' },
+                  { value: 'parking', label: '🅿️ Overnight Parking' },
+                  { value: 'other', label: '🏕️ Other' },
+                ].map(opt => (
+                  <button key={opt.value} type="button" onClick={() => setSubType(opt.value)}
+                    className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                      subType === opt.value
+                        ? 'bg-orange-500/20 text-orange-400 border border-orange-500/50'
+                        : darkMode
+                          ? 'bg-dark-800 text-gray-400 border border-gray-700 hover:border-gray-600'
+                          : 'bg-gray-50 text-gray-600 border border-gray-200 hover:border-gray-300'
+                    }`}>
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {category === 'riding' && (
+            <div>
+              <label className={labelClass}>Trail Type</label>
+              <input type="text" value={subType} onChange={e => setSubType(e.target.value)}
+                placeholder="Single Track, Fire Road, Enduro..."
+                className={inputClass} />
+            </div>
+          )}
 
           {/* Description */}
           <div>
@@ -145,40 +167,14 @@ export default function AddLocationModal({ coords, onClose, onCreate, darkMode }
             />
           </div>
 
-          {/* Visibility */}
-          <div>
-            <label className={labelClass}>Visibility</label>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setVisibility('public')}
-                className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${
-                  visibility === 'public'
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/50'
-                    : darkMode
-                      ? 'bg-dark-800 text-gray-400 border border-gray-700'
-                      : 'bg-gray-50 text-gray-600 border border-gray-200'
-                }`}
-              >
-                🌍 Public
-              </button>
-              <button
-                type="button"
-                onClick={() => setVisibility('private')}
-                className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${
-                  visibility === 'private'
-                    ? 'bg-purple-500/20 text-purple-400 border border-purple-500/50'
-                    : darkMode
-                      ? 'bg-dark-800 text-gray-400 border border-gray-700'
-                      : 'bg-gray-50 text-gray-600 border border-gray-200'
-                }`}
-              >
-                🔒 Private
-              </button>
-            </div>
-            <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-              {visibility === 'private' ? 'Only you can see this location' : 'Visible to all users'}
-            </p>
+          {/* Visibility Note */}
+          <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+            darkMode ? 'bg-purple-500/10 border border-purple-500/20' : 'bg-purple-50 border border-purple-200'
+          }`}>
+            <span>🔒</span>
+            <span className={`text-sm ${darkMode ? 'text-purple-300' : 'text-purple-700'}`}>
+              This location will be private — only visible to you
+            </span>
           </div>
 
           {/* Actions */}

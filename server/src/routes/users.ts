@@ -8,6 +8,16 @@ import { validate } from '../middleware/validate';
 
 const router = Router();
 
+/** Convert camelCase Drizzle output to snake_case for API response */
+function toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+    result[snakeKey] = value;
+  }
+  return result;
+}
+
 const updateProfileSchema = z.object({
   display_name: z.string().min(1).max(100).nullish(),
   avatar_url: z.string().url().nullish(),
@@ -35,7 +45,7 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
 
     const [settings] = await db.select().from(userSettings).where(eq(userSettings.userId, req.user!.id));
 
-    res.json({ ...user, settings: settings ?? null });
+    res.json({ ...toSnakeCase(user), settings: settings ? toSnakeCase(settings) : null });
   } catch (err) {
     console.error('Error fetching profile:', err);
     res.status(500).json({ error: 'Failed to fetch profile', code: 'INTERNAL_ERROR' });
@@ -70,7 +80,7 @@ router.put('/me', requireAuth, validate(updateProfileSchema), async (req: Reques
       }).returning();
     }
 
-    res.json(user);
+    res.json(toSnakeCase(user));
   } catch (err) {
     console.error('Error updating profile:', err);
     res.status(500).json({ error: 'Failed to update profile', code: 'INTERNAL_ERROR' });

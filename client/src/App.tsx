@@ -17,6 +17,7 @@ import AddLocationModal from './components/AddLocationModal';
 import ToastContainer from './components/ToastContainer';
 import type { Location, MapStyle } from './types';
 import { MAP_STYLES } from './types';
+import { useUserData } from './hooks/useUserData';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -34,6 +35,7 @@ export default function App() {
   const { stops, addStop, updateStop, reorderStops, deleteStop } = useTripStops(selectedTrip?.id ?? null);
   const { locations, searchLocations, createLocation, updateLocation, deleteLocation, toggleFavorite } = useLocations();
   const { toasts, showToast, removeToast } = useToast();
+  const { getLocationData, updateLocationData } = useUserData();
 
   const { routeGeoJSON } = useRoute(stops, updateStop);
   const { weatherCache, fetchWeather } = useWeather();
@@ -223,6 +225,8 @@ export default function App() {
               onFlyTo={handleFlyTo}
               onLocationClick={handleLocationClick}
               showToast={showToast}
+              getUserData={getLocationData}
+              onUpdateUserData={updateLocationData}
             />
           )}
         </div>

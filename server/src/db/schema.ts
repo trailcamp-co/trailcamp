@@ -209,6 +209,33 @@ export const userFavorites = pgTable(
   ]
 );
 
+// ─── User Location Data (per-user annotations on any location) ───────────────
+
+export const userLocationData = pgTable(
+  'user_location_data',
+  {
+    id: serial('id').primaryKey(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    locationId: integer('location_id')
+      .notNull()
+      .references(() => locations.id, { onDelete: 'cascade' }),
+    visited: integer('visited').notNull().default(0),
+    visitedDate: text('visited_date'),
+    wantToVisit: integer('want_to_visit').notNull().default(0),
+    userRating: integer('user_rating'),
+    userNotes: text('user_notes'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique('uq_user_location').on(table.userId, table.locationId),
+    index('idx_user_location_user').on(table.userId),
+    index('idx_user_location_location').on(table.locationId),
+  ]
+);
+
 // ─── User Settings ───────────────────────────────────────────────────────────
 
 export const userSettings = pgTable('user_settings', {

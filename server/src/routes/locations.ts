@@ -463,7 +463,7 @@ router.put('/:id/favorite', requireAuth, async (req: Request, res: Response) => 
     }
     const newVal = location.favorited ? 0 : 1;
     const [updated] = await db.update(locations)
-      .set({ favorited: newVal, updatedAt: new Date().toISOString() })
+      .set({ favorited: newVal, updatedAt: new Date() })
       .where(eq(locations.id, id))
       .returning();
     res.json(updated);
@@ -478,7 +478,7 @@ router.put('/:id/favorite', requireAuth, async (req: Request, res: Response) => 
 router.post('/', requireAuth, validate(createLocationSchema), async (req: Request, res: Response) => {
   try {
     const body = req.body;
-    const now = new Date().toISOString();
+    const now = new Date();
     const [created] = await db.insert(locations).values({
       name: body.name,
       description: body.description ?? null,
@@ -541,7 +541,7 @@ router.put('/:id', requireAuth, validate(updateLocationSchema), async (req: Requ
     }
 
     const body = req.body;
-    const updateData: Record<string, unknown> = { updatedAt: new Date().toISOString() };
+    const updateData: Record<string, unknown> = { updatedAt: new Date() };
 
     const fieldMap: Record<string, string> = {
       name: 'name', description: 'description', latitude: 'latitude', longitude: 'longitude',

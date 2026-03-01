@@ -26,6 +26,7 @@ import directionsRouter from './routes/directions';
 import importRouter from './routes/import';
 import usersRouter from './routes/users';
 import favoritesRouter from './routes/favorites';
+import userdataRouter from './routes/userdata';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -84,6 +85,7 @@ app.use('/api/directions', directionsRouter);
 app.use('/api/import', importRouter);
 app.use('/api/users', authLimiter, usersRouter);
 app.use('/api/favorites', favoritesRouter);
+app.use('/api/userdata', userdataRouter);
 
 // Health check (public)
 app.get('/api/health', (_req, res) => {

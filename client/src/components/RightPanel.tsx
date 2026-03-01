@@ -23,7 +23,8 @@ import {
 } from 'lucide-react';
 import type { Location } from '../types';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
-import { toggleFavorite, fetchNearbyRiding, fetchGroupMembers } from '../hooks/useApi';
+import { fetchNearbyRiding, fetchGroupMembers } from '../hooks/useApi';
+import type { UserLocationData } from '../hooks/useUserData';
 
 interface RightPanelProps {
   location: Location;
@@ -36,6 +37,8 @@ interface RightPanelProps {
   showToast?: (message: string, type?: 'success' | 'error' | 'info') => void;
   onFlyTo?: (lng: number, lat: number) => void;
   onLocationClick?: (location: Location) => void;
+  getUserData?: (locationId: number) => UserLocationData;
+  onUpdateUserData?: (locationId: number, updates: Partial<UserLocationData>) => Promise<UserLocationData | null>;
 }
 
 const CATEGORY_LUCIDE_ICONS: Record<string, React.ReactNode> = {
@@ -60,10 +63,13 @@ function DetailBadge({ label, value, darkMode }: { label: string; value: string 
 
 export default function RightPanel({
   location, onClose, onUpdate, onDelete, onAddToTrip, hasActiveTrip, darkMode, onFlyTo, onLocationClick, showToast,
+  getUserData, onUpdateUserData,
 }: RightPanelProps) {
+  // Per-user data (overrides location fields for multi-tenant)
+  const userData = getUserData?.(location.id);
   const [hoverRating, setHoverRating] = useState(0);
   const [editingNotes, setEditingNotes] = useState(false);
-  const [userNotes, setUserNotes] = useState(location.user_notes ?? '');
+  const [userNotes, setUserNotes] = useState(userData?.user_notes ?? location.user_notes ?? '');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [copiedCoords, setCopiedCoords] = useState(false);
   const [addingToTrip, setAddingToTrip] = useState(false);
@@ -89,10 +95,10 @@ export default function RightPanel({
 
   // Reset notes when location changes
   useEffect(() => {
-    setUserNotes(location.user_notes ?? '');
+    setUserNotes(userData?.user_notes ?? location.user_notes ?? '');
     setEditingNotes(false);
     setConfirmDelete(false);
-  }, [location.id, location.user_notes]);
+  }, [location.id, userData?.user_notes, location.user_notes]);
 
   // Fetch group members
   useEffect(() => {
@@ -137,31 +143,68 @@ export default function RightPanel({
       .catch(() => {});
   }, [location.id, location.latitude, location.longitude]);
 
+  // Effective user interaction values (from user_location_data, falling back to location fields)
+  const effectiveRating = userData?.user_rating ?? location.user_rating;
+  const effectiveVisited = userData?.visited ?? location.visited;
+  const effectiveWantToVisit = userData?.want_to_visit ?? location.want_to_visit;
+  const effectiveFavorited = location.favorited; // Favorites use the separate user_favorites table
+  const effectiveNotes = userData?.user_notes ?? location.user_notes;
+
   const handleRating = useCallback(async (rating: number) => {
-    await onUpdate(location.id, { user_rating: location.user_rating === rating ? null : rating });
-  }, [location.id, location.user_rating, onUpdate]);
+    if (onUpdateUserData) {
+      await onUpdateUserData(location.id, { user_rating: effectiveRating === rating ? null : rating });
+    }
+  }, [location.id, effectiveRating, onUpdateUserData]);
 
   const handleToggleFavorite = useCallback(async () => {
     setHeartKey((k) => k + 1);
-    await toggleFavorite(location.id);
-    await onUpdate(location.id, { favorited: location.favorited ? 0 : 1 });
-  }, [location.id, location.favorited, onUpdate]);
+    // Use the favorites API
+    try {
+      const { getSupabase } = await import('../lib/supabase');
+      const supabase = getSupabase();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) return;
+
+      const API_BASE = import.meta.env.VITE_API_URL || '/api';
+      if (effectiveFavorited) {
+        await fetch(`${API_BASE}/favorites/${location.id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+      } else {
+        await fetch(`${API_BASE}/favorites/${location.id}`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+      }
+      // Toggle local state via onUpdate
+      await onUpdate(location.id, { favorited: effectiveFavorited ? 0 : 1 });
+    } catch {
+      showToast?.('Failed to update favorite', 'error');
+    }
+  }, [location.id, effectiveFavorited, onUpdate, showToast]);
 
   const handleToggleWantToVisit = useCallback(async () => {
-    await onUpdate(location.id, { want_to_visit: location.want_to_visit ? 0 : 1 });
-  }, [location.id, location.want_to_visit, onUpdate]);
+    if (onUpdateUserData) {
+      await onUpdateUserData(location.id, { want_to_visit: effectiveWantToVisit ? 0 : 1 });
+    }
+  }, [location.id, effectiveWantToVisit, onUpdateUserData]);
 
   const handleToggleVisited = useCallback(async () => {
-    await onUpdate(location.id, {
-      visited: location.visited ? 0 : 1,
-      visited_date: location.visited ? null : new Date().toISOString().split('T')[0],
-    });
-  }, [location.id, location.visited, onUpdate]);
+    if (onUpdateUserData) {
+      await onUpdateUserData(location.id, {
+        visited: effectiveVisited ? 0 : 1,
+        visited_date: effectiveVisited ? null : new Date().toISOString().split('T')[0],
+      });
+    }
+  }, [location.id, effectiveVisited, onUpdateUserData]);
 
   const handleSaveNotes = useCallback(async () => {
-    await onUpdate(location.id, { user_notes: userNotes || null });
+    if (onUpdateUserData) {
+      await onUpdateUserData(location.id, { user_notes: userNotes || null });
+    }
     setEditingNotes(false);
-  }, [location.id, userNotes, onUpdate]);
+  }, [location.id, userNotes, onUpdateUserData]);
 
   const handleNavigate = useCallback(() => {
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}`, '_blank');
@@ -432,16 +475,16 @@ export default function RightPanel({
                 <Plus className="w-3.5 h-3.5" />{addingToTrip ? 'Adding...' : 'Add to Trip'}
               </button>
             )}
-            <button onClick={handleToggleFavorite} title={location.favorited ? 'Remove from favorites' : 'Add to favorites'}
-              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${location.favorited ? 'bg-red-500/20 text-red-400 border border-red-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${location.favorited ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
-              <Heart key={heartKey} className={`w-4 h-4 ${location.favorited ? 'fill-red-400 animate-heart-bounce' : ''}`} />
+            <button onClick={handleToggleFavorite} title={effectiveFavorited ? 'Remove from favorites' : 'Add to favorites'}
+              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${effectiveFavorited ? 'bg-red-500/20 text-red-400 border border-red-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${effectiveFavorited ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
+              <Heart key={heartKey} className={`w-4 h-4 ${effectiveFavorited ? 'fill-red-400 animate-heart-bounce' : ''}`} />
             </button>
-            <button onClick={handleToggleWantToVisit} title={location.want_to_visit ? 'Remove from wishlist' : 'Want to visit'}
-              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${location.want_to_visit ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${location.want_to_visit ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
-              {location.want_to_visit ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+            <button onClick={handleToggleWantToVisit} title={effectiveWantToVisit ? 'Remove from wishlist' : 'Want to visit'}
+              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${effectiveWantToVisit ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${effectiveWantToVisit ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
+              {effectiveWantToVisit ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
             </button>
-            <button onClick={handleToggleVisited} title={location.visited ? 'Mark as not visited' : 'Mark as visited'}
-              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${location.visited ? 'bg-green-500/20 text-green-400 border border-green-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${location.visited ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
+            <button onClick={handleToggleVisited} title={effectiveVisited ? 'Mark as not visited' : 'Mark as visited'}
+              className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors press-scale ${effectiveVisited ? 'bg-green-500/20 text-green-400 border border-green-500/30' : darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-400 border border-dark-700/50' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 border border-gray-200'} [.light_&]:${effectiveVisited ? '' : 'bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-500 [.light_&]:border-gray-200'}`}>
               <Check className="w-4 h-4" />
             </button>
           </div>
@@ -452,14 +495,14 @@ export default function RightPanel({
           <div className={labelStyle}>Your Rating</div>
           <div className="flex items-center gap-1 star-rating mt-2">
             {[1, 2, 3, 4, 5].map((star) => {
-              const filled = hoverRating > 0 ? star <= hoverRating : star <= (location.user_rating ?? 0);
+              const filled = hoverRating > 0 ? star <= hoverRating : star <= (effectiveRating ?? 0);
               return (
                 <button key={star} onClick={() => handleRating(star)} onMouseEnter={() => setHoverRating(star)} onMouseLeave={() => setHoverRating(0)} className="p-0.5 transition-transform hover:scale-110">
                   <Star className={`w-6 h-6 transition-colors ${filled ? 'fill-yellow-400 text-yellow-400' : darkMode ? 'text-gray-600 hover:text-yellow-400/50' : 'text-gray-300 hover:text-yellow-400/50'}`} />
                 </button>
               );
             })}
-            {location.user_rating && <span className={`ml-2 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'} [.light_&]:text-gray-500`}>{location.user_rating}/5</span>}
+            {effectiveRating && <span className={`ml-2 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'} [.light_&]:text-gray-500`}>{effectiveRating}/5</span>}
           </div>
         </div>
 
@@ -571,7 +614,7 @@ export default function RightPanel({
                   className={`w-full text-sm rounded-xl px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-orange-500/50 ${darkMode ? 'bg-dark-800 border border-dark-700/50 text-gray-200 placeholder-gray-500' : 'bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400'} [.light_&]:bg-gray-50 [.light_&]:border-gray-200 [.light_&]:text-gray-800 [.light_&]:placeholder-gray-400`} />
                 <div className="flex gap-2 mt-2">
                   <button onClick={handleSaveNotes} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-500 hover:bg-orange-600 text-white transition-colors press-scale">Save</button>
-                  <button onClick={() => { setUserNotes(location.user_notes ?? ''); setEditingNotes(false); }} className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors press-scale ${darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'} [.light_&]:bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-600`}>Cancel</button>
+                  <button onClick={() => { setUserNotes(effectiveNotes ?? ''); setEditingNotes(false); }} className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors press-scale ${darkMode ? 'bg-dark-800 hover:bg-dark-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'} [.light_&]:bg-gray-100 [.light_&]:hover:bg-gray-200 [.light_&]:text-gray-600`}>Cancel</button>
                 </div>
               </div>
             ) : (
@@ -580,10 +623,10 @@ export default function RightPanel({
               </p>
             )}
           </div>
-          {!!location.visited && location.visited_date && (
+          {!!effectiveVisited && (userData?.visited_date ?? location.visited_date) && (
             <div className="mt-3 flex items-center gap-2">
               <Clock className={`w-3.5 h-3.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`} />
-              <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`}>Visited {location.visited_date}</span>
+              <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`}>Visited {userData?.visited_date ?? location.visited_date}</span>
             </div>
           )}
         </div>
