@@ -222,7 +222,8 @@ router.get('/', optionalAuth, async (req: Request, res: Response) => {
       return;
     }
 
-    const rows = await db.select().from(locations).where(whereClause).orderBy(asc(locations.name));
+    const queryLimit = req.query.limit ? Math.min(Number(req.query.limit), 50000) : 50000;
+    const rows = await db.select().from(locations).where(whereClause).orderBy(asc(locations.name)).limit(queryLimit);
 
     // Precompute group counts in one query
     const groupIds2 = [...new Set(rows.map(r => r.groupId).filter(Boolean))] as number[];
