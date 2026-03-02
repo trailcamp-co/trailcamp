@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import compression from 'compression';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
@@ -58,6 +59,7 @@ const authLimiter = rateLimit({
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
+app.use(compression());
 app.use(cors({
   origin: process.env.CORS_ORIGIN || '*',
   credentials: true,

@@ -128,7 +128,8 @@ export function useLocations() {
     setLoading(true);
     try {
       const query = params ? '?' + new URLSearchParams(params).toString() : '';
-      const data = await apiFetch<Location[]>(`/locations${query}`);
+      const endpoint = query ? `/locations${query}` : '/locations/slim';
+      const data = await apiFetch<Location[]>(endpoint);
 
       setLocations(data);
     } catch {

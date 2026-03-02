@@ -115,6 +115,93 @@ function computeSeasonalStatus(loc: SeasonalLoc, month: number): 'great' | 'shou
 
 // ─── GET /api/locations ──────────────────────────────────────────────────────
 
+// ─── GET /api/locations/slim ─────────────────────────────────────────────────
+// Returns lightweight location data for map markers + sidebar cards.
+// ~90% smaller than full endpoint. Full details fetched on click via GET /:id.
+
+router.get('/slim', optionalAuth, async (req: Request, res: Response) => {
+  try {
+    const rows = await db.select({
+      id: locations.id,
+      name: locations.name,
+      latitude: locations.latitude,
+      longitude: locations.longitude,
+      category: locations.category,
+      subType: locations.subType,
+      city: locations.city,
+      state: locations.state,
+      costPerNight: locations.costPerNight,
+      userRating: locations.userRating,
+      waterNearby: locations.waterNearby,
+      waterAvailable: locations.waterAvailable,
+      dumpNearby: locations.dumpNearby,
+      difficulty: locations.difficulty,
+      trailTypes: locations.trailTypes,
+      distanceMiles: locations.distanceMiles,
+      bestSeason: locations.bestSeason,
+      groupId: locations.groupId,
+      isGroupPrimary: locations.isGroupPrimary,
+      externalLinks: locations.externalLinks,
+      source: locations.source,
+      visibility: locations.visibility,
+      userId: locations.userId,
+    }).from(locations).where(
+      or(eq(locations.visibility, 'public'), isNull(locations.visibility))
+    ).orderBy(asc(locations.name));
+
+    // Group filtering - only show primary from groups
+    const filtered = rows.filter(r => !r.groupId || r.isGroupPrimary === 1);
+
+    // Precompute group counts
+    const groupIds = [...new Set(filtered.map(r => r.groupId).filter(Boolean))] as number[];
+    const groupCountMap = new Map<number, number>();
+    if (groupIds.length > 0) {
+      const groupCounts = await db.select({
+        groupId: locations.groupId,
+        cnt: sql<number>`count(*)`,
+      }).from(locations).where(sql`${locations.groupId} IN ${groupIds}`).groupBy(locations.groupId);
+      for (const gc of groupCounts) {
+        if (gc.groupId) groupCountMap.set(gc.groupId, gc.cnt);
+      }
+    }
+
+    const result = filtered.map(r => {
+      const obj: Record<string, unknown> = {
+        id: r.id,
+        name: r.name,
+        latitude: r.latitude,
+        longitude: r.longitude,
+        category: r.category,
+        sub_type: r.subType,
+      };
+      // Only include non-null optional fields to minimize payload
+      if (r.city) obj.city = r.city;
+      if (r.state) obj.state = r.state;
+      if (r.costPerNight != null) obj.cost_per_night = r.costPerNight;
+      if (r.userRating != null) obj.user_rating = r.userRating;
+      if (r.waterNearby != null) obj.water_nearby = r.waterNearby;
+      if (r.waterAvailable) obj.water_available = r.waterAvailable;
+      if (r.dumpNearby != null) obj.dump_nearby = r.dumpNearby;
+      if (r.difficulty) obj.difficulty = r.difficulty;
+      if (r.trailTypes) obj.trail_types = r.trailTypes;
+      if (r.distanceMiles != null) obj.distance_miles = r.distanceMiles;
+      if (r.bestSeason) obj.best_season = r.bestSeason;
+      if (r.externalLinks) obj.external_links = r.externalLinks;
+      if (r.source) obj.source = r.source;
+      if (r.groupId) {
+        obj.group_id = r.groupId;
+        obj.group_count = groupCountMap.get(r.groupId) ?? 1;
+      }
+      return obj;
+    });
+
+    res.json(result);
+  } catch (err) {
+    console.error('Failed to fetch slim locations:', err);
+    res.status(500).json({ error: 'Failed to fetch locations', code: 'INTERNAL_ERROR' });
+  }
+});
+
 router.get('/', optionalAuth, async (req: Request, res: Response) => {
   try {
     const conditions: ReturnType<typeof eq>[] = [];
