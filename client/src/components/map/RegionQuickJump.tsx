@@ -27,7 +27,7 @@ const REGIONS = [
 ];
 
 interface RegionQuickJumpProps {
-  mapRef: React.MutableRefObject<mapboxgl.Map | null>;
+  mapRef: React.MutableRefObject<any>;
 }
 
 export default function RegionQuickJump({ mapRef }: RegionQuickJumpProps) {

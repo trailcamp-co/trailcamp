@@ -19,6 +19,7 @@ export default function RidingCard({ location: loc, onFlyTo, distanceFrom, dista
     great: { dot: 'bg-green-400', label: 'In Season', ring: 'ring-green-400/20' },
     shoulder: { dot: 'bg-yellow-400', label: 'Shoulder', ring: 'ring-yellow-400/20' },
     off: { dot: 'bg-red-400', label: 'Off Season', ring: 'ring-red-400/20' },
+    bad: { dot: 'bg-red-400', label: 'Off Season', ring: 'ring-red-400/20' },
   }[loc.seasonal_status] : null;
 
   return (

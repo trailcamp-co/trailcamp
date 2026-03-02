@@ -77,7 +77,7 @@ export function updateEmojiMarkers(
 /** Create numbered stop markers on the map */
 export function createStopMarkers(
   map: any,
-  stops: { id: number; latitude: number; longitude: number; name?: string; sort_order?: number }[],
+  stops: { id: number; latitude: number; longitude: number; name?: string | null; sort_order?: number }[],
 ): any[] {
   const markers: any[] = [];
   for (let i = 0; i < stops.length; i++) {
