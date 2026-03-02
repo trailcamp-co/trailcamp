@@ -80,6 +80,7 @@ export default function BottomSheet({ open, snapPoint, onSnapChange, onDismiss, 
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!dragState.current) return;
+    e.preventDefault();
     const touch = e.touches[0];
     const delta = dragState.current.startY - touch.clientY;
     const newHeight = Math.max(0, Math.min(getAvailableHeight() * 0.95, dragState.current.startHeight + delta));
@@ -118,7 +119,7 @@ export default function BottomSheet({ open, snapPoint, onSnapChange, onDismiss, 
   return (
     <div
       ref={sheetRef}
-      className="fixed left-0 right-0 z-30 lg:hidden flex flex-col bg-dark-900 rounded-t-2xl shadow-2xl border-t border-dark-700/50"
+      className="fixed left-0 right-0 z-30 lg:hidden flex flex-col bg-dark-900 rounded-t-2xl shadow-2xl border-t border-dark-700/50 overscroll-none touch-none"
       style={{
         bottom: bottomOffset,
         height: `${height}px`,
@@ -128,7 +129,7 @@ export default function BottomSheet({ open, snapPoint, onSnapChange, onDismiss, 
     >
       {/* Drag handle */}
       <div
-        className="flex-shrink-0 flex items-center justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing"
+        className="flex-shrink-0 flex items-center justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing touch-manipulation"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -140,7 +141,7 @@ export default function BottomSheet({ open, snapPoint, onSnapChange, onDismiss, 
       {/* Content */}
       <div
         ref={contentRef}
-        className={`flex-1 min-h-0 ${isScrollable ? 'overflow-y-auto' : 'overflow-hidden'}`}
+        className={`flex-1 min-h-0 ${isScrollable ? 'overflow-y-auto overscroll-contain' : 'overflow-hidden'}`}
         style={{ WebkitOverflowScrolling: 'touch' }}
         onTouchStart={(e) => {
           if (!isScrollable) {

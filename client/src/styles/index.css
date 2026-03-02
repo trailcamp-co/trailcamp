@@ -409,11 +409,12 @@ input:focus, textarea:focus, select:focus {
   /* Push mapbox controls above bottom tab bar */
   .mapboxgl-ctrl-bottom-left,
   .mapboxgl-ctrl-bottom-right {
-    bottom: 64px !important;
+    bottom: 80px !important;
   }
 
   .mapboxgl-ctrl-attrib {
-    bottom: 64px !important;
+    bottom: 80px !important;
+    right: 60px !important;
   }
 
   /* Mobile overlay panels fill the screen */
