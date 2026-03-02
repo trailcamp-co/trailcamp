@@ -35,6 +35,7 @@ interface RidingTabProps {
 
 export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationClick, onToggleFavorite, homeLat, homeLon }: RidingTabProps) {
   const [sortField, setSortField] = useState<RidingSortField>('name');
+  const [visibleCount, setVisibleCount] = useState(50);
   const [sortAsc, setSortAsc] = useState(true);
   const [filterDifficulty, setFilterDifficulty] = useState<string | null>(null);
   const [filterTrailType, setFilterTrailType] = useState<string>('');
@@ -237,9 +238,17 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
             <p className="text-xs text-gray-600 [.light_&]:text-gray-400">Try adjusting your filters or zooming out on the map</p>
           </div>
         )}
-        {ridingLocations.map((loc) => (
+        {ridingLocations.slice(0, visibleCount).map((loc) => (
           <RidingCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} distanceFromHome={(loc as any)._distanceFromHome ?? null} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} />
         ))}
+        {visibleCount < ridingLocations.length && (
+          <button
+            onClick={() => setVisibleCount(c => c + 50)}
+            className="w-full py-3 text-sm text-orange-400 hover:text-orange-300 font-medium"
+          >
+            Show more ({'{'}(ridingLocations.length - visibleCount).toLocaleString(){'}'} remaining)
+          </button>
+        )}
       </div>
     </div>
   );

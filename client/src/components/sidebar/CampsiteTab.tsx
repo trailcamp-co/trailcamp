@@ -33,6 +33,7 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
   const [viewportFilter, setViewportFilter] = useState(false);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [distanceFromQuery, setDistanceFromQuery] = useState('');
+  const [visibleCount, setVisibleCount] = useState(50);
   const [distanceFromCoords, setDistanceFromCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [distanceFromLabel, setDistanceFromLabel] = useState('');
   const [geocoding, setGeocoding] = useState(false);
@@ -234,9 +235,17 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
         {(sortField === 'riding_nearby'
           ? [...campsiteLocations].sort((a, b) => (sortAsc ? 1 : -1) * ((nearbyRidingCounts[b.id] ?? 0) - (nearbyRidingCounts[a.id] ?? 0)))
           : campsiteLocations
-        ).map(loc => (
+        ).slice(0, visibleCount).map(loc => (
           <CampsiteCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} distanceFromHome={(loc as any)._distanceFromHome ?? null} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} nearbyRidingCount={nearbyRidingCounts[loc.id]} />
         ))}
+        {visibleCount < campsiteLocations.length && (
+          <button
+            onClick={() => setVisibleCount(c => c + 50)}
+            className="w-full py-3 text-sm text-orange-400 hover:text-orange-300 font-medium"
+          >
+            Show more ({'{'}(campsiteLocations.length - visibleCount).toLocaleString(){'}'} remaining)
+          </button>
+        )}
       </div>
     </div>
   );
