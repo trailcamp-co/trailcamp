@@ -26,6 +26,6 @@ export const db = new Proxy({} as PostgresJsDatabase<typeof schema>, {
     if (!_db) {
       _db = drizzle(getClient(), { schema });
     }
-    return (_db as Record<string | symbol, unknown>)[prop];
+    return (_db as unknown as Record<string | symbol, unknown>)[prop];
   },
 });

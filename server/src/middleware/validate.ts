@@ -27,7 +27,7 @@ export function validate(schema: z.ZodType, target: ValidationTarget = 'body') {
     }
 
     // Replace with parsed data (coerced types, defaults applied)
-    (req as Record<string, unknown>)[target] = result.data;
+    (req as unknown as Record<string, unknown>)[target] = result.data;
     next();
   };
 }

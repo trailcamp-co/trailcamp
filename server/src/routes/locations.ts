@@ -23,8 +23,8 @@ function toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
 const createLocationSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().nullish(),
-  latitude: z.number({ required_error: 'Latitude is required' }),
-  longitude: z.number({ required_error: 'Longitude is required' }),
+  latitude: z.number({ error: 'Latitude is required' }),
+  longitude: z.number({ error: 'Longitude is required' }),
   category: z.string().min(1, 'Category is required'),
   sub_type: z.string().nullish(),
   source: z.string().nullish(),

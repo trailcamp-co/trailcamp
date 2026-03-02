@@ -73,7 +73,7 @@ app.use((req, _res, next) => {
     if (duration > 500) {
       console.warn(`⚠️ Slow request: ${req.method} ${req.path} ${_res.statusCode} ${duration}ms`);
     }
-    return originalEnd.apply(this, args);
+    return originalEnd.apply(this as any, args);
   } as typeof originalEnd;
   next();
 });

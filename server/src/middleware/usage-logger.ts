@@ -44,7 +44,7 @@ export function usageLogger(req: Request, res: Response, next: NextFunction) {
     });
     
     // Call original end
-    return originalEnd.apply(res, args);
+    return (originalEnd as Function).apply(res, args);
   };
   
   next();
