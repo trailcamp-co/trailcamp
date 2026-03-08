@@ -66,6 +66,10 @@ router.post('/summary/batch', optionalAuth, async (req: Request, res: Response) 
       res.json({});
       return;
     }
+    if (location_ids.length > 500) {
+      res.status(400).json({ error: 'Maximum 500 location IDs per batch', code: 'VALIDATION_ERROR' });
+      return;
+    }
 
     const rows = await db
       .select({

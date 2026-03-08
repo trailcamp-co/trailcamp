@@ -448,22 +448,7 @@ router.get('/nearby-riding', async (req: Request, res: Response) => {
 
 // ─── GET /api/locations/seasonal ─────────────────────────────────────────────
 
-router.get('/seasonal', async (req: Request, res: Response) => {
-  try {
-    const month = Number(req.query.month) || new Date().getMonth() + 1;
-    const rows = await db.select().from(locations);
-    const result = rows.map((loc) => ({
-      ...loc,
-      seasonal_status: computeSeasonalStatus(
-        { best_season: loc.bestSeason, latitude: loc.latitude, elevation_gain_ft: loc.elevationGainFt }, month
-      ),
-    }));
-    res.json(result.map(r => toSnakeCase(r as Record<string, unknown>)));
-  } catch (err) {
-    console.error('Error fetching seasonal:', err);
-    res.status(500).json({ error: 'Failed to fetch seasonal data', code: 'INTERNAL_ERROR' });
-  }
-});
+// Seasonal endpoint removed (loaded all 34K locations, never called by frontend)
 
 // ─── GET /api/locations/stats ────────────────────────────────────────────────
 
@@ -508,7 +493,13 @@ router.get('/stats', optionalAuth, async (req: Request, res: Response) => {
 
 // ─── GET /api/locations/export ───────────────────────────────────────────────
 
-router.get('/export', async (_req: Request, res: Response) => {
+router.get('/export', requireAuth, async (req: Request, res: Response) => {
+  // Admin-only
+  const adminId = process.env.ADMIN_USER_ID;
+  if (!adminId || req.user!.id !== adminId) {
+    res.status(403).json({ error: 'Admin access required', code: 'FORBIDDEN' });
+    return;
+  }
   try {
     const rows = await db.select().from(locations).orderBy(asc(locations.category), asc(locations.name));
     res.setHeader('Content-Disposition', 'attachment; filename="trailcamp-locations.json"');

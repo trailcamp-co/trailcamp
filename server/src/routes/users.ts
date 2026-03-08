@@ -3,7 +3,7 @@ import { Router, Request, Response } from 'express';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db';
-import { users, trips, locations, userFavorites, userSettings, tripJournal } from '../db/schema';
+import { users, locations, userSettings } from '../db/schema';
 import { requireAuth } from '../middleware/auth';
 import { validate } from '../middleware/validate';
 
