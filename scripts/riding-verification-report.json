@@ -1,0 +1,1208 @@
+{
+  "legit": [
+    {
+      "id": 5263,
+      "name": "100 Mile Wilderness \u2014 ME",
+      "state": "ME",
+      "reason": "legit=5"
+    },
+    {
+      "id": 5967,
+      "name": "Absaroka Range Trails",
+      "state": "MT",
+      "reason": "legit=11"
+    },
+    {
+      "id": 6000,
+      "name": "AEP ReCreation Land",
+      "state": "OH",
+      "reason": "legit=11"
+    },
+    {
+      "id": 5779,
+      "name": "Alamo Lake Trails",
+      "state": "AZ",
+      "reason": "legit=2"
+    },
+    {
+      "id": 5724,
+      "name": "Allegheny NF Trails",
+      "state": "NY",
+      "reason": "legit=5"
+    },
+    {
+      "id": 5939,
+      "name": "Alturas Lake Area",
+      "state": "ID",
+      "reason": "legit=16"
+    },
+    {
+      "id": 5961,
+      "name": "Anaconda-Pintler Trails",
+      "state": "ID",
+      "reason": "legit=13"
+    },
+    {
+      "id": 5087,
+      "name": "Angelina National Forest OHV",
+      "state": "TX",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5729,
+      "name": "Angelina NF",
+      "state": "TX",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5564,
+      "name": "Anthracite OHV",
+      "state": "NY",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5016,
+      "name": "Anthracite Outdoor Adventure Area",
+      "state": "NY",
+      "reason": "legit=5"
+    },
+    {
+      "id": 6036,
+      "name": "Apache Trail",
+      "state": "AZ",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5003,
+      "name": "Apalachicola National Forest OHV",
+      "state": "FL",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5817,
+      "name": "Apalachicola NF Florida",
+      "state": "FL",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5251,
+      "name": "Arcadia Management Area",
+      "state": "MA",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5941,
+      "name": "Arco Desert",
+      "state": "ID",
+      "reason": "legit=11"
+    },
+    {
+      "id": 5022,
+      "name": "Badlands Off Road Park",
+      "state": "IN",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5659,
+      "name": "Baja 1000 Route",
+      "state": "Baja California",
+      "reason": "legit=2"
+    },
+    {
+      "id": 5196,
+      "name": "Baja California \u2014 Mike's Sky Ranch",
+      "state": "Baja California",
+      "reason": "legit=2"
+    },
+    {
+      "id": 5997,
+      "name": "Bald Eagle SF",
+      "state": "NY",
+      "reason": "legit=15"
+    },
+    {
+      "id": 5565,
+      "name": "Bald Eagle State Forest OHV",
+      "state": "NY",
+      "reason": "legit=11"
+    },
+    {
+      "id": 5811,
+      "name": "Bald River Falls Area",
+      "state": "NC",
+      "reason": "legit=5"
+    },
+    {
+      "id": 5814,
+      "name": "Bankhead NF Alabama",
+      "state": "AL",
+      "reason": "legit=4"
+    },
+    {
+      "id": 5634,
+      "name": "Barnwell Mountain",
+      "state": "TX",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5084,
+      "name": "Barnwell Mountain Recreation Area",
+      "state": "TX",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5969,
+      "name": "Beartooth Plateau",
+      "state": "MT",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5020,
+      "name": "Beartown Rocks",
+      "state": "NY",
+      "reason": "legit=12"
+    },
+    {
+      "id": 5253,
+      "name": "Beartown State Forest",
+      "state": "MA",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5656,
+      "name": "Beasley Knob OHV",
+      "state": "NC",
+      "reason": "legit=5"
+    },
+    {
+      "id": 5717,
+      "name": "Beaverhead NF Trails",
+      "state": "ID",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5593,
+      "name": "Behind the Rocks",
+      "state": "UT",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5947,
+      "name": "Bennett Hills",
+      "state": "ID",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5532,
+      "name": "Big Bear OHV Trails",
+      "state": "CA",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5977,
+      "name": "Big Bend Ranch Backcountry",
+      "state": "TX",
+      "reason": "legit=2"
+    },
+    {
+      "id": 5632,
+      "name": "Big Bend Ranch OHV",
+      "state": "TX",
+      "reason": "legit=3"
+    },
+    {
+      "id": 5200,
+      "name": "Big Bend Ranch State Park",
+      "state": "TX",
+      "reason": "legit=6"
+    },
+    {
+      "id": 6090,
+      "name": "Big Creek",
+      "state": "ID",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5176,
+      "name": "Big Meadows \u2014 Sequoia NF",
+      "state": "CA",
+      "reason": "legit=11"
+    },
+    {
+      "id": 5655,
+      "name": "Big Scrub OHV",
+      "state": "FL",
+      "reason": "legit=5"
+    },
+    {
+      "id": 5801,
+      "name": "Big South Fork TN/KY",
+      "state": "KY",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5968,
+      "name": "Bighorn Mountains",
+      "state": "MT",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5617,
+      "name": "Bighorn NF Trails",
+      "state": "MT",
+      "reason": "legit=5"
+    },
+    {
+      "id": 5778,
+      "name": "Bill Williams River Trail",
+      "state": "AZ",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5614,
+      "name": "Bitterroot NF Trails",
+      "state": "ID",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5639,
+      "name": "Black Bear Pass",
+      "state": "CO",
+      "reason": "legit=5"
+    },
+    {
+      "id": 5679,
+      "name": "Black Hills NF Trails",
+      "state": "SD",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5104,
+      "name": "Black Moshannon State Forest",
+      "state": "NY",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5272,
+      "name": "Black River SF ORV",
+      "state": "MN",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5951,
+      "name": "Blacks Creek Range",
+      "state": "ID",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5806,
+      "name": "Blackwater Falls Area",
+      "state": "MD",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5696,
+      "name": "Bloody Basin Road",
+      "state": "AZ",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5998,
+      "name": "Bloody Skillet",
+      "state": "NY",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5566,
+      "name": "Bloody Skillet Trail",
+      "state": "NY",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5957,
+      "name": "Bob Marshall Wilderness Edge",
+      "state": "ID",
+      "reason": "legit=7"
+    },
+    {
+      "id": 6101,
+      "name": "Boca Springs Road",
+      "state": "CA",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5926,
+      "name": "Bogus Basin Trails",
+      "state": "ID",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5925,
+      "name": "Boise Ridge Road",
+      "state": "ID",
+      "reason": "legit=11"
+    },
+    {
+      "id": 5006,
+      "name": "Bone Valley ATV Park",
+      "state": "FL",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5526,
+      "name": "Box Canyon",
+      "state": "AZ",
+      "reason": "legit=9"
+    },
+    {
+      "id": 6017,
+      "name": "Breckenridge Mountain",
+      "state": "CA",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5207,
+      "name": "Bricks OHV Area",
+      "state": "GA",
+      "reason": "legit=11"
+    },
+    {
+      "id": 5981,
+      "name": "Bridgeport OHV",
+      "state": "TX",
+      "reason": "legit=3"
+    },
+    {
+      "id": 5018,
+      "name": "Brimstone Recreation",
+      "state": "KY",
+      "reason": "legit=6"
+    },
+    {
+      "id": 6038,
+      "name": "Broken Arrow Trail",
+      "state": "AZ",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5201,
+      "name": "Brown Mountain OHV",
+      "state": "NC",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5952,
+      "name": "Bruneau Dunes Area",
+      "state": "ID",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5033,
+      "name": "Brushy Creek SRA",
+      "state": "IA",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5203,
+      "name": "Brushy Mountain Motorsports Park",
+      "state": "NC",
+      "reason": "legit=6"
+    },
+    {
+      "id": 6114,
+      "name": "Buck Creek Summit",
+      "state": "CA",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5983,
+      "name": "Bull Creek Peninsula",
+      "state": "OK",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5265,
+      "name": "Bull Gap Trail System",
+      "state": "MI",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5525,
+      "name": "Bulldog Canyon",
+      "state": "AZ",
+      "reason": "legit=5"
+    },
+    {
+      "id": 6111,
+      "name": "Burney Falls Area",
+      "state": "CA",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5995,
+      "name": "Burning Rock",
+      "state": "VA",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5098,
+      "name": "Burr Trail",
+      "state": "UT",
+      "reason": "legit=12"
+    },
+    {
+      "id": 5086,
+      "name": "Caddo National Grasslands OHV",
+      "state": "TX",
+      "reason": "legit=5"
+    },
+    {
+      "id": 5771,
+      "name": "California Pass",
+      "state": "CO",
+      "reason": "legit=5"
+    },
+    {
+      "id": 5944,
+      "name": "Camas Prairie Trails",
+      "state": "ID",
+      "reason": "legit=12"
+    },
+    {
+      "id": 5262,
+      "name": "Camp RiNo \u2014 Barre VT",
+      "state": "NH",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5807,
+      "name": "Canaan Valley Area",
+      "state": "MD",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5105,
+      "name": "Carnegie SVRA",
+      "state": "CA",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5642,
+      "name": "Cathedral Valley Loop",
+      "state": "UT",
+      "reason": "legit=2"
+    },
+    {
+      "id": 5541,
+      "name": "Cedar Crest OHV",
+      "state": "NM",
+      "reason": "legit=9"
+    },
+    {
+      "id": 6076,
+      "name": "Cerro Gordo Ghost Town",
+      "state": "CA",
+      "reason": "legit=2"
+    },
+    {
+      "id": 5682,
+      "name": "Chadwick OHV",
+      "state": "MO",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5573,
+      "name": "Chardon Lakes Park Trails",
+      "state": "OH",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5726,
+      "name": "Charlemont OHV",
+      "state": "MA",
+      "reason": "legit=8"
+    },
+    {
+      "id": 6120,
+      "name": "Chemise Mountain",
+      "state": "CA",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5273,
+      "name": "Chequamegon NF \u2014 Perkinstown",
+      "state": "MN",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5810,
+      "name": "Cherokee NF \u2014 Tellico",
+      "state": "NC",
+      "reason": "legit=5"
+    },
+    {
+      "id": 6088,
+      "name": "Chimney Rock Trail",
+      "state": "AZ",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5026,
+      "name": "Choccolocco Mountain ORV",
+      "state": "AL",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5769,
+      "name": "Cinnamon Pass",
+      "state": "CO",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5613,
+      "name": "City of Rocks OHV",
+      "state": "ID",
+      "reason": "legit=11"
+    },
+    {
+      "id": 6065,
+      "name": "Cle Elum Ridge",
+      "state": "WA",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5109,
+      "name": "Clear Creek Management Area",
+      "state": "CA",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5007,
+      "name": "Clear Creek OHV Trails",
+      "state": "AL",
+      "reason": "legit=9"
+    },
+    {
+      "id": 6087,
+      "name": "Clear Lake",
+      "state": "CO",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5528,
+      "name": "Cleghorn Ridge",
+      "state": "CA",
+      "reason": "legit=4"
+    },
+    {
+      "id": 5179,
+      "name": "Cleghorn Ridge \u2014 San Bernardino",
+      "state": "CA",
+      "reason": "legit=4"
+    },
+    {
+      "id": 6123,
+      "name": "Coffee Creek Road",
+      "state": "CA",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5812,
+      "name": "Cohutta Wilderness Edge GA",
+      "state": "GA",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5839,
+      "name": "Colville NF Trails",
+      "state": "WA",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5822,
+      "name": "Conecuh NF Alabama",
+      "state": "AL",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5722,
+      "name": "Connecticut Hill WMA",
+      "state": "NY",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5269,
+      "name": "Copper Harbor Trails",
+      "state": "MI",
+      "reason": "legit=4"
+    },
+    {
+      "id": 5038,
+      "name": "Copper River Valley OHV",
+      "state": "AK",
+      "reason": "legit=11"
+    },
+    {
+      "id": 5177,
+      "name": "Corral Canyon OHV \u2014 San Bernardino",
+      "state": "CA",
+      "reason": "legit=6"
+    },
+    {
+      "id": 6040,
+      "name": "Cottonwood Canyon Road",
+      "state": "UT",
+      "reason": "legit=4"
+    },
+    {
+      "id": 6030,
+      "name": "Cottonwood Pass",
+      "state": "CO",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5107,
+      "name": "Cow Mountain OHV",
+      "state": "CA",
+      "reason": "legit=7"
+    },
+    {
+      "id": 6078,
+      "name": "Coyote Flat",
+      "state": "CA",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5940,
+      "name": "Craters of Moon Backcountry",
+      "state": "ID",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5821,
+      "name": "Croatan NF NC",
+      "state": "NC",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5005,
+      "name": "Croom Motorcycle Area",
+      "state": "FL",
+      "reason": "legit=3"
+    },
+    {
+      "id": 5652,
+      "name": "Croom OHV",
+      "state": "FL",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5695,
+      "name": "Crown King Trail",
+      "state": "AZ",
+      "reason": "legit=4"
+    },
+    {
+      "id": 5932,
+      "name": "Custer Motorway",
+      "state": "ID",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5089,
+      "name": "Dames Point Motocross",
+      "state": "FL",
+      "reason": "legit=5"
+    },
+    {
+      "id": 5987,
+      "name": "Daniel Boone NF \u2014 London",
+      "state": "KY",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5979,
+      "name": "Davis Mountains",
+      "state": "TX",
+      "reason": "legit=4"
+    },
+    {
+      "id": 5081,
+      "name": "Davy Crockett National Forest ATV",
+      "state": "TX",
+      "reason": "legit=2"
+    },
+    {
+      "id": 5728,
+      "name": "Davy Crockett NF",
+      "state": "TX",
+      "reason": "legit=1"
+    },
+    {
+      "id": 5989,
+      "name": "Dawsonville Forest",
+      "state": "GA",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5028,
+      "name": "De Soto National Forest OHV",
+      "state": "LA",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5823,
+      "name": "De Soto NF Mississippi",
+      "state": "LA",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5036,
+      "name": "Denali Highway",
+      "state": "AK",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5710,
+      "name": "Deschutes NF Trails",
+      "state": "OR",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5731,
+      "name": "DeSoto NF",
+      "state": "LA",
+      "reason": "legit=10"
+    },
+    {
+      "id": 6063,
+      "name": "Diamond Craters",
+      "state": "OR",
+      "reason": "legit=8"
+    },
+    {
+      "id": 6089,
+      "name": "Diamondback Gulch",
+      "state": "AZ",
+      "reason": "legit=3"
+    },
+    {
+      "id": 5808,
+      "name": "Dolly Sods Wilderness Edge",
+      "state": "MD",
+      "reason": "legit=1"
+    },
+    {
+      "id": 6107,
+      "name": "Downieville Trails",
+      "state": "CA",
+      "reason": "legit=5"
+    },
+    {
+      "id": 5268,
+      "name": "Drummond Island",
+      "state": "MI",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5531,
+      "name": "Dumont Dunes OHV",
+      "state": "CA",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5214,
+      "name": "Durhamtown OHV Trail",
+      "state": "AL",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5208,
+      "name": "Durhamtown Plantation Sportsman's Resort",
+      "state": "GA",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5637,
+      "name": "Dusy-Ershim Trail",
+      "state": "CA",
+      "reason": "legit=4"
+    },
+    {
+      "id": 6098,
+      "name": "Ebbetts Pass Area",
+      "state": "CA",
+      "reason": "legit=5"
+    },
+    {
+      "id": 5976,
+      "name": "El Malpais Backcountry",
+      "state": "NM",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5606,
+      "name": "El Mirage OHV",
+      "state": "CA",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5181,
+      "name": "Eldorado NF \u2014 Georgetown",
+      "state": "CA",
+      "reason": "legit=4"
+    },
+    {
+      "id": 6042,
+      "name": "Elephant Hill",
+      "state": "UT",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5190,
+      "name": "Elk City Wagon Road",
+      "state": "ID",
+      "reason": "legit=8"
+    },
+    {
+      "id": 6066,
+      "name": "Ellensburg Backcountry",
+      "state": "WA",
+      "reason": "legit=7"
+    },
+    {
+      "id": 6097,
+      "name": "Emigrant Gap \u2014 Bowman Lake",
+      "state": "CA",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5770,
+      "name": "Engineer Pass",
+      "state": "CO",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5205,
+      "name": "Enoree OHV Area",
+      "state": "GA",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5661,
+      "name": "Erzberg Rodeo",
+      "state": "Steiermark",
+      "reason": "legit=1"
+    },
+    {
+      "id": 5111,
+      "name": "Evans Creek ORV Park",
+      "state": "WA",
+      "reason": "legit=11"
+    },
+    {
+      "id": 6104,
+      "name": "Feather River Trail",
+      "state": "CA",
+      "reason": "legit=11"
+    },
+    {
+      "id": 5198,
+      "name": "Findley State Park Trails",
+      "state": "OH",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5660,
+      "name": "Finke Desert Race Route",
+      "state": "AU-NT",
+      "reason": "legit=2"
+    },
+    {
+      "id": 5588,
+      "name": "Fins and Things",
+      "state": "UT",
+      "reason": "legit=6"
+    },
+    {
+      "id": 6044,
+      "name": "Fins N Things",
+      "state": "UT",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5658,
+      "name": "Flagg Mountain OHV",
+      "state": "AL",
+      "reason": "legit=11"
+    },
+    {
+      "id": 5011,
+      "name": "Florida Cracker Ranch",
+      "state": "FL",
+      "reason": "legit=5"
+    },
+    {
+      "id": 6105,
+      "name": "Forest Hill Divide",
+      "state": "CA",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5988,
+      "name": "Fort Mountain SP Edge",
+      "state": "GA",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5819,
+      "name": "Francis Marion NF SC",
+      "state": "SC",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5842,
+      "name": "Fremont-Winema NF",
+      "state": "OR",
+      "reason": "legit=3"
+    },
+    {
+      "id": 5985,
+      "name": "Frozen Head SP",
+      "state": "TN",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5257,
+      "name": "Fryeburg ME \u2014 White Mtns",
+      "state": "ME",
+      "reason": "legit=4"
+    },
+    {
+      "id": 5936,
+      "name": "Galena Lodge Area",
+      "state": "ID",
+      "reason": "legit=11"
+    },
+    {
+      "id": 5697,
+      "name": "Galena Summit Trails",
+      "state": "ID",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5927,
+      "name": "Garden Valley Area",
+      "state": "ID",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5958,
+      "name": "Garnet Ghost Town",
+      "state": "ID",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5015,
+      "name": "Gatorback Cycle Park",
+      "state": "FL",
+      "reason": "legit=3"
+    },
+    {
+      "id": 5197,
+      "name": "Geauga County Forest Trails",
+      "state": "OH",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5100,
+      "name": "Gemini Bridges Trail",
+      "state": "UT",
+      "reason": "legit=3"
+    },
+    {
+      "id": 5993,
+      "name": "George Washington NF \u2014 Massanutten",
+      "state": "MD",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5568,
+      "name": "George Washington NF Trails",
+      "state": "VA",
+      "reason": "legit=3"
+    },
+    {
+      "id": 5837,
+      "name": "Gifford Pinchot NF Trails",
+      "state": "OR",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5542,
+      "name": "Gila Box",
+      "state": "AZ",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5974,
+      "name": "Gila NF Trails",
+      "state": "NM",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5275,
+      "name": "Gilbert OHV Park",
+      "state": "MN",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5608,
+      "name": "Glamis Dunes",
+      "state": "CA",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5538,
+      "name": "Gold Butte Backcountry",
+      "state": "AZ",
+      "reason": "legit=9"
+    },
+    {
+      "id": 6034,
+      "name": "Gold Camp Road",
+      "state": "CO",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5183,
+      "name": "Gold Camp Road \u2014 Colorado Springs",
+      "state": "CO",
+      "reason": "legit=7"
+    },
+    {
+      "id": 6108,
+      "name": "Gold Lake Loop",
+      "state": "CA",
+      "reason": "legit=8"
+    },
+    {
+      "id": 5248,
+      "name": "Green Mountain NF Trails",
+      "state": "NY",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5804,
+      "name": "Green Ridge SF Maryland",
+      "state": "MD",
+      "reason": "legit=11"
+    },
+    {
+      "id": 5964,
+      "name": "Gros Ventre Range",
+      "state": "WY",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5261,
+      "name": "Grout Pond Recreation Area",
+      "state": "NY",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5978,
+      "name": "Guadalupe Mountains",
+      "state": "NM",
+      "reason": "legit=10"
+    },
+    {
+      "id": 5692,
+      "name": "Guanella Pass",
+      "state": "CO",
+      "reason": "legit=4"
+    },
+    {
+      "id": 6031,
+      "name": "Hagerman Pass",
+      "state": "CO",
+      "reason": "legit=4"
+    },
+    {
+      "id": 5954,
+      "name": "Hagerman Valley",
+      "state": "ID",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5773,
+      "name": "Hancock Pass",
+      "state": "CO",
+      "reason": "legit=6"
+    },
+    {
+      "id": 5561,
+      "name": "Hanging Rock OHV",
+      "state": "KY",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5009,
+      "name": "Hard Rock Cycle Park",
+      "state": "FL",
+      "reason": "legit=9"
+    },
+    {
+      "id": 5021,
+      "name": "Haspin Acres",
+      "state": "IN",
+      "reason": "legit=7"
+    },
+    {
+      "id": 5562,
+      "name": "Hatfield-McCoy \u2014 Bearwallow",
+      "state": "VA",
+      "reason": "legit=4"
+    },
+    {
+      "id": 5091,
+      "name": "Hatfield-McCoy \u2014 Indian Ridge",
+      "state": "VA",
+      "reason": "legit=5"
+    },
+    {
+      "id": 5090,
+      "name": "Hatfield-McCoy \u2014 Pinnacle Creek",
+      "state": "VA",
+      "reason": "legit=5"
+    }
+  ],
+  "wrong": [
+    {
+      "id": 5677,
+      "name": "Flint Hills Trail",
+      "state": "KS",
+      "reason": "wrong=2, legit=2"
+    }
+  ],
+  "unclear": [
+    {
+      "id": 6006,
+      "name": "Dalton Highway",
+      "state": "AK",
+      "reason": "legit=0, wrong=0"
+    },
+    {
+      "id": 6115,
+      "name": "Etna Summit",
+      "state": "CA",
+      "reason": "legit=0, wrong=0"
+    },
+    {
+      "id": 6071,
+      "name": "Greenbrier River Trail",
+      "state": "VA",
+      "reason": "legit=0, wrong=0"
+    }
+  ]
+}

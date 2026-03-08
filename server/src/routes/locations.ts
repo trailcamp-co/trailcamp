@@ -1,3 +1,4 @@
+import { toSnakeCase } from '../utils/caseTransform';
 import { Router, Request, Response } from 'express';
 import { eq, and, or, sql, isNull, gte, asc, desc } from 'drizzle-orm';
 import { z } from 'zod';
@@ -8,15 +9,6 @@ import { validate } from '../middleware/validate';
 
 const router = Router();
 
-/** Convert camelCase Drizzle output to snake_case for API response */
-function toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    const snakeKey = key.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`);
-    result[snakeKey] = value;
-  }
-  return result;
-}
 
 // ─── Zod Schemas ─────────────────────────────────────────────────────────────
 
@@ -549,27 +541,7 @@ router.get('/:id', optionalAuth, async (req: Request, res: Response) => {
   }
 });
 
-// ─── PUT /api/locations/:id/favorite ─────────────────────────────────────────
-
-router.put('/:id/favorite', requireAuth, async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    const [location] = await db.select().from(locations).where(eq(locations.id, id));
-    if (!location) {
-      res.status(404).json({ error: 'Location not found', code: 'NOT_FOUND' });
-      return;
-    }
-    const newVal = location.favorited ? 0 : 1;
-    const [updated] = await db.update(locations)
-      .set({ favorited: newVal, updatedAt: new Date() })
-      .where(eq(locations.id, id))
-      .returning();
-    res.json(toSnakeCase(updated as Record<string, unknown>));
-  } catch (err) {
-    console.error('Error toggling favorite:', err);
-    res.status(500).json({ error: 'Failed to toggle favorite', code: 'INTERNAL_ERROR' });
-  }
-});
+// Legacy PUT /:id/favorite removed — use POST/DELETE /api/favorites/:locationId
 
 // ─── POST /api/locations ─────────────────────────────────────────────────────
 
@@ -633,7 +605,7 @@ router.put('/:id', requireAuth, validate(updateLocationSchema), async (req: Requ
       res.status(404).json({ error: 'Location not found', code: 'NOT_FOUND' });
       return;
     }
-    if (existing.userId && existing.userId !== req.user!.id) {
+    if (!existing.userId || existing.userId !== req.user!.id) {
       res.status(403).json({ error: 'Not authorized to update this location', code: 'FORBIDDEN' });
       return;
     }
@@ -694,7 +666,7 @@ router.delete('/:id', requireAuth, async (req: Request, res: Response) => {
       res.status(404).json({ error: 'Location not found', code: 'NOT_FOUND' });
       return;
     }
-    if (existing.userId && existing.userId !== req.user!.id) {
+    if (!existing.userId || existing.userId !== req.user!.id) {
       res.status(403).json({ error: 'Not authorized to delete this location', code: 'FORBIDDEN' });
       return;
     }

@@ -61,7 +61,11 @@ const authLimiter = rateLimit({
 
 app.use(compression());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',')
+    : (process.env.NODE_ENV === 'production'
+      ? ['https://trailcamp.co', 'https://www.trailcamp.co']
+      : true),
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -100,9 +104,14 @@ app.get('/api/health', (_req, res) => {
   });
 });
 
-// Mapbox token endpoint (public)
+// Mapbox token endpoint (public — only public key, never secret)
 app.get('/api/mapbox-token', (_req, res) => {
-  res.json({ token: process.env.MAPBOX_PUBLIC_KEY || process.env.MAPBOX_SECRET_KEY });
+  const token = process.env.MAPBOX_PUBLIC_KEY;
+  if (!token) {
+    res.status(500).json({ error: 'Mapbox not configured', code: 'CONFIG_ERROR' });
+    return;
+  }
+  res.json({ token });
 });
 
 // Supabase config for frontend (public — only anon key, never service role)

@@ -1,3 +1,4 @@
+import { toSnakeCase } from '../utils/caseTransform';
 import { Router, Request, Response } from 'express';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
@@ -8,15 +9,6 @@ import { validate } from '../middleware/validate';
 
 const router = Router();
 
-/** Convert camelCase Drizzle output to snake_case for API response */
-function toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-    result[snakeKey] = value;
-  }
-  return result;
-}
 
 const updateProfileSchema = z.object({
   display_name: z.string().min(1).max(100).nullish(),
@@ -88,7 +80,7 @@ router.put('/me', requireAuth, validate(updateProfileSchema), async (req: Reques
 });
 
 // ─── DELETE /api/users/me ────────────────────────────────────────────────────
-// Deletes all user data. Cascading FKs handle trips, journal, favorites, settings.
+// Deletes all user data + Supabase auth user.
 
 router.delete('/me', requireAuth, async (req: Request, res: Response) => {
   try {
@@ -96,6 +88,21 @@ router.delete('/me', requireAuth, async (req: Request, res: Response) => {
     await db.delete(locations).where(eq(locations.userId, req.user!.id));
     // Delete user record (cascades to trips, favorites, settings, journal)
     await db.delete(users).where(eq(users.id, req.user!.id));
+
+    // Delete Supabase auth user so email can be re-registered
+    try {
+      const { createClient } = await import('@supabase/supabase-js');
+      const adminClient = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { auth: { autoRefreshToken: false, persistSession: false } }
+      );
+      await adminClient.auth.admin.deleteUser(req.user!.id);
+    } catch (authErr) {
+      console.error('Failed to delete Supabase auth user:', authErr);
+      // Continue — DB data is already deleted
+    }
+
     res.status(204).send();
   } catch (err) {
     console.error('Error deleting account:', err);

@@ -37,14 +37,16 @@ async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
 export function useTrips() {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchTrips = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const data = await apiFetch<Trip[]>('/trips');
       setTrips(data);
-    } catch {
-      // fetch failed silently
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load trips');
     }
     setLoading(false);
   }, []);
@@ -68,22 +70,24 @@ export function useTrips() {
     setTrips(prev => prev.filter(t => t.id !== id));
   };
 
-  return { trips, loading, fetchTrips, createTrip, updateTrip, deleteTrip };
+  return { trips, loading, error, fetchTrips, createTrip, updateTrip, deleteTrip };
 }
 
 // Trip Stops
 export function useTripStops(tripId: number | null) {
   const [stops, setStops] = useState<TripStop[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchStops = useCallback(async () => {
     if (!tripId) { setStops([]); return; }
     setLoading(true);
+    setError(null);
     try {
       const data = await apiFetch<TripStop[]>(`/trips/${tripId}/stops`);
       setStops(data);
-    } catch {
-      // fetch failed silently
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load stops');
     }
     setLoading(false);
   }, [tripId]);
@@ -116,24 +120,26 @@ export function useTripStops(tripId: number | null) {
     setStops(prev => prev.filter(s => s.id !== stopId));
   };
 
-  return { stops, loading, fetchStops, addStop, updateStop, reorderStops, deleteStop };
+  return { stops, loading, error, fetchStops, addStop, updateStop, reorderStops, deleteStop };
 }
 
 // Locations
 export function useLocations() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchLocations = useCallback(async (params?: Record<string, string>) => {
     setLoading(true);
+    setError(null);
     try {
       const query = params ? '?' + new URLSearchParams(params).toString() : '';
       const endpoint = query ? `/locations${query}` : '/locations/slim';
       const data = await apiFetch<Location[]>(endpoint);
 
       setLocations(data);
-    } catch {
-      // fetch failed silently
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load locations');
     }
     setLoading(false);
   }, []);
@@ -163,12 +169,16 @@ export function useLocations() {
   };
 
   const toggleFavorite = async (id: number) => {
-    const updated = await apiFetch<Location>(`/locations/${id}/favorite`, { method: 'PUT' });
-    setLocations(prev => prev.map(l => l.id === id ? { ...l, ...updated } : l));
-    return updated;
+    // Use proper favorites endpoint (POST to add, DELETE to remove)
+    try {
+      await apiFetch(`/favorites/${id}`, { method: 'POST' });
+    } catch {
+      // Already favorited — try removing
+      await apiFetch(`/favorites/${id}`, { method: 'DELETE' });
+    }
   };
 
-  return { locations, loading, fetchLocations, searchLocations, createLocation, updateLocation, deleteLocation, toggleFavorite };
+  return { locations, loading, error, fetchLocations, searchLocations, createLocation, updateLocation, deleteLocation, toggleFavorite };
 }
 
 // Stats
@@ -200,9 +210,13 @@ export async function importRecreation(params: { state?: string; query?: string;
   return apiFetch<{ imported: number; skipped: number; total: number }>('/import/recreation', { method: 'POST', body: JSON.stringify(params) });
 }
 
-// Toggle favorite
+// Toggle favorite (uses proper favorites endpoint)
 export async function toggleFavorite(id: number) {
-  return apiFetch<Location>(`/locations/${id}/favorite`, { method: 'PUT' });
+  try {
+    await apiFetch(`/favorites/${id}`, { method: 'POST' });
+  } catch {
+    await apiFetch(`/favorites/${id}`, { method: 'DELETE' });
+  }
 }
 
 // Nearby riding

@@ -332,3 +332,60 @@
 - **Launch Mode:** Free beta (no payments initially)
 - **Domain:** TBD (Nicos to register)
 - **Mobile:** Mobile-first design priority throughout all phases
+
+---
+
+## PHASE 7: AI Trip Planner (Premium Feature)
+*Natural language trip planning powered by AI + TrailCamp's location database.*
+
+### 7.1 — Chat Interface
+- [ ] Chat UI component in Trips tab
+- [ ] Message history per trip
+- [ ] Typing indicators, error states
+
+### 7.2 — AI Backend
+- [ ] `/api/chat` endpoint with streaming responses
+- [ ] Model: GPT-4o-mini or Claude Haiku (cost: ~$0.01-0.05/conversation)
+- [ ] System prompt with TrailCamp context + tool definitions
+- [ ] Tool functions: `search_locations`, `get_route_distance`, `get_weather_forecast`
+- [ ] Rate limiting per user (free: 2/month, premium: unlimited)
+
+### 7.3 — Trip Generation
+- [ ] AI generates structured trip with stops, dates, daily plans
+- [ ] One-click "Save as Trip" pushes to trip planner with all stops on map
+- [ ] Follow-up refinement via conversation
+- [ ] Considers driving distance, riding difficulty, boondocking vs campgrounds, dump/water proximity
+
+---
+
+## PHASE 8: Multi-Hobby Platform ("One App for Every Adventure")
+*Expand from dirt bike + camping to ALL outdoor recreation hobbies.*
+
+### 8.1 — User Hobby Preferences
+- [ ] `user_preferences` table (hobbies array, default filters)
+- [ ] Onboarding screen after signup: "What do you enjoy?"
+- [ ] Hobby options: Hiking, Mountain Biking, Dirt Bikes, ATVs/UTVs, Fishing, Boating, Rock Climbing, Hunting, Kayaking/Canoeing, Horseback Riding
+- [ ] App defaults to showing only selected hobbies + universal (camps, boondocking, water, dumps)
+- [ ] Can always toggle others on/off in layers panel
+
+### 8.2 — New Location Categories
+- [ ] 🥾 Hiking trails (OpenStreetMap, USFS trail data)
+- [ ] 🚵 Mountain biking trails (OpenStreetMap, MTB Project API)
+- [ ] 🎣 Fishing spots (state fish & wildlife public access, boat ramps)
+- [ ] 🛶 Kayaking/Canoeing (public water access points, put-ins)
+- [ ] 🧗 Rock climbing (OpenBeta open source DB)
+- [ ] 🏹 Hunting areas (public land overlays — BLM/USFS already partial)
+- [ ] 🐎 Horseback riding trails
+
+### 8.3 — Hobby-Specific Features
+- [ ] Hobby-specific card designs per category
+- [ ] Hobby-specific filters (e.g., fish species, rapid class, route grade)
+- [ ] Hobby-specific detail fields per location type
+- [ ] Category-aware API filtering based on user preferences
+- [ ] Smart defaults: new users see campgrounds + their hobbies, nothing else
+
+### 8.4 — Performance at Scale
+- [ ] Server-side filtering by user hobby preferences (don't load what you don't use)
+- [ ] Mapbox clustering handles density at any zoom level
+- [ ] Slim endpoint already strips unnecessary fields
+- [ ] Adding 50K+ locations per hobby won't impact users who don't select that hobby

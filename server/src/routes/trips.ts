@@ -1,5 +1,6 @@
+import { toSnakeCase } from '../utils/caseTransform';
 import { Router, Request, Response } from 'express';
-import { eq, and, sql, asc, desc } from 'drizzle-orm';
+import { eq, and, sql, asc, desc, gte, lte } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db';
 import { trips, tripStops, tripJournal, locations } from '../db/schema';
@@ -8,15 +9,6 @@ import { validate } from '../middleware/validate';
 
 const router = Router();
 
-/** Convert camelCase Drizzle output to snake_case for API response */
-function toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    const snakeKey = key.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`);
-    result[snakeKey] = value;
-  }
-  return result;
-}
 
 // ─── Zod Schemas ─────────────────────────────────────────────────────────────
 
@@ -507,19 +499,36 @@ router.get('/:id/export-gpx', requireAuth, async (req: Request, res: Response) =
     const stops = await db.select().from(tripStops)
       .where(eq(tripStops.tripId, trip.id)).orderBy(asc(tripStops.sortOrder));
 
-    // Find nearby riding spots
-    const ridingSpots = await db.select().from(locations).where(eq(locations.category, 'riding'));
-    const nearbyRiding: typeof ridingSpots = [];
-    const seenIds = new Set<number>();
+    // Find nearby riding spots using bounding box (instead of loading all)
+    const validStops = stops.filter(s => s.latitude && s.longitude);
+    const nearbyRiding: (typeof locations.$inferSelect)[] = [];
 
-    for (const stop of stops) {
-      if (!stop.latitude || !stop.longitude) continue;
-      for (const spot of ridingSpots) {
-        if (seenIds.has(spot.id)) continue;
-        const dist = haversineDistance(stop.latitude, stop.longitude, spot.latitude, spot.longitude);
-        if (dist <= 20) {
-          nearbyRiding.push(spot);
-          seenIds.add(spot.id);
+    if (validStops.length > 0) {
+      const lats = validStops.map(s => s.latitude!);
+      const lngs = validStops.map(s => s.longitude!);
+      const pad = 0.3; // ~20 miles in degrees
+      const south = Math.min(...lats) - pad;
+      const north = Math.max(...lats) + pad;
+      const west = Math.min(...lngs) - pad;
+      const east = Math.max(...lngs) + pad;
+
+      const candidates = await db.select().from(locations).where(and(
+        eq(locations.category, 'riding'),
+        gte(locations.latitude, south),
+        lte(locations.latitude, north),
+        gte(locations.longitude, west),
+        lte(locations.longitude, east),
+      ));
+
+      const seenIds = new Set<number>();
+      for (const stop of validStops) {
+        for (const spot of candidates) {
+          if (seenIds.has(spot.id)) continue;
+          const dist = haversineDistance(stop.latitude!, stop.longitude!, spot.latitude, spot.longitude);
+          if (dist <= 20) {
+            nearbyRiding.push(spot);
+            seenIds.add(spot.id);
+          }
         }
       }
     }

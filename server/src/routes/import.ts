@@ -6,8 +6,15 @@ import { requireAuth } from '../middleware/auth';
 
 const router = Router();
 
-// POST /api/import/ioverlander — admin/auth only
+// POST /api/import/ioverlander — admin only
 router.post('/ioverlander', requireAuth, async (req: Request, res: Response) => {
+  // Admin-only check
+  const adminId = process.env.ADMIN_USER_ID;
+  if (!adminId || req.user!.id !== adminId) {
+    res.status(403).json({ error: 'Admin access required', code: 'FORBIDDEN' });
+    return;
+  }
+
   const { sw_lat, sw_lng, ne_lat, ne_lng } = req.body;
 
   if (!sw_lat || !sw_lng || !ne_lat || !ne_lng) {
