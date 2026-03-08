@@ -88,7 +88,7 @@ export interface Location {
   visibility?: string;
 }
 
-export type LocationCategory = 'campsite' | 'riding' | 'water' | 'dump' | 'gas' | 'grocery' | 'scenic' | 'laundromat';
+export type LocationCategory = 'campsite' | 'riding' | 'water' | 'dump' | 'gas' | 'grocery' | 'scenic' | 'laundromat' | 'hiking' | 'mtb' | 'fishing' | 'boating' | 'kayaking' | 'hunting' | 'horseback' | 'climbing' | 'swimming' | 'offroad';
 
 export type CampsiteSubType = 'boondocking' | 'campground' | 'parking' | 'other';
 
@@ -135,17 +135,37 @@ export const CATEGORY_COLORS: Record<LocationCategory, string> = {
   grocery: '#eab308',
   scenic: '#ec4899',
   laundromat: '#14b8a6',
+  hiking: '#10b981',
+  mtb: '#8b5cf6',
+  fishing: '#0ea5e9',
+  boating: '#06b6d4',
+  kayaking: '#14b8a6',
+  hunting: '#b45309',
+  horseback: '#d97706',
+  climbing: '#ef4444',
+  swimming: '#38bdf8',
+  offroad: '#ea580c',
 };
 
 export const CATEGORY_LABELS: Record<LocationCategory, string> = {
   campsite: 'Campsites',
-  riding: 'Riding Areas',
+  riding: 'Dirt Bikes / OHV',
   water: 'Water Stations',
   dump: 'Dump Stations',
   gas: 'Gas Stations',
   grocery: 'Grocery / Resupply',
   scenic: 'Scenic Viewpoints',
   laundromat: 'Laundromat',
+  hiking: 'Hiking Trails',
+  mtb: 'Mountain Biking',
+  fishing: 'Fishing Spots',
+  boating: 'Boat Ramps & Marinas',
+  kayaking: 'Kayaking / Canoeing',
+  hunting: 'Hunting Areas',
+  horseback: 'Horseback Riding',
+  climbing: 'Rock Climbing',
+  swimming: 'Swimming Areas',
+  offroad: '4x4 / Off-Road',
 };
 
 export const CATEGORY_ICONS: Record<LocationCategory, string> = {
@@ -157,6 +177,16 @@ export const CATEGORY_ICONS: Record<LocationCategory, string> = {
   grocery: '🛒',
   scenic: '📸',
   laundromat: '🧺',
+  hiking: '🥾',
+  mtb: '🚵',
+  fishing: '🎣',
+  boating: '🚤',
+  kayaking: '🛶',
+  hunting: '🏹',
+  horseback: '🐎',
+  climbing: '🧗',
+  swimming: '🏊',
+  offroad: '🚙',
 };
 
 export interface JournalEntry {
