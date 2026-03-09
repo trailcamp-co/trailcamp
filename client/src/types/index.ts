@@ -127,24 +127,24 @@ export const MAP_STYLES: MapStyle[] = [
 ];
 
 export const CATEGORY_COLORS: Record<LocationCategory, string> = {
-  campsite: '#22c55e',
-  riding: '#f97316',
-  water: '#3b82f6',
-  dump: '#a16207',
-  gas: '#6b7280',
-  grocery: '#eab308',
-  scenic: '#ec4899',
-  laundromat: '#14b8a6',
-  hiking: '#10b981',
-  mtb: '#8b5cf6',
-  fishing: '#0ea5e9',
-  boating: '#06b6d4',
-  kayaking: '#14b8a6',
-  hunting: '#b45309',
-  horseback: '#d97706',
-  climbing: '#ef4444',
-  swimming: '#38bdf8',
-  offroad: '#ea580c',
+  campsite: '#22c55e',   // green
+  riding: '#f97316',     // orange
+  water: '#3b82f6',      // blue
+  dump: '#92400e',       // brown
+  gas: '#6b7280',        // gray
+  grocery: '#eab308',    // yellow
+  scenic: '#ec4899',     // pink
+  laundromat: '#14b8a6', // teal
+  hiking: '#10b981',     // emerald
+  mtb: '#8b5cf6',        // purple
+  fishing: '#0ea5e9',    // sky blue
+  boating: '#0369a1',    // deep blue
+  kayaking: '#2dd4bf',   // cyan/teal
+  hunting: '#b91c1c',    // dark red
+  horseback: '#d97706',  // amber
+  climbing: '#ef4444',   // red
+  swimming: '#06b6d4',   // light cyan
+  offroad: '#c2410c',    // rust/burnt orange
 };
 
 export const CATEGORY_LABELS: Record<LocationCategory, string> = {

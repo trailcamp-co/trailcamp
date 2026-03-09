@@ -339,91 +339,39 @@ export default function MobileLocationDetail({
             </div>
           )}
 
-          {/* Hiking details */}
-          {location.category === 'hiking' && (
+          {/* Universal activity details — shows relevant fields for any category */}
+          {!['campsite', 'riding'].includes(location.category) && (
             <div className="grid grid-cols-2 gap-2 mb-4">
-              {location.difficulty && <DetailBadge label="Difficulty" value={location.difficulty} />}
-              {location.distance_miles != null && <DetailBadge label="Distance" value={`${location.distance_miles} mi`} />}
-              {location.elevation_gain_ft != null && <DetailBadge label="Elevation Gain" value={`${location.elevation_gain_ft.toLocaleString()} ft`} />}
-              {location.sub_type && location.sub_type !== 'Trail' && <DetailBadge label="Type" value={location.sub_type} />}
-            </div>
-          )}
-
-          {/* MTB details */}
-          {location.category === 'mtb' && (
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {location.difficulty && <DetailBadge label="Difficulty" value={location.difficulty} />}
-              {location.distance_miles != null && <DetailBadge label="Distance" value={`${location.distance_miles} mi`} />}
-              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
-            </div>
-          )}
-
-          {/* Fishing details */}
-          {location.category === 'fishing' && (
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
-              {location.permit_required != null && <DetailBadge label="Permit" value={location.permit_required ? 'Required' : 'Not Required'} />}
-              {location.water_available != null && <DetailBadge label="Water Access" value="Yes" />}
-            </div>
-          )}
-
-          {/* Boating details */}
-          {location.category === 'boating' && (
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
-              {location.hours && <DetailBadge label="Hours" value={location.hours} />}
-            </div>
-          )}
-
-          {/* Kayaking details */}
-          {location.category === 'kayaking' && (
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
-              {location.difficulty && <DetailBadge label="Rapid Grade" value={location.difficulty} />}
-              {location.distance_miles != null && <DetailBadge label="Distance" value={`${location.distance_miles} mi`} />}
-            </div>
-          )}
-
-          {/* Hunting details */}
-          {location.category === 'hunting' && (
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
-              {location.permit_required != null && <DetailBadge label="Permit" value={location.permit_required ? 'Required' : 'Not Required'} />}
-              {location.best_season && <DetailBadge label="Season" value={location.best_season} />}
-            </div>
-          )}
-
-          {/* Horseback details */}
-          {location.category === 'horseback' && (
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {location.difficulty && <DetailBadge label="Difficulty" value={location.difficulty} />}
-              {location.distance_miles != null && <DetailBadge label="Distance" value={`${location.distance_miles} mi`} />}
-              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
-            </div>
-          )}
-
-          {/* Climbing details */}
-          {location.category === 'climbing' && (
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {location.sub_type && <DetailBadge label="Style" value={location.sub_type} />}
-              {location.difficulty && <DetailBadge label="Grade" value={location.difficulty} />}
-            </div>
-          )}
-
-          {/* Swimming details */}
-          {location.category === 'swimming' && (
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
-              {location.hours && <DetailBadge label="Hours" value={location.hours} />}
-            </div>
-          )}
-
-          {/* Off-road details */}
-          {location.category === 'offroad' && (
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {location.difficulty && <DetailBadge label="Difficulty" value={location.difficulty} />}
-              {location.distance_miles != null && <DetailBadge label="Distance" value={`${location.distance_miles} mi`} />}
-              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
+              {location.difficulty && (
+                <DetailBadge 
+                  label={location.category === 'kayaking' ? 'Rapid Grade' : location.category === 'climbing' ? 'Grade' : 'Difficulty'} 
+                  value={location.difficulty} 
+                />
+              )}
+              {location.sub_type && (
+                <DetailBadge 
+                  label={location.category === 'climbing' ? 'Style' : 'Type'} 
+                  value={location.sub_type} 
+                />
+              )}
+              {location.distance_miles != null && (
+                <DetailBadge label="Distance" value={`${location.distance_miles} mi`} />
+              )}
+              {location.elevation_gain_ft != null && (
+                <DetailBadge label="Elevation Gain" value={`${location.elevation_gain_ft.toLocaleString()} ft`} />
+              )}
+              {location.permit_required != null && (
+                <DetailBadge label="Permit" value={location.permit_required ? 'Required' : 'Not Required'} />
+              )}
+              {location.water_available != null && (
+                <DetailBadge label="Water Access" value={location.water_available ? 'Yes' : 'No'} />
+              )}
+              {location.hours && (
+                <DetailBadge label="Hours" value={location.hours} />
+              )}
+              {location.best_season && (
+                <DetailBadge label="Best Season" value={location.best_season} />
+              )}
             </div>
           )}
 

@@ -485,7 +485,13 @@ button, a, input, select, textarea, [role="button"], label {
 
 /* Prevent pull-to-refresh on mobile */
 html, body {
-  overscroll-behavior-y: contain;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+/* Prevent pull-to-refresh specifically on map + bottom sheet */
+.mapboxgl-map, .bottom-sheet-container {
+  overscroll-behavior: none;
+  touch-action: pan-x pan-y;
 }
 
 /* Prevent rubber banding on overlay panels */
