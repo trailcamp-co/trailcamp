@@ -104,9 +104,14 @@ export default function MapContainer({
       doubleClickZoom: false,
     });
 
-    map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+    // Disable rotation on mobile to prevent accidental rotation during pinch zoom
+    map.touchZoomRotate.disableRotation();
+    map.dragRotate.disable();
+
+    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'bottom-right');
     map.addControl(new mapboxgl.ScaleControl({ maxWidth: 100 }), 'bottom-left');
-    map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
+    // Hide default Mapbox attribution on mobile to prevent overlap
+    map.addControl(new mapboxgl.AttributionControl({ compact: true }));
 
     map.on('style.load', () => {
       // Add 3D terrain
@@ -176,6 +181,7 @@ export default function MapContainer({
     };
 
     map.on('moveend', reportBounds);
+    map.on('load', reportBounds); // Report initial bounds for viewport fetch
 
     mapRef.current = map;
 

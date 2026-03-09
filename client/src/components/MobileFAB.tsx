@@ -12,7 +12,7 @@ export default function MobileFAB({ onClick }: MobileFABProps) {
       className="fixed z-40 lg:hidden w-14 h-14 rounded-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-white shadow-lg shadow-orange-500/30 flex items-center justify-center transition-all"
       style={{
         right: '16px',
-        bottom: 'calc(64px + 140px + env(safe-area-inset-bottom, 0px))',
+        bottom: 'calc(64px + 16px + env(safe-area-inset-bottom, 0px))',
       }}
       title="Add Location"
     >

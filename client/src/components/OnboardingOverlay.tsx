@@ -7,6 +7,7 @@ const HOBBY_GROUPS = [
   {
     title: 'Camping & Stays',
     categories: ['campsite'] as LocationCategory[],
+    note: 'Includes campgrounds, boondocking & overnight parking',
   },
   {
     title: 'Trail Activities',

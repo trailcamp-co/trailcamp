@@ -120,10 +120,10 @@ export interface MapStyle {
 }
 
 export const MAP_STYLES: MapStyle[] = [
+  { id: 'streets', name: 'Street', url: 'mapbox://styles/mapbox/dark-v11' },
   { id: 'satellite', name: 'Satellite', url: 'mapbox://styles/mapbox/satellite-streets-v12' },
   { id: 'outdoors', name: 'Topo', url: 'mapbox://styles/mapbox/outdoors-v12' },
   { id: 'hybrid', name: 'Hybrid', url: 'mapbox://styles/mapbox/satellite-v9' },
-  { id: 'streets', name: 'Street', url: 'mapbox://styles/mapbox/dark-v11' },
 ];
 
 export const CATEGORY_COLORS: Record<LocationCategory, string> = {

@@ -475,7 +475,7 @@ button, a, input, select, textarea, [role="button"], label {
 }
 @media (max-width: 1023px) {
   .map-controls-bottom {
-    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(140px + env(safe-area-inset-bottom, 0px));
   }
 }
 
