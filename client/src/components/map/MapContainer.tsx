@@ -110,8 +110,7 @@ export default function MapContainer({
 
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'bottom-right');
     map.addControl(new mapboxgl.ScaleControl({ maxWidth: 100 }), 'bottom-left');
-    // Hide default Mapbox attribution on mobile to prevent overlap
-    map.addControl(new mapboxgl.AttributionControl({ compact: true }));
+
 
     map.on('style.load', () => {
       // Add 3D terrain

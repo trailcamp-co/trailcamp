@@ -59,7 +59,7 @@ export default function LayerPanel({
     return (
       <button
         onClick={onToggle}
-        className="absolute top-14 lg:top-3 right-3 z-10 flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg glass text-gray-200 hover:text-white transition-colors"
+        className="absolute top-14 lg:top-3 right-3 z-50 flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg glass text-gray-200 hover:text-white transition-colors"
       >
         <Layers size={16} />
         <span className="text-sm font-medium">Layers</span>
@@ -68,7 +68,7 @@ export default function LayerPanel({
   }
 
   return (
-    <div className="absolute top-14 lg:top-3 right-3 z-10 w-[200px] rounded-xl shadow-xl border border-dark-600/50 overflow-hidden glass">
+    <div className="absolute top-14 lg:top-3 right-3 z-50 w-[200px] rounded-xl shadow-xl border border-dark-600/50 overflow-hidden glass">
       {/* Header */}
       <button
         onClick={onToggle}

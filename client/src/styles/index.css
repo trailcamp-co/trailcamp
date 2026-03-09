@@ -483,6 +483,11 @@ button, a, input, select, textarea, [role="button"], label {
    iOS SAFARI FIXES
    ============================================ */
 
+/* Prevent pull-to-refresh on mobile */
+html, body {
+  overscroll-behavior-y: contain;
+}
+
 /* Prevent rubber banding on overlay panels */
 .mobile-panel-overlay {
   overscroll-behavior: contain;
@@ -520,4 +525,19 @@ button, a, input, select, textarea, [role="button"], label {
 .mobile-panel-overlay,
 .bottom-sheet-content {
   -webkit-overflow-scrolling: touch;
+}
+
+/* Hide duplicate Mapbox attribution info buttons */
+.mapboxgl-ctrl-attrib-button {
+  display: none !important;
+}
+.mapboxgl-ctrl-attrib {
+  font-size: 10px !important;
+  opacity: 0.6;
+}
+@media (max-width: 1023px) {
+  .mapboxgl-ctrl-attrib {
+    max-width: 200px;
+    font-size: 9px !important;
+  }
 }
