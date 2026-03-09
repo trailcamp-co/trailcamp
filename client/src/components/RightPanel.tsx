@@ -289,6 +289,11 @@ export default function RightPanel({
   const hasDetails = () => {
     if (location.category === 'campsite') return !!(location.cell_signal || location.shade !== null || location.level_ground !== null || location.water_nearby !== null || location.dump_nearby !== null || location.max_vehicle_length !== null || location.stay_limit_days !== null || location.season || location.crowding);
     if (location.category === 'riding') return !!(location.difficulty || location.distance_miles !== null || location.elevation_gain_ft !== null || location.trail_types || location.permit_required !== null);
+    if (['hiking', 'mtb', 'horseback', 'offroad'].includes(location.category)) return !!(location.difficulty || location.distance_miles !== null || location.sub_type);
+    if (['fishing', 'hunting'].includes(location.category)) return !!(location.sub_type || location.permit_required !== null);
+    if (['boating', 'swimming'].includes(location.category)) return !!(location.sub_type || location.hours);
+    if (location.category === 'kayaking') return !!(location.sub_type || location.difficulty);
+    if (location.category === 'climbing') return !!(location.sub_type || location.difficulty);
     return !!(location.hours || location.sub_type);
   };
 

@@ -225,6 +225,13 @@ export default function MobileLocationDetail({
         {location.distance_miles != null && <InfoPill>📏 {location.distance_miles} mi</InfoPill>}
         {location.elevation_gain_ft != null && <InfoPill>⛰️ {location.elevation_gain_ft.toLocaleString()} ft</InfoPill>}
         {distFromHome != null && <InfoPill>🏠 {distFromHome} mi</InfoPill>}
+        {location.sub_type && !['campground', 'boondocking', 'parking', 'Trail'].includes(location.sub_type) && (
+          <InfoPill>{location.sub_type}</InfoPill>
+        )}
+        {location.permit_required != null && location.permit_required !== 0 && (
+          <InfoPill>📋 Permit Req.</InfoPill>
+        )}
+        {location.best_season && <InfoPill>📅 {location.best_season}</InfoPill>}
       </div>
 
       {/* ===== HALF+: Expanded content ===== */}
@@ -332,6 +339,94 @@ export default function MobileLocationDetail({
             </div>
           )}
 
+          {/* Hiking details */}
+          {location.category === 'hiking' && (
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {location.difficulty && <DetailBadge label="Difficulty" value={location.difficulty} />}
+              {location.distance_miles != null && <DetailBadge label="Distance" value={`${location.distance_miles} mi`} />}
+              {location.elevation_gain_ft != null && <DetailBadge label="Elevation Gain" value={`${location.elevation_gain_ft.toLocaleString()} ft`} />}
+              {location.sub_type && location.sub_type !== 'Trail' && <DetailBadge label="Type" value={location.sub_type} />}
+            </div>
+          )}
+
+          {/* MTB details */}
+          {location.category === 'mtb' && (
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {location.difficulty && <DetailBadge label="Difficulty" value={location.difficulty} />}
+              {location.distance_miles != null && <DetailBadge label="Distance" value={`${location.distance_miles} mi`} />}
+              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
+            </div>
+          )}
+
+          {/* Fishing details */}
+          {location.category === 'fishing' && (
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
+              {location.permit_required != null && <DetailBadge label="Permit" value={location.permit_required ? 'Required' : 'Not Required'} />}
+              {location.water_available != null && <DetailBadge label="Water Access" value="Yes" />}
+            </div>
+          )}
+
+          {/* Boating details */}
+          {location.category === 'boating' && (
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
+              {location.hours && <DetailBadge label="Hours" value={location.hours} />}
+            </div>
+          )}
+
+          {/* Kayaking details */}
+          {location.category === 'kayaking' && (
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
+              {location.difficulty && <DetailBadge label="Rapid Grade" value={location.difficulty} />}
+              {location.distance_miles != null && <DetailBadge label="Distance" value={`${location.distance_miles} mi`} />}
+            </div>
+          )}
+
+          {/* Hunting details */}
+          {location.category === 'hunting' && (
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
+              {location.permit_required != null && <DetailBadge label="Permit" value={location.permit_required ? 'Required' : 'Not Required'} />}
+              {location.best_season && <DetailBadge label="Season" value={location.best_season} />}
+            </div>
+          )}
+
+          {/* Horseback details */}
+          {location.category === 'horseback' && (
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {location.difficulty && <DetailBadge label="Difficulty" value={location.difficulty} />}
+              {location.distance_miles != null && <DetailBadge label="Distance" value={`${location.distance_miles} mi`} />}
+              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
+            </div>
+          )}
+
+          {/* Climbing details */}
+          {location.category === 'climbing' && (
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {location.sub_type && <DetailBadge label="Style" value={location.sub_type} />}
+              {location.difficulty && <DetailBadge label="Grade" value={location.difficulty} />}
+            </div>
+          )}
+
+          {/* Swimming details */}
+          {location.category === 'swimming' && (
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
+              {location.hours && <DetailBadge label="Hours" value={location.hours} />}
+            </div>
+          )}
+
+          {/* Off-road details */}
+          {location.category === 'offroad' && (
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {location.difficulty && <DetailBadge label="Difficulty" value={location.difficulty} />}
+              {location.distance_miles != null && <DetailBadge label="Distance" value={`${location.distance_miles} mi`} />}
+              {location.sub_type && <DetailBadge label="Type" value={location.sub_type} />}
+            </div>
+          )}
+
           {/* Reviews summary */}
           {showFull && (
             <div className="border-t border-dark-700/50 pt-4 mb-4">
@@ -431,10 +526,17 @@ export default function MobileLocationDetail({
 }
 
 function DetailBadge({ label, value }: { label: string; value: string | number }) {
+  const diffColors: Record<string, string> = {
+    'Easy': 'text-green-400', 'Moderate': 'text-yellow-400', 'Difficult': 'text-orange-400',
+    'Expert': 'text-red-400', 'Extreme': 'text-red-500',
+  };
+  const isDifficulty = label === 'Difficulty' || label === 'Grade' || label === 'Rapid Grade';
+  const colorClass = isDifficulty && typeof value === 'string' ? diffColors[value] || 'text-gray-200' : 'text-gray-200';
+
   return (
     <div className="rounded-xl px-3 py-2 bg-dark-800 border border-dark-700/50">
       <div className="text-[10px] font-medium text-gray-500 mb-0.5">{label}</div>
-      <div className="text-xs font-semibold text-gray-200">{value}</div>
+      <div className={`text-xs font-semibold ${colorClass}`}>{value}</div>
     </div>
   );
 }
