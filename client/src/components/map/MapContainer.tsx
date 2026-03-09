@@ -69,7 +69,7 @@ export default function MapContainer({
   const homeMarkerRef = useRef<any>(null);
   // Emoji markers removed — native Mapbox circle layers handle all location rendering
   const [layerPanelOpen, setLayerPanelOpen] = useState(true);
-  const [publicLandVisible, setPublicLandVisible] = useState(false);
+  const [visibleLands, setVisibleLands] = useState<Set<string>>(new Set());
   const locationsRef = useRef<Location[]>(locations);
   const routeRef = useRef<GeoJSON.GeoJsonObject | null>(routeGeoJSON);
   const styleUrlRef = useRef(style.url);
@@ -376,15 +376,25 @@ export default function MapContainer({
     return () => window.removeEventListener('deviceorientation', handler, true);
   }, [compassTracking]);
 
-  const handleTogglePublicLand = useCallback(() => {
+  const handleToggleLand = useCallback((agency: string) => {
     const map = mapRef.current;
     if (!map) return;
-    const newVal = !publicLandVisible;
-    setPublicLandVisible(newVal);
-    if (map.getLayer('public-land-sma-layer')) {
-      map.setPaintProperty('public-land-sma-layer', 'raster-opacity', newVal ? 0.35 : 0);
-    }
-  }, [publicLandVisible]);
+    setVisibleLands(prev => {
+      const next = new Set(prev);
+      const fillId = `public-land-${agency}-fill`;
+      const lineId = `public-land-${agency}-line`;
+      if (next.has(agency)) {
+        next.delete(agency);
+        if (map.getLayer(fillId)) map.setPaintProperty(fillId, 'fill-opacity', 0);
+        if (map.getLayer(lineId)) map.setPaintProperty(lineId, 'line-opacity', 0);
+      } else {
+        next.add(agency);
+        if (map.getLayer(fillId)) map.setPaintProperty(fillId, 'fill-opacity', 0.3);
+        if (map.getLayer(lineId)) map.setPaintProperty(lineId, 'line-opacity', 0.7);
+      }
+      return next;
+    });
+  }, []);
 
   return (
     <div className="relative w-full h-full">
@@ -395,8 +405,8 @@ export default function MapContainer({
         darkMode={darkMode}
         visibleLayers={visibleLayers}
         onToggleLayer={onToggleLayer}
-        publicLandVisible={publicLandVisible}
-        onTogglePublicLand={handleTogglePublicLand}
+        visibleLands={visibleLands}
+        onToggleLand={handleToggleLand}
         campsiteSubTypes={campsiteSubTypes}
         onToggleCampsiteSubType={onToggleCampsiteSubType}
         mapStyle={mapStyle || style}

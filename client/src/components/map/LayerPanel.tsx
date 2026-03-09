@@ -16,8 +16,8 @@ interface LayerPanelProps {
   darkMode: boolean;
   visibleLayers: Set<LocationCategory>;
   onToggleLayer: (category: LocationCategory) => void;
-  publicLandVisible: boolean;
-  onTogglePublicLand: () => void;
+  visibleLands: Set<string>;
+  onToggleLand: (agency: string) => void;
   campsiteSubTypes?: Set<CampsiteSubType>;
   onToggleCampsiteSubType?: (subType: CampsiteSubType) => void;
   mapStyle: MapStyle;
@@ -72,7 +72,7 @@ function CollapsibleGroup({ title, forceOpen = false, children }: { title: strin
 
 export default function LayerPanel({
   isOpen, onToggle, visibleLayers, onToggleLayer,
-  publicLandVisible, onTogglePublicLand,
+  visibleLands, onToggleLand,
   campsiteSubTypes, onToggleCampsiteSubType,
   mapStyle, onChangeMapStyle,
 }: LayerPanelProps) {
@@ -92,6 +92,7 @@ export default function LayerPanel({
   const serviceCats: LocationCategory[] = ['water', 'dump', 'scenic'];
   const hasActiveActivity = activityCats.some(c => visibleLayers.has(c));
   const hasActiveService = serviceCats.some(c => visibleLayers.has(c));
+  const hasActiveLand = visibleLands.size > 0;
 
   return (
     <div className="absolute top-14 lg:top-3 right-3 z-50 w-[200px] rounded-xl shadow-xl border border-dark-600/50 overflow-hidden glass">
@@ -174,32 +175,26 @@ export default function LayerPanel({
         <LayerRow emoji={CATEGORY_ICONS.scenic} color={CATEGORY_COLORS.scenic} label="Scenic Views" visible={visibleLayers.has('scenic')} onToggle={() => onToggleLayer('scenic')} />
       </CollapsibleGroup>
 
-      <CollapsibleGroup title="Land Overlays" forceOpen={publicLandVisible}>
-        <LayerRow emoji="🗺️" color="#f59e0b" label="Public Lands (All)" visible={publicLandVisible} onToggle={onTogglePublicLand} />
-        {publicLandVisible && (
-          <div className="px-2.5 pb-2 pt-0.5">
-            <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
-              {[
-                ['#e8d44d', 'BLM'],
-                ['#6ab56a', "Nat'l Forest"],
-                ['#c4b9a3', "Nat'l Park"],
-                ['#7bb0d4', 'State Land'],
-                ['#8bc4c1', 'Fish & Wildlife'],
-                ['#d4a0b9', 'Reclamation'],
-                ['#ef8f8f', 'Military'],
-                ['#d4a46a', 'Tribal'],
-              ].map(([color, label]) => (
-                <div key={label} className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: color }} />
-                  <span className="text-[9px] text-gray-500">{label}</span>
-                </div>
-              ))}
-            </div>
-            <p className="text-[8px] text-gray-600 mt-1.5 leading-relaxed">
-              Source: BLM Surface Management Agency. Checkerboard patterns in the West are real — from 1800s railroad land grants.
-            </p>
-          </div>
-        )}
+      <CollapsibleGroup title="Land Overlays" forceOpen={hasActiveLand}>
+        {[
+          ['blm', '#d4a017', 'BLM'],
+          ['usfs', '#228B22', 'National Forest'],
+          ['nps', '#8B4513', 'National Park'],
+          ['fws', '#008B8B', 'Fish & Wildlife'],
+          ['state', '#4169E1', 'State Land'],
+          ['usbr', '#C71585', 'Reclamation'],
+          ['bia', '#D2691E', 'Tribal / BIA'],
+          ['dod', '#DC143C', 'Military'],
+        ].map(([id, color, label]) => (
+          <LayerRow
+            key={id}
+            emoji=""
+            color={color}
+            label={label}
+            visible={visibleLands.has(id)}
+            onToggle={() => onToggleLand(id)}
+          />
+        ))}
       </CollapsibleGroup>
     </div>
   );

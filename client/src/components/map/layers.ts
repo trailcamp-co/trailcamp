@@ -234,30 +234,52 @@ export function addCustomLayers(
   });
 }
 
-/** Add public land overlay sources and layers (BLM SMA raster tiles) */
+/** Add public land overlay sources and layers (vector tiles from PADUS/SMA) */
 export function addOverlayLayers(map: mapboxgl.Map): void {
-  // BLM Surface Management Agency — all federal + state lands
-  // Uses the official BLM cached tile service (100% accurate, updated regularly)
-  // Color-coded by agency: BLM=yellow, USFS=green, NPS=brown, State=blue, etc.
-  if (!map.getSource('public-land-sma')) {
-    map.addSource('public-land-sma', {
-      type: 'raster',
-      tiles: [
-        'https://gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Cached_without_PriUnk/MapServer/tile/{z}/{y}/{x}'
-      ],
-      tileSize: 256,
-      minzoom: 4,
-      maxzoom: 16,
-      attribution: '© BLM Surface Management Agency',
+  if (!map.getSource('public-land')) {
+    map.addSource('public-land', {
+      type: 'vector',
+      url: 'mapbox://nstrnad26.public-lands',
     });
-    map.addLayer({
-      id: 'public-land-sma-layer',
-      type: 'raster',
-      source: 'public-land-sma',
-      paint: {
-        'raster-opacity': 0,
-        'raster-fade-duration': 200,
-      },
-    }, 'clusters');
+
+    // Per-agency fill layers — each can be toggled independently
+    const agencies: [string, string, string][] = [
+      // [id, filter value, fill color]
+      ['blm', 'BLM', '#d4a017'],       // gold
+      ['usfs', 'USFS', '#228B22'],      // forest green
+      ['nps', 'NPS', '#8B4513'],        // saddle brown
+      ['fws', 'FWS', '#008B8B'],        // dark cyan
+      ['state', 'ST', '#4169E1'],       // royal blue
+      ['usbr', 'USBR', '#C71585'],     // medium violet red
+      ['bia', 'BIA', '#D2691E'],        // chocolate
+      ['dod', 'DOD', '#DC143C'],        // crimson
+    ];
+
+    for (const [id, code, color] of agencies) {
+      map.addLayer({
+        id: `public-land-${id}-fill`,
+        type: 'fill',
+        source: 'public-land',
+        'source-layer': 'public_land',
+        filter: ['==', ['get', 'agency'], code],
+        paint: {
+          'fill-color': color,
+          'fill-opacity': 0,
+        },
+      }, 'clusters');
+
+      map.addLayer({
+        id: `public-land-${id}-line`,
+        type: 'line',
+        source: 'public-land',
+        'source-layer': 'public_land',
+        filter: ['==', ['get', 'agency'], code],
+        paint: {
+          'line-color': color,
+          'line-width': 1,
+          'line-opacity': 0,
+        },
+      }, 'clusters');
+    }
   }
 }
