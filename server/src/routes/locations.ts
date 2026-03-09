@@ -407,6 +407,8 @@ router.get('/search', optionalAuth, async (req: Request, res: Response) => {
         relevance: sql<number>`CASE
           WHEN LOWER(${locations.name}) = LOWER(${q}) THEN 3
           WHEN LOWER(${locations.name}) LIKE LOWER(${q} || '%') THEN 2
+          WHEN LOWER(${locations.state}) = LOWER(${q}) THEN 2
+          WHEN LOWER(${locations.city}) = LOWER(${q}) THEN 2
           ELSE 1
         END`.as('relevance'),
       })
@@ -420,12 +422,15 @@ router.get('/search', optionalAuth, async (req: Request, res: Response) => {
             sql`${locations.notes} ILIKE ${pattern}`,
             sql`${locations.subType} ILIKE ${pattern}`,
             sql`${locations.trailTypes} ILIKE ${pattern}`,
-            sql`${locations.difficulty} ILIKE ${pattern}`
+            sql`${locations.difficulty} ILIKE ${pattern}`,
+            sql`${locations.city} ILIKE ${pattern}`,
+            sql`${locations.state} ILIKE ${pattern}`,
+            sql`${locations.county} ILIKE ${pattern}`
           )
         )
       )
       .orderBy(sql`relevance DESC`, asc(locations.name))
-      .limit(20);
+      .limit(50);
 
     res.json(rows.map((r) => toSnakeCase({ ...r.location, relevance: r.relevance } as Record<string, unknown>)));
   } catch (err) {
