@@ -7,7 +7,7 @@ import CampsiteTab from './CampsiteTab';
 import FiltersTab from './FiltersTab';
 import PackingList from './PackingList';
 
-export type SidebarTab = 'trip' | 'riding' | 'camp' | 'filters' | 'packing';
+export type SidebarTab = 'trip' | 'riding' | 'camp' | 'filters' | 'packing' | 'hiking' | 'mtb' | 'fishing' | 'boating' | 'kayaking' | 'hunting' | 'horseback' | 'climbing' | 'swimming' | 'offroad';
 
 interface LeftSidebarProps {
   selectedTrip: Trip | null;
@@ -78,7 +78,7 @@ export default function LeftSidebar({
   const stopCount = stops.length;
 
   // Calculate active filter count
-  const ALL_CATEGORIES = ['campsite', 'riding', 'water', 'dump', 'scenic'];
+  const ALL_CATEGORIES = ['campsite', 'riding', 'hiking', 'mtb', 'fishing', 'boating', 'kayaking', 'hunting', 'horseback', 'climbing', 'swimming', 'offroad', 'water', 'dump', 'scenic'];
   const ALL_CAMPSITE_SUBTYPES = ['boondocking', 'campground', 'parking'];
   const activeFilterCount = [
     filterMode !== 'all',

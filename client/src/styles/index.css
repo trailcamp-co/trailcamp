@@ -541,3 +541,22 @@ html, body {
     font-size: 9px !important;
   }
 }
+
+/* Bottom sheet scroll hint — fade at bottom to hint more content */
+.bottom-sheet-content {
+  position: relative;
+}
+.bottom-sheet-content::after {
+  content: '';
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(transparent, var(--color-dark-900, #111827));
+  pointer-events: none;
+  display: block;
+}
+.bottom-sheet-content:has(:last-child:not(.scroll-hint)) .scroll-hint {
+  display: none;
+}

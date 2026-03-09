@@ -1,4 +1,5 @@
-import { Layers, ChevronUp } from 'lucide-react';
+import { Layers, ChevronUp, ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 import type { LocationCategory, CampsiteSubType, MapStyle } from '../../types';
 import {
   CATEGORY_COLORS, CATEGORY_ICONS,
@@ -46,6 +47,22 @@ function LayerRow({ emoji, color, label, visible, onToggle }: {
       <span className="flex-1 text-left text-[11px]">{label}</span>
       <Toggle on={visible} />
     </button>
+  );
+}
+
+function CollapsibleGroup({ title, defaultOpen = false, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-t border-dark-600/30">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-300 transition-colors"
+      >
+        {title}
+        {open ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
+      </button>
+      {open && <div className="pb-0.5">{children}</div>}
+    </div>
   );
 }
 
@@ -133,35 +150,28 @@ export default function LayerPanel({
         })}
       </div>
 
-      {/* Activities */}
-      <div className="border-t border-dark-600/30 py-0.5">
-        <LayerRow emoji={CATEGORY_ICONS.hiking} color={CATEGORY_COLORS.hiking} label="Hiking Trails" visible={visibleLayers.has('hiking')} onToggle={() => onToggleLayer('hiking')} />
-        <LayerRow emoji={CATEGORY_ICONS.riding} color={CATEGORY_COLORS.riding} label="Dirt Bikes / OHV" visible={visibleLayers.has('riding')} onToggle={() => onToggleLayer('riding')} />
-        <LayerRow emoji={CATEGORY_ICONS.mtb} color={CATEGORY_COLORS.mtb} label="Mountain Biking" visible={visibleLayers.has('mtb')} onToggle={() => onToggleLayer('mtb')} />
+      <CollapsibleGroup title="Activities" defaultOpen={false}>
+        <LayerRow emoji={CATEGORY_ICONS.hiking} color={CATEGORY_COLORS.hiking} label="Hiking" visible={visibleLayers.has('hiking')} onToggle={() => onToggleLayer('hiking')} />
+        <LayerRow emoji={CATEGORY_ICONS.riding} color={CATEGORY_COLORS.riding} label="Dirt Bikes" visible={visibleLayers.has('riding')} onToggle={() => onToggleLayer('riding')} />
+        <LayerRow emoji={CATEGORY_ICONS.mtb} color={CATEGORY_COLORS.mtb} label="MTB" visible={visibleLayers.has('mtb')} onToggle={() => onToggleLayer('mtb')} />
         <LayerRow emoji={CATEGORY_ICONS.offroad} color={CATEGORY_COLORS.offroad} label="4x4 / Off-Road" visible={visibleLayers.has('offroad')} onToggle={() => onToggleLayer('offroad')} />
         <LayerRow emoji={CATEGORY_ICONS.horseback} color={CATEGORY_COLORS.horseback} label="Horseback" visible={visibleLayers.has('horseback')} onToggle={() => onToggleLayer('horseback')} />
-        <LayerRow emoji={CATEGORY_ICONS.climbing} color={CATEGORY_COLORS.climbing} label="Rock Climbing" visible={visibleLayers.has('climbing')} onToggle={() => onToggleLayer('climbing')} />
-      </div>
+        <LayerRow emoji={CATEGORY_ICONS.climbing} color={CATEGORY_COLORS.climbing} label="Climbing" visible={visibleLayers.has('climbing')} onToggle={() => onToggleLayer('climbing')} />
+      </CollapsibleGroup>
 
-      {/* Water Activities */}
-      <div className="border-t border-dark-600/30 py-0.5">
-        <LayerRow emoji={CATEGORY_ICONS.fishing} color={CATEGORY_COLORS.fishing} label="Fishing Spots" visible={visibleLayers.has('fishing')} onToggle={() => onToggleLayer('fishing')} />
-        <LayerRow emoji={CATEGORY_ICONS.boating} color={CATEGORY_COLORS.boating} label="Boat Ramps" visible={visibleLayers.has('boating')} onToggle={() => onToggleLayer('boating')} />
+      <CollapsibleGroup title="Water" defaultOpen={false}>
+        <LayerRow emoji={CATEGORY_ICONS.fishing} color={CATEGORY_COLORS.fishing} label="Fishing" visible={visibleLayers.has('fishing')} onToggle={() => onToggleLayer('fishing')} />
+        <LayerRow emoji={CATEGORY_ICONS.boating} color={CATEGORY_COLORS.boating} label="Boating" visible={visibleLayers.has('boating')} onToggle={() => onToggleLayer('boating')} />
         <LayerRow emoji={CATEGORY_ICONS.kayaking} color={CATEGORY_COLORS.kayaking} label="Kayaking" visible={visibleLayers.has('kayaking')} onToggle={() => onToggleLayer('kayaking')} />
         <LayerRow emoji={CATEGORY_ICONS.swimming} color={CATEGORY_COLORS.swimming} label="Swimming" visible={visibleLayers.has('swimming')} onToggle={() => onToggleLayer('swimming')} />
-      </div>
+        <LayerRow emoji={CATEGORY_ICONS.hunting} color={CATEGORY_COLORS.hunting} label="Hunting" visible={visibleLayers.has('hunting')} onToggle={() => onToggleLayer('hunting')} />
+      </CollapsibleGroup>
 
-      {/* Hunting */}
-      <div className="border-t border-dark-600/30 py-0.5">
-        <LayerRow emoji={CATEGORY_ICONS.hunting} color={CATEGORY_COLORS.hunting} label="Hunting Areas" visible={visibleLayers.has('hunting')} onToggle={() => onToggleLayer('hunting')} />
-      </div>
-
-      {/* Services */}
-      <div className="border-t border-dark-600/30 py-0.5">
+      <CollapsibleGroup title="Services" defaultOpen={false}>
         <LayerRow emoji={CATEGORY_ICONS.water} color={CATEGORY_COLORS.water} label="Water Stations" visible={visibleLayers.has('water')} onToggle={() => onToggleLayer('water')} />
         <LayerRow emoji={CATEGORY_ICONS.dump} color={CATEGORY_COLORS.dump} label="Dump Stations" visible={visibleLayers.has('dump')} onToggle={() => onToggleLayer('dump')} />
         <LayerRow emoji={CATEGORY_ICONS.scenic} color={CATEGORY_COLORS.scenic} label="Scenic Views" visible={visibleLayers.has('scenic')} onToggle={() => onToggleLayer('scenic')} />
-      </div>
+      </CollapsibleGroup>
 
       {/* Land overlays */}
       <div className="border-t border-dark-600/30 py-0.5">

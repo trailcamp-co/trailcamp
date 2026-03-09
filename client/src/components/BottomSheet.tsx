@@ -141,7 +141,7 @@ export default function BottomSheet({ open, snapPoint, onSnapChange, onDismiss, 
       {/* Content */}
       <div
         ref={contentRef}
-        className={`flex-1 min-h-0 ${isScrollable ? 'overflow-y-auto overscroll-contain' : 'overflow-hidden'}`}
+        className={`flex-1 min-h-0 ${isScrollable ? 'overflow-y-auto relative overscroll-contain' : 'overflow-hidden'}`}
         style={{ WebkitOverflowScrolling: 'touch' }}
         onTouchStart={(e) => {
           if (!isScrollable) {
