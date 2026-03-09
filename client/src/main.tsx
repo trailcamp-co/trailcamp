@@ -8,6 +8,7 @@ import SignupPage from './pages/SignupPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import SettingsPage from './pages/SettingsPage';
+import LandingPage from './pages/LandingPage';
 import './styles/index.css';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -28,6 +29,18 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function LandingOrApp() {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-dark-950">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto" />
+      </div>
+    );
+  }
+  return user ? <App /> : <LandingPage />;
+}
+
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   if (loading) return null;
@@ -45,7 +58,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-          <Route path="/*" element={<ProtectedRoute><App /></ProtectedRoute>} />
+          <Route path="/app/*" element={<ProtectedRoute><App /></ProtectedRoute>} />
+          <Route path="/*" element={<LandingOrApp />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
