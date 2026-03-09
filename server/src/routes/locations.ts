@@ -113,6 +113,27 @@ function computeSeasonalStatus(loc: SeasonalLoc, month: number): 'great' | 'shou
 
 router.get('/slim', optionalAuth, async (req: Request, res: Response) => {
   try {
+    const conditions: ReturnType<typeof eq>[] = [];
+
+    // Visibility filter
+    conditions.push(or(eq(locations.visibility, 'public'), isNull(locations.visibility))!);
+
+    // Bounding box filter (critical for performance)
+    if (req.query.sw_lat && req.query.sw_lng && req.query.ne_lat && req.query.ne_lng) {
+      conditions.push(gte(locations.latitude, Number(req.query.sw_lat)));
+      conditions.push(sql`${locations.latitude} <= ${Number(req.query.ne_lat)}`);
+      conditions.push(gte(locations.longitude, Number(req.query.sw_lng)));
+      conditions.push(sql`${locations.longitude} <= ${Number(req.query.ne_lng)}`);
+    }
+
+    // Category filter (comma-separated list)
+    if (req.query.categories) {
+      const cats = String(req.query.categories).split(',');
+      conditions.push(sql`${locations.category} IN (${sql.join(cats.map(c => sql`${c}`), sql`,`)})`);
+    }
+
+    const queryLimit = req.query.limit ? Math.min(Number(req.query.limit), 10000) : 5000;
+
     const rows = await db.select({
       id: locations.id,
       name: locations.name,
@@ -137,9 +158,7 @@ router.get('/slim', optionalAuth, async (req: Request, res: Response) => {
       source: locations.source,
       visibility: locations.visibility,
       userId: locations.userId,
-    }).from(locations).where(
-      or(eq(locations.visibility, 'public'), isNull(locations.visibility))
-    ).orderBy(asc(locations.name));
+    }).from(locations).where(and(...conditions)).orderBy(asc(locations.name)).limit(queryLimit);
 
     // Group filtering - only show primary from groups
     const filtered = rows.filter(r => !r.groupId || r.isGroupPrimary === 1);

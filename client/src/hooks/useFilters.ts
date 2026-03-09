@@ -51,10 +51,24 @@ export function useFilters(
   visitedIds?: Set<number>,
   reviewSummaries?: Map<number, { average_rating: number; review_count: number }>,
 ) {
-  const [filters, setFilters] = useState<Filters>({
-    ...DEFAULT_FILTERS,
-    categories: new Set(DEFAULT_FILTERS.categories),
-    campsiteSubTypes: new Set(DEFAULT_FILTERS.campsiteSubTypes),
+  const [filters, setFilters] = useState<Filters>(() => {
+    // Load saved layer preferences from localStorage
+    try {
+      const saved = localStorage.getItem('trailcamp-layers');
+      if (saved) {
+        const cats = JSON.parse(saved) as string[];
+        return {
+          ...DEFAULT_FILTERS,
+          categories: new Set(cats as LocationCategory[]),
+          campsiteSubTypes: new Set(DEFAULT_FILTERS.campsiteSubTypes),
+        };
+      }
+    } catch {}
+    return {
+      ...DEFAULT_FILTERS,
+      categories: new Set(DEFAULT_FILTERS.categories),
+      campsiteSubTypes: new Set(DEFAULT_FILTERS.campsiteSubTypes),
+    };
   });
 
   const handleToggleLayer = useCallback((category: LocationCategory) => {
@@ -62,6 +76,8 @@ export function useFilters(
       const nextCategories = new Set(prev.categories);
       if (nextCategories.has(category)) nextCategories.delete(category);
       else nextCategories.add(category);
+      // Persist layer preferences
+      try { localStorage.setItem('trailcamp-layers', JSON.stringify([...nextCategories])); } catch {}
       return { ...prev, categories: nextCategories };
     });
   }, []);

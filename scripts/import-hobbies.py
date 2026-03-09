@@ -12,6 +12,25 @@ import sys, json, time, urllib.request, urllib.parse, psycopg2, math
 DB_URL = "postgresql://postgres.iagfjotzcuazdowksxwy:beC67JY5HFqTsnHq@aws-0-us-west-2.pooler.supabase.com:5432/postgres"
 OVERPASS_URL = "https://overpass-api.de/api/interpreter"
 
+# US split into regions (Overpass can't handle full US in one query)
+US_REGIONS = [
+    ("NE-North",      "42.0,-82.0,47.5,-66.9"),
+    ("NE-South",      "37.0,-82.0,42.0,-66.9"),
+    ("SE-East",       "24.4,-83.0,37.0,-75.0"),
+    ("SE-West",       "24.4,-91.5,37.0,-83.0"),
+    ("MW-North",      "42.0,-97.5,49.4,-80.5"),
+    ("MW-South",      "36.0,-97.5,42.0,-80.5"),
+    ("SC-East",       "25.8,-97.0,37.0,-88.0"),
+    ("SC-West",       "25.8,-106.6,37.0,-97.0"),
+    ("MW-North-RM",   "42.0,-112.0,49.0,-102.0"),
+    ("MW-South-RM",   "31.3,-112.0,42.0,-102.0"),
+    ("MW-West-RM",    "31.3,-117.0,49.0,-112.0"),
+    ("PAC-North",     "42.0,-125.0,49.0,-114.0"),
+    ("PAC-South",     "32.5,-125.0,42.0,-114.0"),
+    ("Alaska",        "51.0,-180.0,71.5,-130.0"),
+    ("Hawaii",        "18.9,-160.3,22.3,-154.8"),
+]
+
 # US bounding box (continental + Alaska + Hawaii handled separately)
 US_BBOX = "24.396308,-125.0,49.384358,-66.93457"  # south,west,north,east
 
@@ -19,7 +38,7 @@ HOBBY_CONFIGS = {
     "hiking": {
         "category": "hiking",
         "queries": [
-            '[out:json][timeout:300];(relation["route"="hiking"]["name"](24.39,-125.0,49.38,-66.93);way["highway"="path"]["sac_scale"]["name"](24.39,-125.0,49.38,-66.93);way["highway"="footway"]["name"]["sac_scale"](24.39,-125.0,49.38,-66.93);relation["route"="foot"]["name"](24.39,-125.0,49.38,-66.93););out center tags;',
+            '[out:json][timeout:300];(relation["route"="hiking"]["name"]({bbox});way["highway"="path"]["sac_scale"]["name"]({bbox});way["highway"="footway"]["name"]["sac_scale"]({bbox});relation["route"="foot"]["name"]({bbox}););out center tags;',
         ],
         "sub_type_map": {
             "sac_scale": {
@@ -43,7 +62,7 @@ HOBBY_CONFIGS = {
     "mtb": {
         "category": "mtb",
         "queries": [
-            '[out:json][timeout:300];(relation["route"="mtb"]["name"](24.39,-125.0,49.38,-66.93);way["mtb:scale"]["name"](24.39,-125.0,49.38,-66.93);node["sport"~"cycling|mountain_biking"]["name"](24.39,-125.0,49.38,-66.93);way["sport"~"cycling|mountain_biking"]["name"](24.39,-125.0,49.38,-66.93););out center tags;',
+            '[out:json][timeout:300];(relation["route"="mtb"]["name"]({bbox});way["mtb:scale"]["name"]({bbox});node["sport"~"cycling|mountain_biking"]["name"]({bbox});way["sport"~"cycling|mountain_biking"]["name"]({bbox}););out center tags;',
         ],
         "extract_fields": lambda tags: {
             "difficulty": _mtb_to_difficulty(tags.get("mtb:scale", tags.get("mtb:scale:imba", ""))),
@@ -55,7 +74,7 @@ HOBBY_CONFIGS = {
     "fishing": {
         "category": "fishing",
         "queries": [
-            '[out:json][timeout:300];(node["leisure"="fishing"]["name"](24.39,-125.0,49.38,-66.93);way["leisure"="fishing"]["name"](24.39,-125.0,49.38,-66.93);node["sport"="fishing"]["name"](24.39,-125.0,49.38,-66.93);way["sport"="fishing"]["name"](24.39,-125.0,49.38,-66.93);node["fishing"~"yes|designated|permitted"]["name"](24.39,-125.0,49.38,-66.93););out center tags;',
+            '[out:json][timeout:300];(node["leisure"="fishing"]["name"]({bbox});way["leisure"="fishing"]["name"]({bbox});node["sport"="fishing"]["name"]({bbox});way["sport"="fishing"]["name"]({bbox});node["fishing"~"yes|designated|permitted"]["name"]({bbox}););out center tags;',
         ],
         "extract_fields": lambda tags: {
             "sub_type": _fishing_subtype(tags),
@@ -66,9 +85,9 @@ HOBBY_CONFIGS = {
     "boating": {
         "category": "boating",
         "queries": [
-            '[out:json][timeout:300];(node["leisure"="slipway"]["name"](24.39,-125.0,49.38,-66.93);way["leisure"="slipway"]["name"](24.39,-125.0,49.38,-66.93);node["leisure"="marina"]["name"](24.39,-125.0,49.38,-66.93);way["leisure"="marina"]["name"](24.39,-125.0,49.38,-66.93);node["seamark:type"="small_craft_facility"]["name"](24.39,-125.0,49.38,-66.93););out center tags;',
+            '[out:json][timeout:300];(node["leisure"="slipway"]["name"]({bbox});way["leisure"="slipway"]["name"]({bbox});node["leisure"="marina"]["name"]({bbox});way["leisure"="marina"]["name"]({bbox});node["seamark:type"="small_craft_facility"]["name"]({bbox}););out center tags;',
             # Unnamed boat ramps (slipways are often unnamed but useful)
-            '[out:json][timeout:300];(node["leisure"="slipway"](24.39,-125.0,49.38,-66.93);way["leisure"="slipway"](24.39,-125.0,49.38,-66.93););out center tags;',
+            '[out:json][timeout:300];(node["leisure"="slipway"]({bbox});way["leisure"="slipway"]({bbox}););out center tags;',
         ],
         "extract_fields": lambda tags: {
             "sub_type": "Marina" if tags.get("leisure") == "marina" else "Boat Ramp",
@@ -79,9 +98,9 @@ HOBBY_CONFIGS = {
     "kayaking": {
         "category": "kayaking",
         "queries": [
-            '[out:json][timeout:300];(node["sport"~"canoe|kayak"]["name"](24.39,-125.0,49.38,-66.93);way["sport"~"canoe|kayak"]["name"](24.39,-125.0,49.38,-66.93);node["canoe"~"put_in|egress|portage"]["name"](24.39,-125.0,49.38,-66.93);relation["route"="canoe"]["name"](24.39,-125.0,49.38,-66.93);node["whitewater"~"put_in|egress"]["name"](24.39,-125.0,49.38,-66.93););out center tags;',
+            '[out:json][timeout:300];(node["sport"~"canoe|kayak"]["name"]({bbox});way["sport"~"canoe|kayak"]["name"]({bbox});node["canoe"~"put_in|egress|portage"]["name"]({bbox});relation["route"="canoe"]["name"]({bbox});node["whitewater"~"put_in|egress"]["name"]({bbox}););out center tags;',
             # Unnamed put-ins
-            '[out:json][timeout:300];(node["canoe"~"put_in|egress"](24.39,-125.0,49.38,-66.93);node["whitewater"~"put_in|egress"](24.39,-125.0,49.38,-66.93););out center tags;',
+            '[out:json][timeout:300];(node["canoe"~"put_in|egress"]({bbox});node["whitewater"~"put_in|egress"]({bbox}););out center tags;',
         ],
         "extract_fields": lambda tags: {
             "sub_type": _kayak_subtype(tags),
@@ -93,7 +112,7 @@ HOBBY_CONFIGS = {
     "hunting": {
         "category": "hunting",
         "queries": [
-            '[out:json][timeout:300];(node["hunting"~"yes|designated"]["name"](24.39,-125.0,49.38,-66.93);way["hunting"~"yes|designated"]["name"](24.39,-125.0,49.38,-66.93);relation["hunting"~"yes|designated"]["name"](24.39,-125.0,49.38,-66.93);way["leisure"="hunting_stand"]["name"](24.39,-125.0,49.38,-66.93);node["sport"="shooting"]["name"](24.39,-125.0,49.38,-66.93);way["sport"="shooting"]["name"](24.39,-125.0,49.38,-66.93););out center tags;',
+            '[out:json][timeout:300];(node["hunting"~"yes|designated"]["name"]({bbox});way["hunting"~"yes|designated"]["name"]({bbox});relation["hunting"~"yes|designated"]["name"]({bbox});way["leisure"="hunting_stand"]["name"]({bbox});node["sport"="shooting"]["name"]({bbox});way["sport"="shooting"]["name"]({bbox}););out center tags;',
         ],
         "extract_fields": lambda tags: {
             "sub_type": "Shooting Range" if tags.get("sport") == "shooting" else "Public Hunting Land",
@@ -104,7 +123,7 @@ HOBBY_CONFIGS = {
     "horseback": {
         "category": "horseback",
         "queries": [
-            '[out:json][timeout:300];(way["highway"="bridleway"]["name"](24.39,-125.0,49.38,-66.93);way["horse"="designated"]["name"](24.39,-125.0,49.38,-66.93);relation["route"="horse"]["name"](24.39,-125.0,49.38,-66.93);node["sport"="equestrian"]["name"](24.39,-125.0,49.38,-66.93);way["sport"="equestrian"]["name"](24.39,-125.0,49.38,-66.93););out center tags;',
+            '[out:json][timeout:300];(way["highway"="bridleway"]["name"]({bbox});way["horse"="designated"]["name"]({bbox});relation["route"="horse"]["name"]({bbox});node["sport"="equestrian"]["name"]({bbox});way["sport"="equestrian"]["name"]({bbox}););out center tags;',
         ],
         "extract_fields": lambda tags: {
             "sub_type": "Equestrian Trail",
@@ -115,7 +134,7 @@ HOBBY_CONFIGS = {
     "climbing": {
         "category": "climbing",
         "queries": [
-            '[out:json][timeout:300];(node["sport"="climbing"]["name"](24.39,-125.0,49.38,-66.93);way["sport"="climbing"]["name"](24.39,-125.0,49.38,-66.93);node["climbing"~"sport|boulder|trad|ice"]["name"](24.39,-125.0,49.38,-66.93);way["natural"="cliff"]["climbing"]["name"](24.39,-125.0,49.38,-66.93););out center tags;',
+            '[out:json][timeout:300];(node["sport"="climbing"]["name"]({bbox});way["sport"="climbing"]["name"]({bbox});node["climbing"~"sport|boulder|trad|ice"]["name"]({bbox});way["natural"="cliff"]["climbing"]["name"]({bbox}););out center tags;',
         ],
         "extract_fields": lambda tags: {
             "sub_type": _climbing_subtype(tags),
@@ -125,7 +144,7 @@ HOBBY_CONFIGS = {
     "swimming": {
         "category": "swimming",
         "queries": [
-            '[out:json][timeout:300];(node["sport"="swimming"]["name"](24.39,-125.0,49.38,-66.93);way["sport"="swimming"]["name"](24.39,-125.0,49.38,-66.93);node["leisure"="swimming_area"]["name"](24.39,-125.0,49.38,-66.93);way["leisure"="swimming_area"]["name"](24.39,-125.0,49.38,-66.93);node["leisure"="beach_resort"]["name"](24.39,-125.0,49.38,-66.93);way["natural"="beach"]["name"]["swimming"](24.39,-125.0,49.38,-66.93););out center tags;',
+            '[out:json][timeout:300];(node["sport"="swimming"]["name"]({bbox});way["sport"="swimming"]["name"]({bbox});node["leisure"="swimming_area"]["name"]({bbox});way["leisure"="swimming_area"]["name"]({bbox});node["leisure"="beach_resort"]["name"]({bbox});way["natural"="beach"]["name"]["swimming"]({bbox}););out center tags;',
         ],
         "extract_fields": lambda tags: {
             "sub_type": "Beach" if tags.get("natural") == "beach" else "Swimming Area",
@@ -136,7 +155,7 @@ HOBBY_CONFIGS = {
     "offroad": {
         "category": "offroad",
         "queries": [
-            '[out:json][timeout:300];(way["highway"="track"]["4wd_only"~"yes|recommended"]["name"](24.39,-125.0,49.38,-66.93);way["highway"="track"]["tracktype"~"grade4|grade5"]["name"](24.39,-125.0,49.38,-66.93);node["sport"="4wd"]["name"](24.39,-125.0,49.38,-66.93);way["sport"="4wd"]["name"](24.39,-125.0,49.38,-66.93););out center tags;',
+            '[out:json][timeout:300];(way["highway"="track"]["4wd_only"~"yes|recommended"]["name"]({bbox});way["highway"="track"]["tracktype"~"grade4|grade5"]["name"]({bbox});node["sport"="4wd"]["name"]({bbox});way["sport"="4wd"]["name"]({bbox}););out center tags;',
         ],
         "extract_fields": lambda tags: {
             "sub_type": "4x4 Trail",
@@ -272,20 +291,21 @@ def import_hobby(hobby_name, dry_run=False):
     print(f"Importing: {hobby_name} (category: {category})", flush=True)
     print(f"{'='*60}", flush=True)
 
-    # Collect all elements from all queries
+    # Collect all elements from all queries across all US regions
     all_elements = []
-    for i, query in enumerate(config["queries"]):
-        print(f"\n  Running Overpass query {i+1}/{len(config['queries'])}...", flush=True)
-        result = query_overpass(query)
-        if not result:
-            print(f"  ❌ Query {i+1} failed completely", flush=True)
-            continue
-        elements = result.get("elements", [])
-        print(f"  Found {len(elements)} raw elements", flush=True)
-        all_elements.extend(elements)
-        if i < len(config["queries"]) - 1:
-            print(f"  Waiting 10s before next query...", flush=True)
-            time.sleep(10)
+    for region_name, bbox in US_REGIONS:
+        for i, query_template in enumerate(config["queries"]):
+            query = query_template.replace("{bbox}", bbox)
+            print(f"\n  [{region_name}] Query {i+1}/{len(config['queries'])}...", flush=True)
+            result = query_overpass(query)
+            if not result:
+                print(f"  ❌ [{region_name}] Query {i+1} failed", flush=True)
+                time.sleep(15)
+                continue
+            elements = result.get("elements", [])
+            print(f"  [{region_name}] Found {len(elements)} elements", flush=True)
+            all_elements.extend(elements)
+            time.sleep(5)  # Rate limit between queries
 
     if not all_elements:
         print(f"\n❌ No data found for {hobby_name}", flush=True)

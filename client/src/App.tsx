@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react';
 import { useTrips, useTripStops, useLocations, getMapboxToken } from './hooks/useApi';
 import { useFilters } from './hooks/useFilters';
 import { useSearch } from './hooks/useSearch';
@@ -13,6 +13,7 @@ import LeftSidebar from './components/sidebar';
 import ErrorBoundary from './components/ErrorBoundary';
 import ToastContainer from './components/ToastContainer';
 import MobileBottomTabs from './components/MobileBottomTabs';
+import OnboardingOverlay from './components/OnboardingOverlay';
 import MobileFAB from './components/MobileFAB';
 import MobileSearchBar from './components/MobileSearchBar';
 import BottomSheet from './components/BottomSheet';
@@ -63,9 +64,11 @@ export default function App() {
     }
   }, [navigate]);
 
+  const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('trailcamp-layers'));
+
   const { trips, createTrip, updateTrip, deleteTrip } = useTrips();
   const { stops, addStop, updateStop, reorderStops, deleteStop } = useTripStops(selectedTrip?.id ?? null);
-  const { locations, searchLocations, createLocation, updateLocation, deleteLocation, toggleFavorite } = useLocations();
+  const { locations, loading: locationsLoading, fetchLocations, searchLocations, createLocation, updateLocation, deleteLocation, toggleFavorite } = useLocations();
   const { toasts, showToast, removeToast } = useToast();
   const { getLocationData, updateLocationData, dataMap } = useUserData();
   const { isFavorited, toggleFavorite: toggleFav, favoriteIds } = useFavorites();
@@ -85,6 +88,7 @@ export default function App() {
   }, [dataMap]);
 
   const { filters, setFilters, filteredLocations, handleToggleLayer, handleToggleCampsiteSubType } = useFilters(locations, routeGeoJSON, favoriteIds, visitedIds);
+
   const { searchQuery, searchResults, handleSearch, clearSearch } = useSearch(searchLocations);
   const {
     selectedLocation,
@@ -99,6 +103,31 @@ export default function App() {
     handleFlyTo,
     handleToggleStats,
   } = useMapInteraction();
+
+  // Viewport-based location fetching — debounced on map move
+  const boundsTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => {
+    if (!mapBounds) return;
+    if (boundsTimerRef.current) clearTimeout(boundsTimerRef.current);
+    boundsTimerRef.current = setTimeout(() => {
+      const cats = Array.from(filters.categories).join(',');
+      fetchLocations({
+        sw_lat: String(mapBounds.south),
+        sw_lng: String(mapBounds.west),
+        ne_lat: String(mapBounds.north),
+        ne_lng: String(mapBounds.east),
+        categories: cats,
+        limit: '5000',
+      });
+    }, 300); // 300ms debounce
+    return () => { if (boundsTimerRef.current) clearTimeout(boundsTimerRef.current); };
+  }, [mapBounds, filters.categories, fetchLocations]);
+
+  const handleOnboardingComplete = useCallback((selected: Set<import('./types').LocationCategory>) => {
+    setFilters(prev => ({ ...prev, categories: selected }));
+    localStorage.setItem('trailcamp-layers', JSON.stringify([...selected]));
+    setShowOnboarding(false);
+  }, [setFilters]);
 
   // Load mapbox token
   useEffect(() => {
@@ -494,6 +523,7 @@ export default function App() {
       )}
 
       {/* Mobile Bottom Tabs */}
+      {showOnboarding && <OnboardingOverlay onComplete={handleOnboardingComplete} />}
       <MobileBottomTabs activeTab={mobileTab} onTabChange={handleMobileTabChange} />
 
       {/* Add Location Modal */}

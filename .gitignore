@@ -9,3 +9,4 @@ server/exports/
 server/logs/
 /tmp/
 *.log
+data/

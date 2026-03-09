@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef} from 'react';
 import type { Trip, TripStop, Location, Stats, JournalEntry } from '../types';
 import { getSupabase } from '../lib/supabase';
 
@@ -128,23 +128,32 @@ export function useLocations() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const seenIdsRef = useRef(new Set<number>());
 
   const fetchLocations = useCallback(async (params?: Record<string, string>) => {
     setLoading(true);
     setError(null);
     try {
       const query = params ? '?' + new URLSearchParams(params).toString() : '';
-      const endpoint = query ? `/locations${query}` : '/locations/slim';
+      const endpoint = query ? `/locations/slim${query}` : '/locations/slim';
       const data = await apiFetch<Location[]>(endpoint);
 
-      setLocations(data);
+      // Merge: add new locations, update existing ones
+      setLocations(prev => {
+        const merged = new Map(prev.map(l => [l.id, l]));
+        for (const loc of data) {
+          merged.set(loc.id, loc);
+          seenIdsRef.current.add(loc.id);
+        }
+        return Array.from(merged.values());
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load locations');
     }
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetchLocations(); }, [fetchLocations]);
+  // No auto-fetch — viewport-based fetching triggered by App.tsx on map move
 
   const searchLocations = async (q: string) => {
     const data = await apiFetch<Location[]>(`/locations/search?q=${encodeURIComponent(q)}`);

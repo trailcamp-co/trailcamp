@@ -133,12 +133,34 @@ export default function LayerPanel({
         })}
       </div>
 
-      {/* Other location types */}
+      {/* Activities */}
       <div className="border-t border-dark-600/30 py-0.5">
-        <LayerRow emoji={CATEGORY_ICONS.riding} color={CATEGORY_COLORS.riding} label="Riding Areas" visible={visibleLayers.has('riding')} onToggle={() => onToggleLayer('riding')} />
+        <LayerRow emoji={CATEGORY_ICONS.hiking} color={CATEGORY_COLORS.hiking} label="Hiking Trails" visible={visibleLayers.has('hiking')} onToggle={() => onToggleLayer('hiking')} />
+        <LayerRow emoji={CATEGORY_ICONS.riding} color={CATEGORY_COLORS.riding} label="Dirt Bikes / OHV" visible={visibleLayers.has('riding')} onToggle={() => onToggleLayer('riding')} />
+        <LayerRow emoji={CATEGORY_ICONS.mtb} color={CATEGORY_COLORS.mtb} label="Mountain Biking" visible={visibleLayers.has('mtb')} onToggle={() => onToggleLayer('mtb')} />
+        <LayerRow emoji={CATEGORY_ICONS.offroad} color={CATEGORY_COLORS.offroad} label="4x4 / Off-Road" visible={visibleLayers.has('offroad')} onToggle={() => onToggleLayer('offroad')} />
+        <LayerRow emoji={CATEGORY_ICONS.horseback} color={CATEGORY_COLORS.horseback} label="Horseback" visible={visibleLayers.has('horseback')} onToggle={() => onToggleLayer('horseback')} />
+        <LayerRow emoji={CATEGORY_ICONS.climbing} color={CATEGORY_COLORS.climbing} label="Rock Climbing" visible={visibleLayers.has('climbing')} onToggle={() => onToggleLayer('climbing')} />
+      </div>
+
+      {/* Water Activities */}
+      <div className="border-t border-dark-600/30 py-0.5">
+        <LayerRow emoji={CATEGORY_ICONS.fishing} color={CATEGORY_COLORS.fishing} label="Fishing Spots" visible={visibleLayers.has('fishing')} onToggle={() => onToggleLayer('fishing')} />
+        <LayerRow emoji={CATEGORY_ICONS.boating} color={CATEGORY_COLORS.boating} label="Boat Ramps" visible={visibleLayers.has('boating')} onToggle={() => onToggleLayer('boating')} />
+        <LayerRow emoji={CATEGORY_ICONS.kayaking} color={CATEGORY_COLORS.kayaking} label="Kayaking" visible={visibleLayers.has('kayaking')} onToggle={() => onToggleLayer('kayaking')} />
+        <LayerRow emoji={CATEGORY_ICONS.swimming} color={CATEGORY_COLORS.swimming} label="Swimming" visible={visibleLayers.has('swimming')} onToggle={() => onToggleLayer('swimming')} />
+      </div>
+
+      {/* Hunting */}
+      <div className="border-t border-dark-600/30 py-0.5">
+        <LayerRow emoji={CATEGORY_ICONS.hunting} color={CATEGORY_COLORS.hunting} label="Hunting Areas" visible={visibleLayers.has('hunting')} onToggle={() => onToggleLayer('hunting')} />
+      </div>
+
+      {/* Services */}
+      <div className="border-t border-dark-600/30 py-0.5">
         <LayerRow emoji={CATEGORY_ICONS.water} color={CATEGORY_COLORS.water} label="Water Stations" visible={visibleLayers.has('water')} onToggle={() => onToggleLayer('water')} />
         <LayerRow emoji={CATEGORY_ICONS.dump} color={CATEGORY_COLORS.dump} label="Dump Stations" visible={visibleLayers.has('dump')} onToggle={() => onToggleLayer('dump')} />
-        <LayerRow emoji={CATEGORY_ICONS.scenic} color={CATEGORY_COLORS.scenic} label="Scenic Viewpoints" visible={visibleLayers.has('scenic')} onToggle={() => onToggleLayer('scenic')} />
+        <LayerRow emoji={CATEGORY_ICONS.scenic} color={CATEGORY_COLORS.scenic} label="Scenic Views" visible={visibleLayers.has('scenic')} onToggle={() => onToggleLayer('scenic')} />
       </div>
 
       {/* Land overlays */}

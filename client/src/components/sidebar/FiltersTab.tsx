@@ -18,7 +18,9 @@ import {
 } from '../../types';
 
 const NON_CAMPSITE_CATEGORIES: LocationCategory[] = [
-  'riding', 'water', 'dump', 'scenic',
+  'riding', 'hiking', 'mtb', 'fishing', 'boating', 'kayaking',
+  'hunting', 'horseback', 'climbing', 'swimming', 'offroad',
+  'water', 'dump', 'scenic',
 ];
 
 const ALL_CAMPSITE_SUBTYPES: CampsiteSubType[] = ['campground', 'boondocking', 'parking'];
