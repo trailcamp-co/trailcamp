@@ -70,8 +70,7 @@ export default function MapContainer({
   const homeMarkerRef = useRef<any>(null);
   // Emoji markers removed — native Mapbox circle layers handle all location rendering
   const [layerPanelOpen, setLayerPanelOpen] = useState(true);
-  const [blmVisible, setBlmVisible] = useState(false);
-  const [usfsVisible, setUsfsVisible] = useState(false);
+  const [publicLandVisible, setPublicLandVisible] = useState(false);
   const locationsRef = useRef<Location[]>(locations);
   const routeRef = useRef<GeoJSON.GeoJsonObject | null>(routeGeoJSON);
   const styleUrlRef = useRef(style.url);
@@ -378,28 +377,15 @@ export default function MapContainer({
     return () => window.removeEventListener('deviceorientation', handler, true);
   }, [compassTracking]);
 
-  const handleToggleBlm = useCallback(() => {
+  const handleTogglePublicLand = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
-    const newVal = !blmVisible;
-    setBlmVisible(newVal);
-    if (map.getLayer('blm-land-fill')) {
-      map.setPaintProperty('blm-land-fill', 'fill-opacity', newVal ? 0.2 : 0);
-      map.setPaintProperty('blm-land-border', 'line-opacity', newVal ? 0.6 : 0);
+    const newVal = !publicLandVisible;
+    setPublicLandVisible(newVal);
+    if (map.getLayer('public-land-sma-layer')) {
+      map.setPaintProperty('public-land-sma-layer', 'raster-opacity', newVal ? 0.55 : 0);
     }
-  }, [blmVisible]);
-
-  const handleToggleUsfs = useCallback(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    const newVal = !usfsVisible;
-    setUsfsVisible(newVal);
-    if (map.getLayer('usfs-land-fill')) {
-      map.setPaintProperty('usfs-land-fill', 'fill-opacity', newVal ? 0.12 : 0);
-      map.setPaintProperty('usfs-land-border', 'line-opacity', newVal ? 0.7 : 0);
-      map.setLayoutProperty('usfs-land-label', 'visibility', newVal ? 'visible' : 'none');
-    }
-  }, [usfsVisible]);
+  }, [publicLandVisible]);
 
   return (
     <div className="relative w-full h-full">
@@ -410,10 +396,8 @@ export default function MapContainer({
         darkMode={darkMode}
         visibleLayers={visibleLayers}
         onToggleLayer={onToggleLayer}
-        blmVisible={blmVisible}
-        onToggleBlm={handleToggleBlm}
-        usfsVisible={usfsVisible}
-        onToggleUsfs={handleToggleUsfs}
+        publicLandVisible={publicLandVisible}
+        onTogglePublicLand={handleTogglePublicLand}
         campsiteSubTypes={campsiteSubTypes}
         onToggleCampsiteSubType={onToggleCampsiteSubType}
         mapStyle={mapStyle || style}

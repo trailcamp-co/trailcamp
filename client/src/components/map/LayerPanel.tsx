@@ -6,7 +6,7 @@ import {
   CAMPSITE_SUBTYPE_ICONS, CAMPSITE_SUBTYPE_COLORS, CAMPSITE_SUBTYPE_LABELS,
   MAP_STYLES,
 } from '../../types';
-import { BLM_FILL_COLOR, USFS_FILL_COLOR } from './constants';
+// Land overlay colors now come from BLM raster tile service
 
 
 
@@ -16,10 +16,8 @@ interface LayerPanelProps {
   darkMode: boolean;
   visibleLayers: Set<LocationCategory>;
   onToggleLayer: (category: LocationCategory) => void;
-  blmVisible: boolean;
-  onToggleBlm: () => void;
-  usfsVisible: boolean;
-  onToggleUsfs: () => void;
+  publicLandVisible: boolean;
+  onTogglePublicLand: () => void;
   campsiteSubTypes?: Set<CampsiteSubType>;
   onToggleCampsiteSubType?: (subType: CampsiteSubType) => void;
   mapStyle: MapStyle;
@@ -74,7 +72,7 @@ function CollapsibleGroup({ title, forceOpen = false, children }: { title: strin
 
 export default function LayerPanel({
   isOpen, onToggle, visibleLayers, onToggleLayer,
-  blmVisible, onToggleBlm, usfsVisible, onToggleUsfs,
+  publicLandVisible, onTogglePublicLand,
   campsiteSubTypes, onToggleCampsiteSubType,
   mapStyle, onChangeMapStyle,
 }: LayerPanelProps) {
@@ -176,10 +174,12 @@ export default function LayerPanel({
         <LayerRow emoji={CATEGORY_ICONS.scenic} color={CATEGORY_COLORS.scenic} label="Scenic Views" visible={visibleLayers.has('scenic')} onToggle={() => onToggleLayer('scenic')} />
       </CollapsibleGroup>
 
-      <div className="border-t border-dark-600/30 py-0.5">
-        <LayerRow emoji="🏜️" color={BLM_FILL_COLOR} label="BLM Land" visible={blmVisible} onToggle={onToggleBlm} />
-        <LayerRow emoji="🌲" color={USFS_FILL_COLOR} label="National Forests" visible={usfsVisible} onToggle={onToggleUsfs} />
-      </div>
+      <CollapsibleGroup title="Land Overlays" forceOpen={publicLandVisible}>
+        <LayerRow emoji="🗺️" color="#f59e0b" label="Public Lands (All)" visible={publicLandVisible} onToggle={onTogglePublicLand} />
+        <div className="px-2.5 py-1 text-[9px] text-gray-600 leading-relaxed">
+          BLM · USFS · NPS · State · FWS · DOD · BOR
+        </div>
+      </CollapsibleGroup>
     </div>
   );
 }

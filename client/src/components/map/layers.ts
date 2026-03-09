@@ -234,57 +234,30 @@ export function addCustomLayers(
   });
 }
 
-/** Add BLM and USFS overlay sources and layers */
+/** Add public land overlay sources and layers (BLM SMA raster tiles) */
 export function addOverlayLayers(map: mapboxgl.Map): void {
-  // BLM land ownership
-  if (!map.getSource('blm-land')) {
-    map.addSource('blm-land', { type: 'geojson', data: '/blm-land-v3.geojson' });
-    map.addLayer({
-      id: 'blm-land-fill',
-      type: 'fill',
-      source: 'blm-land',
-      paint: { 'fill-color': BLM_FILL_COLOR, 'fill-opacity': 0 },
-    }, 'clusters');
-    map.addLayer({
-      id: 'blm-land-border',
-      type: 'line',
-      source: 'blm-land',
-      paint: { 'line-color': BLM_BORDER_COLOR, 'line-width': 0.8, 'line-opacity': 0 },
-    }, 'clusters');
-  }
-
-  // USFS National Forest boundaries
-  if (!map.getSource('usfs-land')) {
-    map.addSource('usfs-land', { type: 'geojson', data: '/usfs-boundaries.geojson' });
-    map.addLayer({
-      id: 'usfs-land-fill',
-      type: 'fill',
-      source: 'usfs-land',
-      paint: { 'fill-color': USFS_FILL_COLOR, 'fill-opacity': 0 },
-    }, 'clusters');
-    map.addLayer({
-      id: 'usfs-land-border',
-      type: 'line',
-      source: 'usfs-land',
-      paint: { 'line-color': USFS_FILL_COLOR, 'line-width': 1.5, 'line-opacity': 0 },
-    }, 'clusters');
-    map.addLayer({
-      id: 'usfs-land-label',
-      type: 'symbol',
-      source: 'usfs-land',
-      layout: {
-        'text-field': ['get', 'FORESTNAME'],
-        'text-size': 11,
-        'text-transform': 'uppercase',
-        'text-letter-spacing': 0.05,
-        'text-max-width': 8,
-        visibility: 'none',
-      },
-      paint: {
-        'text-color': '#86EFAC',
-        'text-halo-color': 'rgba(0,0,0,0.8)',
-        'text-halo-width': 1.5,
-      },
+  // BLM Surface Management Agency — all federal + state lands
+  // Uses the official BLM cached tile service (100% accurate, updated regularly)
+  // Color-coded by agency: BLM=yellow, USFS=green, NPS=brown, State=blue, etc.
+  if (!map.getSource('public-land-sma')) {
+    map.addSource('public-land-sma', {
+      type: 'raster',
+      tiles: [
+        'https://gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Cached_without_PriUnk/MapServer/tile/{z}/{y}/{x}'
+      ],
+      tileSize: 256,
+      minzoom: 4,
+      maxzoom: 16,
+      attribution: '© BLM Surface Management Agency',
     });
+    map.addLayer({
+      id: 'public-land-sma-layer',
+      type: 'raster',
+      source: 'public-land-sma',
+      paint: {
+        'raster-opacity': 0,
+        'raster-fade-duration': 200,
+      },
+    }, 'clusters');
   }
 }
