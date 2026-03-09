@@ -20,6 +20,8 @@ import type { Location } from '../types';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
 import type { SnapPoint } from './BottomSheet';
 import ReviewsSection from './ReviewsSection';
+import PhotosSection from './PhotosSection';
+import ConditionsSection from './ConditionsSection';
 import type { UserLocationData } from '../hooks/useUserData';
 import { getExternalUrl } from '../utils/getExternalUrl';
 import { hapticLight, hapticMedium, hapticSuccess } from '../utils/haptics';
@@ -284,6 +286,12 @@ export default function MobileLocationDetail({
               </a>
             );
           })()}
+
+          {/* Condition reports — urgent info shown first */}
+          <ConditionsSection locationId={location.id} category={location.category} showToast={showToast} />
+
+          {/* Photos */}
+          <PhotosSection locationId={location.id} showToast={showToast} />
 
           {/* Description (truncated at HALF, full at FULL) */}
           {location.description && (

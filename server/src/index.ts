@@ -29,6 +29,8 @@ import usersRouter from './routes/users';
 import favoritesRouter from './routes/favorites';
 import userdataRouter from './routes/userdata';
 import reviewsRouter from './routes/reviews';
+import photosRouter from './routes/photos';
+import conditionsRouter from './routes/conditions';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -94,6 +96,8 @@ app.use('/api/users', authLimiter, usersRouter);
 app.use('/api/favorites', favoritesRouter);
 app.use('/api/userdata', userdataRouter);
 app.use('/api/reviews', reviewsRouter);
+app.use('/api/photos', photosRouter);
+app.use('/api/conditions', conditionsRouter);
 
 // Health check (public)
 app.get('/api/health', (_req, res) => {

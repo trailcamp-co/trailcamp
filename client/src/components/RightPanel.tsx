@@ -25,6 +25,8 @@ import type { Location } from '../types';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
 import { fetchNearbyRiding, fetchGroupMembers } from '../hooks/useApi';
 import ReviewsSection from './ReviewsSection';
+import PhotosSection from './PhotosSection';
+import ConditionsSection from './ConditionsSection';
 import type { UserLocationData } from '../hooks/useUserData';
 import { getExternalUrl } from '../utils/getExternalUrl';
 
@@ -570,6 +572,16 @@ export default function RightPanel({
             })()}
           </div>
         )}
+
+        {/* Conditions */}
+        <div className={`p-5 ${sectionDivider}`}>
+          <ConditionsSection locationId={location.id} category={location.category} showToast={showToast} />
+        </div>
+
+        {/* Photos */}
+        <div className={`p-5 ${sectionDivider}`}>
+          <PhotosSection locationId={location.id} showToast={showToast} />
+        </div>
 
         {/* Description */}
         {location.description && (

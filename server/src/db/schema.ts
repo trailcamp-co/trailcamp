@@ -264,6 +264,53 @@ export const userLocationData = pgTable(
   ]
 );
 
+// ─── Location Photos ─────────────────────────────────────────────────────
+
+export const locationPhotos = pgTable(
+  'location_photos',
+  {
+    id: serial('id').primaryKey(),
+    locationId: integer('location_id')
+      .notNull()
+      .references(() => locations.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    url: text('url').notNull(),
+    thumbnailUrl: text('thumbnail_url'),
+    caption: text('caption'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('idx_photos_location').on(table.locationId),
+    index('idx_photos_user').on(table.userId),
+  ]
+);
+
+// ─── Condition Reports ───────────────────────────────────────────────────
+
+export const conditionReports = pgTable(
+  'condition_reports',
+  {
+    id: serial('id').primaryKey(),
+    locationId: integer('location_id')
+      .notNull()
+      .references(() => locations.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    conditionType: text('condition_type').notNull(),
+    severity: text('severity').notNull().default('info'),
+    description: text('description'),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('idx_conditions_location_expires').on(table.locationId, table.expiresAt),
+    index('idx_conditions_user').on(table.userId),
+  ]
+);
+
 // ─── User Settings ───────────────────────────────────────────────────────────
 
 export const userSettings = pgTable('user_settings', {
@@ -275,3 +322,4 @@ export const userSettings = pgTable('user_settings', {
   defaultZoom: integer('default_zoom').notNull().default(4),
   sidebarCollapsed: boolean('sidebar_collapsed').notNull().default(false),
 });
+
