@@ -50,15 +50,21 @@ function LayerRow({ emoji, color, label, visible, onToggle }: {
   );
 }
 
-function CollapsibleGroup({ title, defaultOpen = false, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
-  const [open, setOpen] = useState(defaultOpen);
+function CollapsibleGroup({ title, forceOpen = false, children }: { title: string; forceOpen?: boolean; children: React.ReactNode }) {
+  const [manualToggle, setManualToggle] = useState<boolean | null>(null);
+  const open = manualToggle !== null ? manualToggle : forceOpen;
   return (
     <div className="border-t border-dark-600/30">
       <button
-        onClick={() => setOpen(!open)}
+        onClick={() => setManualToggle(open ? false : true)}
         className="w-full flex items-center justify-between px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-300 transition-colors"
       >
-        {title}
+        <div className="flex items-center gap-1.5">
+          {title}
+          {forceOpen && !open && (
+            <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+          )}
+        </div>
         {open ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
       </button>
       {open && <div className="pb-0.5">{children}</div>}
@@ -84,9 +90,13 @@ export default function LayerPanel({
     );
   }
 
+  const activityCats: LocationCategory[] = ['hiking', 'riding', 'mtb', 'offroad', 'horseback', 'climbing', 'fishing', 'boating', 'kayaking', 'swimming', 'hunting'];
+  const serviceCats: LocationCategory[] = ['water', 'dump', 'scenic'];
+  const hasActiveActivity = activityCats.some(c => visibleLayers.has(c));
+  const hasActiveService = serviceCats.some(c => visibleLayers.has(c));
+
   return (
     <div className="absolute top-14 lg:top-3 right-3 z-50 w-[200px] rounded-xl shadow-xl border border-dark-600/50 overflow-hidden glass">
-      {/* Header */}
       <button
         onClick={onToggle}
         className="w-full flex items-center justify-between px-2.5 py-2 border-b border-dark-600/30 hover:bg-dark-700/30 transition-colors"
@@ -98,9 +108,7 @@ export default function LayerPanel({
         <ChevronUp size={12} className="text-gray-500" />
       </button>
 
-      {/* Map Style — compact dropdown on mobile, buttons on desktop */}
       <div className="border-b border-dark-600/30">
-        {/* Mobile: select dropdown */}
         <div className="lg:hidden px-2.5 py-1.5">
           <select
             value={mapStyle.id}
@@ -115,7 +123,6 @@ export default function LayerPanel({
             ))}
           </select>
         </div>
-        {/* Desktop: button row */}
         <div className="hidden lg:flex">
           {MAP_STYLES.map((s) => (
             <button
@@ -133,7 +140,6 @@ export default function LayerPanel({
         </div>
       </div>
 
-      {/* Camp types */}
       <div className="py-0.5">
         {(['campground', 'boondocking', 'parking'] as CampsiteSubType[]).map((st) => {
           const visible = visibleLayers.has('campsite') && (campsiteSubTypes?.has(st) ?? true);
@@ -150,16 +156,13 @@ export default function LayerPanel({
         })}
       </div>
 
-      <CollapsibleGroup title="Activities" defaultOpen={false}>
+      <CollapsibleGroup title="Activities" forceOpen={hasActiveActivity}>
         <LayerRow emoji={CATEGORY_ICONS.hiking} color={CATEGORY_COLORS.hiking} label="Hiking" visible={visibleLayers.has('hiking')} onToggle={() => onToggleLayer('hiking')} />
         <LayerRow emoji={CATEGORY_ICONS.riding} color={CATEGORY_COLORS.riding} label="Dirt Bikes" visible={visibleLayers.has('riding')} onToggle={() => onToggleLayer('riding')} />
         <LayerRow emoji={CATEGORY_ICONS.mtb} color={CATEGORY_COLORS.mtb} label="MTB" visible={visibleLayers.has('mtb')} onToggle={() => onToggleLayer('mtb')} />
         <LayerRow emoji={CATEGORY_ICONS.offroad} color={CATEGORY_COLORS.offroad} label="4x4 / Off-Road" visible={visibleLayers.has('offroad')} onToggle={() => onToggleLayer('offroad')} />
         <LayerRow emoji={CATEGORY_ICONS.horseback} color={CATEGORY_COLORS.horseback} label="Horseback" visible={visibleLayers.has('horseback')} onToggle={() => onToggleLayer('horseback')} />
         <LayerRow emoji={CATEGORY_ICONS.climbing} color={CATEGORY_COLORS.climbing} label="Climbing" visible={visibleLayers.has('climbing')} onToggle={() => onToggleLayer('climbing')} />
-      </CollapsibleGroup>
-
-      <CollapsibleGroup title="Water" defaultOpen={false}>
         <LayerRow emoji={CATEGORY_ICONS.fishing} color={CATEGORY_COLORS.fishing} label="Fishing" visible={visibleLayers.has('fishing')} onToggle={() => onToggleLayer('fishing')} />
         <LayerRow emoji={CATEGORY_ICONS.boating} color={CATEGORY_COLORS.boating} label="Boating" visible={visibleLayers.has('boating')} onToggle={() => onToggleLayer('boating')} />
         <LayerRow emoji={CATEGORY_ICONS.kayaking} color={CATEGORY_COLORS.kayaking} label="Kayaking" visible={visibleLayers.has('kayaking')} onToggle={() => onToggleLayer('kayaking')} />
@@ -167,13 +170,12 @@ export default function LayerPanel({
         <LayerRow emoji={CATEGORY_ICONS.hunting} color={CATEGORY_COLORS.hunting} label="Hunting" visible={visibleLayers.has('hunting')} onToggle={() => onToggleLayer('hunting')} />
       </CollapsibleGroup>
 
-      <CollapsibleGroup title="Services" defaultOpen={false}>
+      <CollapsibleGroup title="Services" forceOpen={hasActiveService}>
         <LayerRow emoji={CATEGORY_ICONS.water} color={CATEGORY_COLORS.water} label="Water Stations" visible={visibleLayers.has('water')} onToggle={() => onToggleLayer('water')} />
         <LayerRow emoji={CATEGORY_ICONS.dump} color={CATEGORY_COLORS.dump} label="Dump Stations" visible={visibleLayers.has('dump')} onToggle={() => onToggleLayer('dump')} />
         <LayerRow emoji={CATEGORY_ICONS.scenic} color={CATEGORY_COLORS.scenic} label="Scenic Views" visible={visibleLayers.has('scenic')} onToggle={() => onToggleLayer('scenic')} />
       </CollapsibleGroup>
 
-      {/* Land overlays */}
       <div className="border-t border-dark-600/30 py-0.5">
         <LayerRow emoji="🏜️" color={BLM_FILL_COLOR} label="BLM Land" visible={blmVisible} onToggle={onToggleBlm} />
         <LayerRow emoji="🌲" color={USFS_FILL_COLOR} label="National Forests" visible={usfsVisible} onToggle={onToggleUsfs} />
