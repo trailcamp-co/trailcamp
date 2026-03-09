@@ -176,9 +176,30 @@ export default function LayerPanel({
 
       <CollapsibleGroup title="Land Overlays" forceOpen={publicLandVisible}>
         <LayerRow emoji="🗺️" color="#f59e0b" label="Public Lands (All)" visible={publicLandVisible} onToggle={onTogglePublicLand} />
-        <div className="px-2.5 py-1 text-[9px] text-gray-600 leading-relaxed">
-          BLM · USFS · NPS · State · FWS · DOD · BOR
-        </div>
+        {publicLandVisible && (
+          <div className="px-2.5 pb-2 pt-0.5">
+            <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+              {[
+                ['#e8d44d', 'BLM'],
+                ['#6ab56a', "Nat'l Forest"],
+                ['#c4b9a3', "Nat'l Park"],
+                ['#7bb0d4', 'State Land'],
+                ['#8bc4c1', 'Fish & Wildlife'],
+                ['#d4a0b9', 'Reclamation'],
+                ['#ef8f8f', 'Military'],
+                ['#d4a46a', 'Tribal'],
+              ].map(([color, label]) => (
+                <div key={label} className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: color }} />
+                  <span className="text-[9px] text-gray-500">{label}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-[8px] text-gray-600 mt-1.5 leading-relaxed">
+              Source: BLM Surface Management Agency. Checkerboard patterns in the West are real — from 1800s railroad land grants.
+            </p>
+          </div>
+        )}
       </CollapsibleGroup>
     </div>
   );

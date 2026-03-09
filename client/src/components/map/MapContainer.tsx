@@ -8,7 +8,6 @@ import { setupHoverTooltip, setupClickPopup, setupClusterClick } from './popups'
 import LayerPanel from './LayerPanel';
 
 // Legend removed — Layers panel is open by default and serves as the legend
-import MapStats from './MapStats';
 import RegionQuickJump from './RegionQuickJump';
 import { DEFAULT_CENTER, DEFAULT_ZOOM, FLY_TO_ZOOM, FLY_TO_DURATION } from './constants';
 
@@ -383,7 +382,7 @@ export default function MapContainer({
     const newVal = !publicLandVisible;
     setPublicLandVisible(newVal);
     if (map.getLayer('public-land-sma-layer')) {
-      map.setPaintProperty('public-land-sma-layer', 'raster-opacity', newVal ? 0.55 : 0);
+      map.setPaintProperty('public-land-sma-layer', 'raster-opacity', newVal ? 0.35 : 0);
     }
   }, [publicLandVisible]);
 
@@ -404,12 +403,7 @@ export default function MapContainer({
         onChangeMapStyle={onChangeMapStyle || (() => {})}
       />
       {/* MapStylePicker moved into LayerPanel top bar */}
-      <MapStats
-        ridingCount={locations.filter(l => l.category === 'riding').length}
-        campsiteCount={locations.filter(l => l.category === 'campsite').length}
-        boondockingCount={locations.filter(l => l.category === 'campsite' && l.sub_type === 'boondocking').length}
-        totalCount={locations.length}
-      />
+
       <RegionQuickJump mapRef={mapRef} />
 
       {/* GPS + Compass buttons — bottom-left on desktop, above tabs on mobile */}
