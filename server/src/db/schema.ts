@@ -75,9 +75,7 @@ export const locations = pgTable(
 
     // User interaction (legacy single-user — kept for migration compat)
     // LEGACY: migrate to user_location_data table
-    // LEGACY: migrate to user_location_data table
     userRating: integer('user_rating'),
-    // LEGACY: migrate to user_location_data table
     // LEGACY: migrate to user_location_data table
     userNotes: text('user_notes'),
     // LEGACY: migrate to user_location_data table

@@ -79,7 +79,7 @@ export default function MobileLocationDetail({
 }: MobileLocationDetailProps) {
   const userData = getUserData?.(location.id);
   const favorited = isFavoritedFn?.(location.id) ?? false;
-  const effectiveVisited = userData?.visited ?? location.visited;
+  const effectiveVisited = userData?.visited ?? 0;
   const [addingToTrip, setAddingToTrip] = useState(false);
   const [heartKey, setHeartKey] = useState(0);
   const [editingNotes, setEditingNotes] = useState(false);

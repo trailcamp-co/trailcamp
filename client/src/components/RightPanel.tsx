@@ -80,7 +80,7 @@ export default function RightPanel({
   const favorited = isFavoritedFn?.(location.id) ?? false;
   const [hoverRating, setHoverRating] = useState(0);
   const [editingNotes, setEditingNotes] = useState(false);
-  const [userNotes, setUserNotes] = useState(userData?.user_notes ?? location.user_notes ?? '');
+  const [userNotes, setUserNotes] = useState(userData?.user_notes ?? '');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [copiedCoords, setCopiedCoords] = useState(false);
   const [addingToTrip, setAddingToTrip] = useState(false);
@@ -114,7 +114,7 @@ export default function RightPanel({
 
   // Reset notes when location changes
   useEffect(() => {
-    setUserNotes(userData?.user_notes ?? location.user_notes ?? '');
+    setUserNotes(userData?.user_notes ?? '');
     setEditingNotes(false);
     setConfirmDelete(false);
   }, [location.id, userData?.user_notes, location.user_notes]);
@@ -163,8 +163,8 @@ export default function RightPanel({
   }, [location.id, location.latitude, location.longitude]);
 
   // Effective user interaction values (from user_location_data, falling back to location fields)
-  const effectiveRating = userData?.user_rating ?? location.user_rating;
-  const effectiveVisited = userData?.visited ?? location.visited;
+  const effectiveRating = userData?.user_rating ?? null;
+  const effectiveVisited = userData?.visited ?? 0;
   const effectiveNotes = userData?.user_notes ?? location.user_notes;
 
   const handleRating = useCallback(async (rating: number) => {
@@ -633,10 +633,10 @@ export default function RightPanel({
               </p>
             )}
           </div>
-          {!!effectiveVisited && (userData?.visited_date ?? location.visited_date) && (
+          {!!effectiveVisited && (userData?.visited_date) && (
             <div className="mt-3 flex items-center gap-2">
               <Clock className={`w-3.5 h-3.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`} />
-              <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`}>Visited {userData?.visited_date ?? location.visited_date}</span>
+              <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`}>Visited {userData?.visited_date}</span>
             </div>
           )}
         </div>

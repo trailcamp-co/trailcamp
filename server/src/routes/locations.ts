@@ -41,10 +41,6 @@ const createLocationSchema = z.object({
   external_links: z.union([z.string(), z.array(z.string())]).nullish(),
   notes: z.string().nullish(),
   hours: z.string().nullish(),
-  user_rating: z.number().int().nullish(),
-  user_notes: z.string().nullish(),
-  visited: z.number().int().nullish(),
-  visited_date: z.string().nullish(),
   want_to_visit: z.number().int().nullish(),
   visibility: z.enum(['public', 'private']).default('public'),
 });
@@ -144,7 +140,6 @@ router.get('/slim', optionalAuth, async (req: Request, res: Response) => {
       city: locations.city,
       state: locations.state,
       costPerNight: locations.costPerNight,
-      userRating: locations.userRating,
       waterNearby: locations.waterNearby,
       waterAvailable: locations.waterAvailable,
       dumpNearby: locations.dumpNearby,
@@ -189,7 +184,6 @@ router.get('/slim', optionalAuth, async (req: Request, res: Response) => {
       if (r.city) obj.city = r.city;
       if (r.state) obj.state = r.state;
       if (r.costPerNight != null) obj.cost_per_night = r.costPerNight;
-      if (r.userRating != null) obj.user_rating = r.userRating;
       if (r.waterNearby != null) obj.water_nearby = r.waterNearby;
       if (r.waterAvailable) obj.water_available = r.waterAvailable;
       if (r.dumpNearby != null) obj.dump_nearby = r.dumpNearby;
@@ -242,19 +236,11 @@ router.get('/', optionalAuth, async (req: Request, res: Response) => {
     if (req.query.category) {
       conditions.push(eq(locations.category, String(req.query.category)));
     }
-    if (req.query.visited === '1') {
-      conditions.push(eq(locations.visited, 1));
-    } else if (req.query.visited === '0') {
-      conditions.push(eq(locations.visited, 0));
-    }
     if (req.query.want_to_visit === '1') {
       conditions.push(eq(locations.wantToVisit, 1));
     }
     if (req.query.favorited === '1') {
       conditions.push(eq(locations.favorited, 1));
-    }
-    if (req.query.min_rating) {
-      conditions.push(gte(locations.userRating, Number(req.query.min_rating)));
     }
     if (req.query.difficulty) {
       conditions.push(eq(locations.difficulty, String(req.query.difficulty)));
@@ -480,28 +466,46 @@ router.get('/stats', optionalAuth, async (req: Request, res: Response) => {
   try {
     const { trips, tripStops } = await import('../db/schema');
 
+    const { userLocationData } = await import('../db/schema');
+
     const [totalRes] = await db.select({ count: sql<number>`count(*)` }).from(locations);
-    const [visitedRes] = await db.select({ count: sql<number>`count(*)` }).from(locations).where(eq(locations.visited, 1));
     const [ridingRes] = await db.select({ count: sql<number>`count(*)` }).from(locations).where(eq(locations.category, 'riding'));
-    const [ridingVisitedRes] = await db.select({ count: sql<number>`count(*)` }).from(locations).where(and(eq(locations.category, 'riding'), eq(locations.visited, 1)));
     const [campsiteRes] = await db.select({ count: sql<number>`count(*)` }).from(locations).where(eq(locations.category, 'campsite'));
     const [tripCountRes] = await db.select({ count: sql<number>`count(*)` }).from(trips);
     const [totalNightsRes] = await db.select({ total: sql<number>`COALESCE(SUM(${tripStops.nights}), 0)` }).from(tripStops);
     const [totalMilesRes] = await db.select({ total: sql<number>`COALESCE(SUM(${tripStops.driveDistanceMiles}), 0)` }).from(tripStops);
 
-    const topRated = await db.select().from(locations)
-      .where(sql`${locations.userRating} IS NOT NULL`)
-      .orderBy(desc(locations.userRating)).limit(5);
+    // User-specific stats from user_location_data (multi-tenant)
+    const userId = req.user?.id;
+    let visitedCount = 0;
+    let ridingVisited = 0;
+    const topRated: unknown[] = [];
+    let visitedLocations: { latitude: number; longitude: number }[] = [];
 
-    const visitedLocations = await db
-      .select({ latitude: locations.latitude, longitude: locations.longitude })
-      .from(locations).where(eq(locations.visited, 1));
+    if (userId) {
+      const [visitedRes] = await db.select({ count: sql<number>`count(*)` }).from(userLocationData)
+        .where(and(eq(userLocationData.userId, userId), eq(userLocationData.visited, 1)));
+      visitedCount = visitedRes.count;
+
+      // Visited riding areas
+      const [rvRes] = await db.select({ count: sql<number>`count(*)` }).from(userLocationData)
+        .innerJoin(locations, eq(userLocationData.locationId, locations.id))
+        .where(and(eq(userLocationData.userId, userId), eq(userLocationData.visited, 1), eq(locations.category, 'riding')));
+      ridingVisited = rvRes.count;
+
+      // Visited location coordinates for map
+      visitedLocations = await db
+        .select({ latitude: locations.latitude, longitude: locations.longitude })
+        .from(userLocationData)
+        .innerJoin(locations, eq(userLocationData.locationId, locations.id))
+        .where(and(eq(userLocationData.userId, userId), eq(userLocationData.visited, 1)));
+    }
 
     res.json({
       totalLocations: totalRes.count,
-      visitedCount: visitedRes.count,
+      visitedCount,
       ridingAreas: ridingRes.count,
-      ridingVisited: ridingVisitedRes.count,
+      ridingVisited,
       campsites: campsiteRes.count,
       tripCount: tripCountRes.count,
       totalNights: totalNightsRes.total,
