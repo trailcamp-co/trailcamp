@@ -75,7 +75,9 @@ export const locations = pgTable(
 
     // User interaction (legacy single-user — kept for migration compat)
     // LEGACY: migrate to user_location_data table
+    // LEGACY: migrate to user_location_data table
     userRating: integer('user_rating'),
+    // LEGACY: migrate to user_location_data table
     // LEGACY: migrate to user_location_data table
     userNotes: text('user_notes'),
     // LEGACY: migrate to user_location_data table
@@ -256,7 +258,9 @@ export const userLocationData = pgTable(
     visited: integer('visited').notNull().default(0),
     visitedDate: text('visited_date'),
     wantToVisit: integer('want_to_visit').notNull().default(0),
+    // LEGACY: migrate to user_location_data table
     userRating: integer('user_rating'),
+    // LEGACY: migrate to user_location_data table
     userNotes: text('user_notes'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
