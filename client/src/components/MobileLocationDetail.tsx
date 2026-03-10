@@ -25,6 +25,7 @@ import ConditionsSection from './ConditionsSection';
 import type { UserLocationData } from '../hooks/useUserData';
 import { getExternalUrl } from '../utils/getExternalUrl';
 import { hapticLight, hapticMedium, hapticSuccess } from '../utils/haptics';
+import ErrorState from './ErrorState';
 
 const CATEGORY_LUCIDE_ICONS: Record<string, React.ReactNode> = {
   campsite: <Trees className="w-3.5 h-3.5" />,
@@ -104,8 +105,13 @@ export default function MobileLocationDetail({
   const handleToggleFavorite = useCallback(async () => {
     hapticLight();
     setHeartKey(k => k + 1);
-    await onToggleFavorite?.(location.id);
-  }, [location.id, onToggleFavorite]);
+    const newState = await onToggleFavorite?.(location.id);
+    if (newState) {
+      showToast?.('Added to favorites', 'success');
+    } else {
+      showToast?.('Removed from favorites', 'info');
+    }
+  }, [location.id, onToggleFavorite, showToast]);
 
   const handleToggleVisited = useCallback(async () => {
     hapticLight();
@@ -181,6 +187,10 @@ export default function MobileLocationDetail({
 
   const showExpanded = snapPoint === 'half' || snapPoint === 'full';
   const showFull = snapPoint === 'full';
+
+  if (!location?.id) {
+    return <ErrorState message="Failed to load location data" />;
+  }
 
   return (
     <div className="px-4 pb-4">

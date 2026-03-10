@@ -42,10 +42,10 @@ app.use(helmet({
   contentSecurityPolicy: false, // Let frontend handle CSP
 }));
 
-// Rate limiting: 100 requests per minute per IP
+// Rate limiting: 300 requests per minute per IP (high for map panning)
 const limiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 100,
+  max: 300,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests', code: 'RATE_LIMITED' },

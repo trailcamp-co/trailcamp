@@ -3,6 +3,7 @@ import { Bike, X, Heart, MapPin } from 'lucide-react';
 import type { Location } from '../../types';
 import { DIFFICULTY_COLORS } from '../../types';
 import RidingCard from './RidingCard';
+import EmptyState from '../EmptyState';
 
 type RidingSortField = 'name' | 'distance_miles' | 'difficulty' | 'distance_from' | 'featured' | 'distance_from_home';
 
@@ -230,13 +231,11 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
 
       <div className="flex-1 overflow-y-auto">
         {ridingLocations.length === 0 && (
-          <div className="p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-dark-800/50 [.light_&]:bg-gray-100 flex items-center justify-center">
-              <Bike size={28} className="text-gray-600 [.light_&]:text-gray-400" />
-            </div>
-            <p className="text-sm font-medium text-gray-400 [.light_&]:text-gray-500 mb-1">No riding areas match</p>
-            <p className="text-xs text-gray-600 [.light_&]:text-gray-400">Try adjusting your filters or zooming out on the map</p>
-          </div>
+          <EmptyState
+            icon="🏍️"
+            title="No locations match your filters"
+            description="Try adjusting your filters or zooming out on the map"
+          />
         )}
         {ridingLocations.slice(0, visibleCount).map((loc) => (
           <RidingCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} distanceFromHome={(loc as any)._distanceFromHome ?? null} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} />

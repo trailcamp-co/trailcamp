@@ -3,6 +3,7 @@ import { Tent, X, Heart, MapPin } from 'lucide-react';
 import type { Location, CampsiteSubType } from '../../types';
 import { CAMPSITE_SUBTYPE_ICONS, CAMPSITE_SUBTYPE_LABELS } from '../../types';
 import CampsiteCard from './CampsiteCard';
+import EmptyState from '../EmptyState';
 
 type CampsiteSortField = 'name' | 'cost' | 'distance_from' | 'riding_nearby' | 'distance_from_home';
 
@@ -224,13 +225,11 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
 
       <div className="flex-1 overflow-y-auto">
         {campsiteLocations.length === 0 && (
-          <div className="p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-dark-800/50 flex items-center justify-center">
-              <Tent size={28} className="text-gray-600" />
-            </div>
-            <p className="text-sm font-medium text-gray-400 mb-1">No campsites match</p>
-            <p className="text-xs text-gray-600">Try zooming out or adjusting filters</p>
-          </div>
+          <EmptyState
+            icon="⛺"
+            title="No locations match your filters"
+            description="Try zooming out or adjusting filters"
+          />
         )}
         {(sortField === 'riding_nearby'
           ? [...campsiteLocations].sort((a, b) => (sortAsc ? 1 : -1) * ((nearbyRidingCounts[b.id] ?? 0) - (nearbyRidingCounts[a.id] ?? 0)))

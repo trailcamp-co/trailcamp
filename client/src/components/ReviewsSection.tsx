@@ -88,7 +88,7 @@ export default function ReviewsSection({ locationId, darkMode, showToast }: Prop
         }),
       });
       if (res.ok) {
-        showToast?.('Review saved!', 'success');
+        showToast?.('Review submitted', 'success');
         setShowForm(false);
         await fetchReviews();
       }

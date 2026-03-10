@@ -29,6 +29,7 @@ import PhotosSection from './PhotosSection';
 import ConditionsSection from './ConditionsSection';
 import type { UserLocationData } from '../hooks/useUserData';
 import { getExternalUrl } from '../utils/getExternalUrl';
+import ErrorState from './ErrorState';
 
 interface RightPanelProps {
   location: Location;
@@ -90,6 +91,14 @@ export default function RightPanel({
   const [weather, setWeather] = useState<{ temp: number; icon: string; desc: string; sunrise?: string; sunset?: string } | null>(null);
   const [groupMembers, setGroupMembers] = useState<Location[]>([]);
   const [groupExpanded, setGroupExpanded] = useState(false);
+
+  if (!location?.id) {
+    return (
+      <div className="w-full sm:w-[400px] h-full flex flex-col bg-dark-950 border-l border-dark-700/50">
+        <ErrorState message="Failed to load location data" onRetry={onClose} />
+      </div>
+    );
+  }
 
   const isCampsite = location.category === 'campsite';
   const categoryColor = CATEGORY_COLORS[location.category] || '#6b7280';
@@ -167,9 +176,14 @@ export default function RightPanel({
   const handleToggleFavorite = useCallback(async () => {
     setHeartKey((k) => k + 1);
     if (onToggleFavorite) {
-      await onToggleFavorite(location.id);
+      const newState = await onToggleFavorite(location.id);
+      if (newState) {
+        showToast?.('Added to favorites', 'success');
+      } else {
+        showToast?.('Removed from favorites', 'info');
+      }
     }
-  }, [location.id, onToggleFavorite]);
+  }, [location.id, onToggleFavorite, showToast]);
 
   const handleToggleVisited = useCallback(async () => {
     if (onUpdateUserData) {

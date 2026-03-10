@@ -132,7 +132,7 @@ export default function ConditionsSection({ locationId, category, showToast }: P
         }),
       });
       if (res.ok) {
-        showToast?.('Condition reported!', 'success');
+        showToast?.('Report submitted', 'success');
         setShowForm(false);
         setSelectedType('');
         setSelectedSeverity('info');

@@ -74,9 +74,13 @@ export const locations = pgTable(
     featured: integer('featured').notNull().default(0),
 
     // User interaction (legacy single-user — kept for migration compat)
+    // LEGACY: migrate to user_location_data table
     userRating: integer('user_rating'),
+    // LEGACY: migrate to user_location_data table
     userNotes: text('user_notes'),
+    // LEGACY: migrate to user_location_data table
     visited: integer('visited').notNull().default(0),
+    // LEGACY: migrate to user_location_data table
     visitedDate: text('visited_date'),
     wantToVisit: integer('want_to_visit').notNull().default(0),
     favorited: integer('favorited').notNull().default(0),
