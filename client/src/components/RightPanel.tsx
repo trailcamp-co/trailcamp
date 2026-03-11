@@ -61,6 +61,14 @@ const CATEGORY_LUCIDE_ICONS: Record<string, React.ReactNode> = {
   laundromat: <Droplets className="w-4 h-4" />,
 };
 
+function AmenityChip({ icon, label }: { icon: string; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-dark-800 text-gray-300 border border-dark-700/50 [.light_&]:bg-gray-100 [.light_&]:text-gray-600 [.light_&]:border-gray-200">
+      {icon} {label}
+    </span>
+  );
+}
+
 function DetailBadge({ label, value, darkMode }: { label: string; value: string | number; darkMode: boolean }) {
   return (
     <div className={`rounded-xl px-3 py-2.5 ${darkMode ? 'bg-dark-800 border border-dark-700/50' : 'bg-gray-50 border border-gray-200'} [.light_&]:bg-gray-50 [.light_&]:border-gray-200`}>
@@ -243,18 +251,41 @@ export default function RightPanel({
   const labelStyle = `text-xs font-medium uppercase tracking-wider ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`;
 
   const renderCampsiteDetails = () => (
-    <div className="grid grid-cols-2 gap-2">
-      {location.cell_signal && <DetailBadge label="Cell Signal" value={location.cell_signal} darkMode={darkMode} />}
-      {location.shade !== null && location.shade !== undefined && <DetailBadge label="Shade" value={location.shade ? 'Yes' : 'No'} darkMode={darkMode} />}
-      {location.level_ground !== null && location.level_ground !== undefined && <DetailBadge label="Level Ground" value={location.level_ground ? 'Yes' : 'No'} darkMode={darkMode} />}
-      {location.cost_per_night !== null && location.cost_per_night !== undefined && <DetailBadge label="💰 Cost" value={location.cost_per_night === 0 ? 'Free!' : `$${location.cost_per_night}/night`} darkMode={darkMode} />}
-      {location.water_available !== null && location.water_available !== undefined && <DetailBadge label="💧 Water" value={location.water_available ? 'Available' : 'None'} darkMode={darkMode} />}
-      {location.water_nearby !== null && location.water_nearby !== undefined && <DetailBadge label="Water Nearby" value={location.water_nearby ? 'Yes' : 'No'} darkMode={darkMode} />}
-      {location.dump_nearby !== null && location.dump_nearby !== undefined && <DetailBadge label="Dump Nearby" value={location.dump_nearby ? 'Yes' : 'No'} darkMode={darkMode} />}
-      {location.max_vehicle_length !== null && location.max_vehicle_length !== undefined && <DetailBadge label="Max Vehicle Length" value={`${location.max_vehicle_length} ft`} darkMode={darkMode} />}
-      {location.stay_limit_days !== null && location.stay_limit_days !== undefined && <DetailBadge label="Stay Limit" value={`${location.stay_limit_days} days`} darkMode={darkMode} />}
-      {location.season && <DetailBadge label="Season" value={location.season} darkMode={darkMode} />}
-      {location.crowding && <DetailBadge label="Crowding" value={location.crowding} darkMode={darkMode} />}
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-2">
+        {location.cost_per_night !== null && location.cost_per_night !== undefined && <DetailBadge label="💰 Cost" value={location.cost_per_night === 0 ? 'Free!' : `$${location.cost_per_night}/night`} darkMode={darkMode} />}
+        {location.fee_info && !location.cost_per_night && location.fee_info !== 'yes' && <DetailBadge label="💰 Fee" value={location.fee_info === 'no' ? 'Free!' : location.fee_info} darkMode={darkMode} />}
+        {location.num_sites != null && location.num_sites > 0 && <DetailBadge label="🏕️ Sites" value={location.num_sites} darkMode={darkMode} />}
+        {location.operator_name && <DetailBadge label="🏛️ Operator" value={location.operator_name} darkMode={darkMode} />}
+        {location.cell_signal && <DetailBadge label="📶 Cell Signal" value={location.cell_signal} darkMode={darkMode} />}
+        {location.water_available !== null && location.water_available !== undefined && <DetailBadge label="💧 Water" value={location.water_available ? 'Available' : 'None'} darkMode={darkMode} />}
+        {location.water_nearby !== null && location.water_nearby !== undefined && <DetailBadge label="Water Nearby" value={location.water_nearby ? 'Yes' : 'No'} darkMode={darkMode} />}
+        {location.dump_nearby !== null && location.dump_nearby !== undefined && <DetailBadge label="🚽 Dump Nearby" value={location.dump_nearby ? 'Yes' : 'No'} darkMode={darkMode} />}
+        {location.max_vehicle_length !== null && location.max_vehicle_length !== undefined && <DetailBadge label="Max Vehicle" value={`${location.max_vehicle_length} ft`} darkMode={darkMode} />}
+        {location.stay_limit_days !== null && location.stay_limit_days !== undefined && <DetailBadge label="Stay Limit" value={`${location.stay_limit_days} days`} darkMode={darkMode} />}
+        {location.elevation_ft != null && <DetailBadge label="🏔️ Elevation" value={`${location.elevation_ft.toLocaleString()} ft`} darkMode={darkMode} />}
+        {location.season && <DetailBadge label="📅 Season" value={location.season} darkMode={darkMode} />}
+        {location.access_type && <DetailBadge label="🔓 Access" value={location.access_type} darkMode={darkMode} />}
+        {location.surface_type && <DetailBadge label="🛤️ Surface" value={location.surface_type} darkMode={darkMode} />}
+        {location.shade !== null && location.shade !== undefined && <DetailBadge label="Shade" value={location.shade ? 'Yes' : 'No'} darkMode={darkMode} />}
+        {location.level_ground !== null && location.level_ground !== undefined && <DetailBadge label="Level Ground" value={location.level_ground ? 'Yes' : 'No'} darkMode={darkMode} />}
+        {location.crowding && <DetailBadge label="Crowding" value={location.crowding} darkMode={darkMode} />}
+      </div>
+      {/* Amenity chips */}
+      {(location.has_toilets || location.has_showers || location.has_electric || location.has_wifi || location.has_fire_ring || location.pet_friendly || location.is_reservable || location.is_backcountry || location.tents_allowed || location.rvs_allowed) && (
+        <div className="flex flex-wrap gap-1.5">
+          {location.has_toilets ? <AmenityChip icon="🚻" label={location.toilet_type || 'Toilets'} /> : null}
+          {location.has_showers ? <AmenityChip icon="🚿" label="Showers" /> : null}
+          {location.has_electric ? <AmenityChip icon="🔌" label="Electric" /> : null}
+          {location.has_wifi ? <AmenityChip icon="📶" label="WiFi" /> : null}
+          {location.has_fire_ring ? <AmenityChip icon="🔥" label="Fire Ring" /> : null}
+          {location.pet_friendly ? <AmenityChip icon="🐕" label="Pet Friendly" /> : null}
+          {location.is_reservable ? <AmenityChip icon="📅" label="Reservable" /> : null}
+          {location.is_backcountry ? <AmenityChip icon="⛺" label="Backcountry" /> : null}
+          {location.tents_allowed ? <AmenityChip icon="⛺" label="Tents OK" /> : null}
+          {location.rvs_allowed ? <AmenityChip icon="🚐" label="RVs OK" /> : null}
+        </div>
+      )}
     </div>
   );
 
@@ -281,16 +312,81 @@ export default function RightPanel({
         <div className="grid grid-cols-2 gap-2">
           {location.permit_required != null && <DetailBadge label="Permit Required" value={location.permit_required ? 'Yes' : 'No'} darkMode={darkMode} />}
           {location.best_season && <DetailBadge label="Best Season" value={location.best_season} darkMode={darkMode} />}
+          {location.operator_name && <DetailBadge label="🏛️ Operator" value={location.operator_name} darkMode={darkMode} />}
+          {location.surface_type && <DetailBadge label="🛤️ Surface" value={location.surface_type} darkMode={darkMode} />}
+          {location.elevation_ft != null && <DetailBadge label="🏔️ Elevation" value={`${location.elevation_ft.toLocaleString()} ft`} darkMode={darkMode} />}
+          {location.access_type && <DetailBadge label="🔓 Access" value={location.access_type} darkMode={darkMode} />}
+          {location.fee_info && <DetailBadge label="💰 Fee" value={location.fee_info === 'no' ? 'Free!' : location.fee_info} darkMode={darkMode} />}
         </div>
         {location.permit_info && <DetailBadge label="Permit Info" value={location.permit_info} darkMode={darkMode} />}
+        {/* Vehicles Allowed */}
+        {location.vehicles_allowed && (() => {
+          try {
+            const v = JSON.parse(location.vehicles_allowed);
+            const tags = Object.keys(v).filter(k => v[k]);
+            if (tags.length === 0) return null;
+            const labels: Record<string, string> = { motorcycle: '🏍️ Motorcycle', atv: '🏍️ ATV', '4wd': '🚙 4WD', horse: '🐴 Horse', bicycle: '🚲 Bicycle' };
+            return (
+              <div className="mt-2">
+                <div className={`text-xs font-medium mb-1.5 ${darkMode ? "text-gray-500" : "text-gray-400"}`}>Vehicles Allowed</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {tags.map(t => <span key={t} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/15 text-green-400 border border-green-500/20">{labels[t] || t}</span>)}
+                </div>
+              </div>
+            );
+          } catch { return null; }
+        })()}
       </div>
     );
   };
 
   const renderServiceDetails = () => (
-    <div className="grid grid-cols-2 gap-2">
-      {location.hours && <DetailBadge label="Hours" value={location.hours} darkMode={darkMode} />}
-      {location.sub_type && <DetailBadge label="Type" value={location.sub_type} darkMode={darkMode} />}
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-2">
+        {location.hours && <DetailBadge label="🕐 Hours" value={location.hours} darkMode={darkMode} />}
+        {location.sub_type && <DetailBadge label="Type" value={location.sub_type} darkMode={darkMode} />}
+        {location.difficulty && <DetailBadge label="Difficulty" value={location.difficulty} darkMode={darkMode} />}
+        {location.distance_miles != null && <DetailBadge label="📏 Distance" value={`${location.distance_miles} mi`} darkMode={darkMode} />}
+        {location.elevation_gain_ft != null && <DetailBadge label="⛰️ Elev. Gain" value={`${location.elevation_gain_ft.toLocaleString()} ft`} darkMode={darkMode} />}
+        {location.elevation_ft != null && <DetailBadge label="🏔️ Elevation" value={`${location.elevation_ft.toLocaleString()} ft`} darkMode={darkMode} />}
+        {location.operator_name && <DetailBadge label="🏛️ Operator" value={location.operator_name} darkMode={darkMode} />}
+        {location.brand_name && <DetailBadge label="Brand" value={location.brand_name} darkMode={darkMode} />}
+        {location.fee_info && <DetailBadge label="💰 Fee" value={location.fee_info === 'no' ? 'Free!' : location.fee_info} darkMode={darkMode} />}
+        {location.surface_type && <DetailBadge label="🛤️ Surface" value={location.surface_type} darkMode={darkMode} />}
+        {location.access_type && <DetailBadge label="🔓 Access" value={location.access_type} darkMode={darkMode} />}
+        {location.water_body_type && <DetailBadge label="🌊 Water Type" value={location.water_body_type} darkMode={darkMode} />}
+        {location.rapid_grade && <DetailBadge label="🌊 Rapid Grade" value={location.rapid_grade} darkMode={darkMode} />}
+        {location.climbing_routes != null && <DetailBadge label="🧗 Routes" value={location.climbing_routes} darkMode={darkMode} />}
+        {location.climbing_grade_min && <DetailBadge label="Grade" value={location.climbing_grade_min} darkMode={darkMode} />}
+        {location.climbing_rock_type && <DetailBadge label="Rock Type" value={location.climbing_rock_type} darkMode={darkMode} />}
+        {location.sac_scale && <DetailBadge label="SAC Scale" value={location.sac_scale.replace(/_/g, ' ')} darkMode={darkMode} />}
+        {location.permit_required != null && <DetailBadge label="Permit" value={location.permit_required ? 'Required' : 'Not Required'} darkMode={darkMode} />}
+        {location.best_season && <DetailBadge label="📅 Best Season" value={location.best_season} darkMode={darkMode} />}
+        {location.num_sites != null && location.num_sites > 0 && <DetailBadge label="🏕️ Sites" value={location.num_sites} darkMode={darkMode} />}
+      </div>
+      {/* Amenity chips for services */}
+      {(location.has_toilets || location.has_showers || location.pet_friendly || location.water_available) && (
+        <div className="flex flex-wrap gap-1.5">
+          {location.water_available ? <AmenityChip icon="💧" label="Water" /> : null}
+          {location.has_toilets ? <AmenityChip icon="🚻" label={location.toilet_type || 'Toilets'} /> : null}
+          {location.has_showers ? <AmenityChip icon="🚿" label="Showers" /> : null}
+          {location.pet_friendly ? <AmenityChip icon="🐕" label="Pet Friendly" /> : null}
+        </div>
+      )}
+      {/* Vehicles allowed */}
+      {location.vehicles_allowed && (() => {
+        try {
+          const v = JSON.parse(location.vehicles_allowed);
+          const tags = Object.keys(v).filter(k => v[k]);
+          if (tags.length === 0) return null;
+          const labels: Record<string, string> = { motorcycle: '🏍️ Motorcycle', atv: '🏍️ ATV', '4wd': '🚙 4WD', horse: '🐴 Horse', bicycle: '🚲 Bicycle' };
+          return (
+            <div className="flex flex-wrap gap-1.5">
+              {tags.map(t => <span key={t} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/15 text-green-400 border border-green-500/20">{labels[t] || t}</span>)}
+            </div>
+          );
+        } catch { return null; }
+      })()}
     </div>
   );
 
@@ -303,14 +399,15 @@ export default function RightPanel({
   };
 
   const hasDetails = () => {
-    if (location.category === 'campsite') return !!(location.cell_signal || location.shade !== null || location.level_ground !== null || location.water_nearby !== null || location.dump_nearby !== null || location.max_vehicle_length !== null || location.stay_limit_days !== null || location.season || location.crowding);
-    if (location.category === 'riding') return !!(location.difficulty || location.distance_miles !== null || location.elevation_gain_ft !== null || location.trail_types || location.permit_required !== null);
-    if (['hiking', 'mtb', 'horseback', 'offroad'].includes(location.category)) return !!(location.difficulty || location.distance_miles !== null || location.sub_type);
-    if (['fishing', 'hunting'].includes(location.category)) return !!(location.sub_type || location.permit_required !== null);
-    if (['boating', 'swimming'].includes(location.category)) return !!(location.sub_type || location.hours);
-    if (location.category === 'kayaking') return !!(location.sub_type || location.difficulty);
-    if (location.category === 'climbing') return !!(location.sub_type || location.difficulty);
-    return !!(location.hours || location.sub_type);
+    // Show details section if ANY enrichment data exists
+    return !!(location.cell_signal || location.shade !== null || location.cost_per_night !== null ||
+      location.fee_info || location.operator_name || location.brand_name || location.num_sites ||
+      location.difficulty || location.distance_miles !== null || location.elevation_gain_ft !== null ||
+      location.trail_types || location.permit_required !== null || location.hours || location.sub_type ||
+      location.has_toilets || location.has_showers || location.has_electric || location.has_fire_ring ||
+      location.pet_friendly || location.vehicles_allowed || location.surface_type || location.access_type ||
+      location.elevation_ft || location.water_body_type || location.rapid_grade || location.climbing_routes ||
+      location.sac_scale || location.best_season || location.water_available !== null);
   };
 
   const externalLinks = parseExternalLinks();
@@ -645,7 +742,19 @@ export default function RightPanel({
         {/* External Links */}
         {(externalLinks.length > 0 || generatedLink) && (
           <div className={`p-5 ${sectionDivider}`}>
-            <div className={`${labelStyle} mb-2`}>Links</div>
+            <div className={`${labelStyle} mb-2`}>Links & Contact</div>
+            {location.website && !externalLinks.some(l => l.url === location.website) && (
+              <a href={location.website} target="_blank" rel="noopener noreferrer"
+                className={`flex items-center gap-2 text-sm font-medium mb-1 transition-colors ${darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'} [.light_&]:text-blue-600 [.light_&]:hover:text-blue-500`}>
+                <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />Website
+              </a>
+            )}
+            {location.phone && (
+              <a href={`tel:${location.phone}`}
+                className={`flex items-center gap-2 text-sm font-medium mb-1 transition-colors ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'} [.light_&]:text-gray-600 [.light_&]:hover:text-gray-900`}>
+                📞 {location.phone}
+              </a>
+            )}
             <div className="flex flex-col gap-2">
               {generatedLink && !externalLinks.some(l => l.url === generatedLink.url) && (
                 <a href={generatedLink.url} target="_blank" rel="noopener noreferrer"

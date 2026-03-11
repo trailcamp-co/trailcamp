@@ -146,7 +146,24 @@ router.get('/slim', optionalAuth, async (req: Request, res: Response) => {
       difficulty: locations.difficulty,
       trailTypes: locations.trailTypes,
       distanceMiles: locations.distanceMiles,
+      elevationGainFt: locations.elevationGainFt,
       bestSeason: locations.bestSeason,
+      operatorName: locations.operatorName,
+      feeInfo: locations.feeInfo,
+      hasToilets: locations.hasToilets,
+      petFriendly: locations.petFriendly,
+      vehiclesAllowed: locations.vehiclesAllowed,
+      surfaceType: locations.surfaceType,
+      elevationFt: locations.elevationFt,
+      sacScale: locations.sacScale,
+      mtbScale: locations.mtbScale,
+      numSites: locations.numSites,
+      isReservable: locations.isReservable,
+      isBackcountry: locations.isBackcountry,
+      hasShowers: locations.hasShowers,
+      hasElectric: locations.hasElectric,
+      hasFireRing: locations.hasFireRing,
+      brandName: locations.brandName,
       groupId: locations.groupId,
       isGroupPrimary: locations.isGroupPrimary,
       externalLinks: locations.externalLinks,
@@ -190,7 +207,24 @@ router.get('/slim', optionalAuth, async (req: Request, res: Response) => {
       if (r.difficulty) obj.difficulty = r.difficulty;
       if (r.trailTypes) obj.trail_types = r.trailTypes;
       if (r.distanceMiles != null) obj.distance_miles = r.distanceMiles;
+      if (r.elevationGainFt != null) obj.elevation_gain_ft = r.elevationGainFt;
       if (r.bestSeason) obj.best_season = r.bestSeason;
+      if (r.operatorName) obj.operator_name = r.operatorName;
+      if (r.feeInfo) obj.fee_info = r.feeInfo;
+      if (r.hasToilets != null) obj.has_toilets = r.hasToilets;
+      if (r.petFriendly != null) obj.pet_friendly = r.petFriendly;
+      if (r.vehiclesAllowed) obj.vehicles_allowed = r.vehiclesAllowed;
+      if (r.surfaceType) obj.surface_type = r.surfaceType;
+      if (r.elevationFt != null) obj.elevation_ft = r.elevationFt;
+      if (r.sacScale) obj.sac_scale = r.sacScale;
+      if (r.mtbScale) obj.mtb_scale = r.mtbScale;
+      if (r.numSites != null) obj.num_sites = r.numSites;
+      if (r.isReservable != null) obj.is_reservable = r.isReservable;
+      if (r.isBackcountry != null) obj.is_backcountry = r.isBackcountry;
+      if (r.hasShowers != null) obj.has_showers = r.hasShowers;
+      if (r.hasElectric != null) obj.has_electric = r.hasElectric;
+      if (r.hasFireRing != null) obj.has_fire_ring = r.hasFireRing;
+      if (r.brandName) obj.brand_name = r.brandName;
       if (r.externalLinks) obj.external_links = r.externalLinks;
       if (r.source) obj.source = r.source;
       if (r.groupId) {

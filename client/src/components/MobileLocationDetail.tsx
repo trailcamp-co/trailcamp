@@ -221,21 +221,34 @@ export default function MobileLocationDetail({
         {location.cost_per_night !== null && location.cost_per_night !== undefined && (
           <InfoPill>{location.cost_per_night === 0 ? '🆓 Free' : `💰 $${location.cost_per_night}/night`}</InfoPill>
         )}
+        {location.fee_info && !location.cost_per_night && location.fee_info !== 'yes' && location.fee_info !== 'no' && (
+          <InfoPill>💰 {location.fee_info}</InfoPill>
+        )}
+        {location.fee_info === 'no' && !location.cost_per_night && <InfoPill>🆓 Free</InfoPill>}
         {location.difficulty && (
           <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
             style={{ backgroundColor: (DIFFICULTY_COLORS[location.difficulty] || '#6b7280') + '22', color: DIFFICULTY_COLORS[location.difficulty] || '#6b7280' }}>
             {location.difficulty}
           </span>
         )}
-        {location.water_available !== null && location.water_available !== undefined && (
-          <InfoPill>{location.water_available ? '💧 Water' : '🚫 No Water'}</InfoPill>
-        )}
-        {location.dump_nearby !== null && location.dump_nearby !== undefined && location.dump_nearby ? (
-          <InfoPill>🚽 Dump Nearby</InfoPill>
-        ) : null}
-        {location.hours && <InfoPill>🕐 {location.hours}</InfoPill>}
         {location.distance_miles != null && <InfoPill>📏 {location.distance_miles} mi</InfoPill>}
-        {location.elevation_gain_ft != null && <InfoPill>⛰️ {location.elevation_gain_ft.toLocaleString()} ft</InfoPill>}
+        {location.elevation_gain_ft != null && <InfoPill>⛰️ {location.elevation_gain_ft.toLocaleString()} ft gain</InfoPill>}
+        {location.elevation_ft != null && !location.elevation_gain_ft && <InfoPill>🏔️ {location.elevation_ft.toLocaleString()} ft elev</InfoPill>}
+        {location.operator_name && <InfoPill>🏛️ {location.operator_name}</InfoPill>}
+        {location.surface_type && <InfoPill>🛤️ {location.surface_type}</InfoPill>}
+        {location.num_sites != null && location.num_sites > 0 && <InfoPill>🏕️ {location.num_sites} sites</InfoPill>}
+        {location.water_available ? <InfoPill>💧 Water</InfoPill> : null}
+        {location.has_toilets ? <InfoPill>🚻 {location.toilet_type || 'Toilets'}</InfoPill> : null}
+        {location.has_showers ? <InfoPill>🚿 Showers</InfoPill> : null}
+        {location.has_electric ? <InfoPill>🔌 Electric</InfoPill> : null}
+        {location.has_fire_ring ? <InfoPill>🔥 Fire Ring</InfoPill> : null}
+        {location.pet_friendly ? <InfoPill>🐕 Pet Friendly</InfoPill> : null}
+        {location.is_reservable ? <InfoPill>📅 Reservable</InfoPill> : null}
+        {location.is_backcountry ? <InfoPill>⛺ Backcountry</InfoPill> : null}
+        {location.tents_allowed ? <InfoPill>⛺ Tents OK</InfoPill> : null}
+        {location.rvs_allowed ? <InfoPill>🚐 RVs OK</InfoPill> : null}
+        {location.dump_nearby ? <InfoPill>🚽 Dump Nearby</InfoPill> : null}
+        {location.hours && <InfoPill>🕐 {location.hours}</InfoPill>}
         {distFromHome != null && <InfoPill>🏠 {distFromHome} mi</InfoPill>}
         {location.sub_type && !['campground', 'boondocking', 'parking', 'Trail'].includes(location.sub_type) && (
           <InfoPill>{location.sub_type}</InfoPill>
@@ -245,6 +258,21 @@ export default function MobileLocationDetail({
         )}
         {location.best_season && <InfoPill>📅 {location.best_season}</InfoPill>}
       </div>
+
+      {/* Vehicles allowed */}
+      {location.vehicles_allowed && (() => {
+        try {
+          const v = JSON.parse(location.vehicles_allowed);
+          const tags = Object.keys(v).filter(k => v[k]);
+          if (tags.length === 0) return null;
+          const labels: Record<string, string> = { motorcycle: '🏍️ Motorcycle', atv: '🏍️ ATV', '4wd': '🚙 4WD', horse: '🐴 Horse', bicycle: '🚲 Bicycle' };
+          return (
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {tags.map(t => <span key={t} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/15 text-green-400 border border-green-500/20">{labels[t] || t}</span>)}
+            </div>
+          );
+        } catch { return null; }
+      })()}
 
       {/* ===== HALF+: Expanded content ===== */}
       {showExpanded && (
@@ -345,6 +373,7 @@ export default function MobileLocationDetail({
               {location.stay_limit_days !== null && location.stay_limit_days !== undefined && <DetailBadge label="Stay Limit" value={`${location.stay_limit_days} days`} />}
               {location.season && <DetailBadge label="Season" value={location.season} />}
               {location.crowding && <DetailBadge label="Crowding" value={location.crowding} />}
+              {location.access_type && <DetailBadge label="Access" value={location.access_type} />}
             </div>
           )}
 

@@ -86,6 +86,39 @@ export interface Location {
   group_count?: number;
   user_id?: string | null;
   visibility?: string;
+  // Enrichment data
+  has_toilets: number | null;
+  toilet_type: string | null;
+  has_showers: number | null;
+  has_electric: number | null;
+  has_wifi: number | null;
+  has_fire_ring: number | null;
+  pet_friendly: number | null;
+  is_reservable: number | null;
+  is_backcountry: number | null;
+  tents_allowed: number | null;
+  rvs_allowed: number | null;
+  phone: string | null;
+  website: string | null;
+  email: string | null;
+  operator_name: string | null;
+  brand_name: string | null;
+  elevation_ft: number | null;
+  fee_info: string | null;
+  access_type: string | null;
+  surface_type: string | null;
+  num_sites: number | null;
+  vehicles_allowed: string | null;
+  route_type: string | null;
+  sac_scale: string | null;
+  mtb_scale: string | null;
+  track_type: string | null;
+  climbing_routes: number | null;
+  climbing_grade_min: string | null;
+  climbing_grade_max: string | null;
+  climbing_rock_type: string | null;
+  water_body_type: string | null;
+  rapid_grade: string | null;
 }
 
 export type LocationCategory = 'campsite' | 'riding' | 'water' | 'dump' | 'gas' | 'grocery' | 'scenic' | 'laundromat' | 'hiking' | 'mtb' | 'fishing' | 'boating' | 'kayaking' | 'hunting' | 'horseback' | 'climbing' | 'swimming' | 'offroad';
