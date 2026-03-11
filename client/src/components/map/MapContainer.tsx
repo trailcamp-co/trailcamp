@@ -40,6 +40,8 @@ interface MapContainerProps {
   homeLon?: number | null;
   forceCloseLayerPanel?: number;
   hideOnDesktop?: boolean;
+  minGoogleRating?: number;
+  onChangeMinRating?: (rating: number) => void;
 }
 
 export default function MapContainer({
@@ -64,6 +66,8 @@ export default function MapContainer({
   homeLon,
   forceCloseLayerPanel,
   hideOnDesktop,
+  minGoogleRating,
+  onChangeMinRating,
 }: MapContainerProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
@@ -411,6 +415,8 @@ export default function MapContainer({
       <div ref={mapContainerRef} className="w-full h-full" />
       <LayerPanel
         hideOnDesktop={hideOnDesktop}
+        minGoogleRating={minGoogleRating}
+        onChangeMinRating={onChangeMinRating}
         isOpen={layerPanelOpen}
         onToggle={() => setLayerPanelOpen(!layerPanelOpen)}
         darkMode={darkMode}

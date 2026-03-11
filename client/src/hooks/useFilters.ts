@@ -138,6 +138,11 @@ export function useFilters(
     if (filters.difficulty && l.category === 'riding' && l.difficulty !== filters.difficulty) return false;
 
 
+    // Google rating filter: hide locations with ratings below threshold, but keep unrated ones
+    if (filters.minGoogleRating > 0) {
+      if (l.google_rating != null && l.google_rating < filters.minGoogleRating) return false;
+    }
+
     // Seasonal filter — only filters locations that have best_season data
     if (filters.hideOutOfSeason) {
       const month = filters.seasonMonth || (new Date().getMonth() + 1);

@@ -270,6 +270,7 @@ export interface Filters {
   nearRouteDistance: number;
   hideOutOfSeason: boolean;
   seasonMonth: number | null;
+  minGoogleRating: number;  // 0 = off, 3-5 = filter threshold
 }
 
 export const DEFAULT_FILTERS: Filters = {
@@ -284,6 +285,7 @@ export const DEFAULT_FILTERS: Filters = {
   nearRouteDistance: 25,
   hideOutOfSeason: false,
   seasonMonth: null,
+  minGoogleRating: 0,
 };
 
 export const WEATHER_CODES: Record<number, { icon: string; label: string }> = {

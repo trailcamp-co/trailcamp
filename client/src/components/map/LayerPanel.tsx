@@ -23,6 +23,8 @@ interface LayerPanelProps {
   mapStyle: MapStyle;
   onChangeMapStyle: (style: MapStyle) => void;
   hideOnDesktop?: boolean;
+  minGoogleRating?: number;
+  onChangeMinRating?: (rating: number) => void;
 }
 
 function Toggle({ on }: { on: boolean }) {
@@ -77,6 +79,8 @@ export default function LayerPanel({
   campsiteSubTypes, onToggleCampsiteSubType,
   mapStyle, onChangeMapStyle,
   hideOnDesktop,
+  minGoogleRating = 0,
+  onChangeMinRating,
 }: LayerPanelProps) {
   if (!isOpen) {
     return (

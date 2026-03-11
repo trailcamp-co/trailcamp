@@ -310,6 +310,8 @@ export default function App() {
             homeLon={homeLon}
             forceCloseLayerPanel={forceCloseLayerPanel}
             hideOnDesktop={showRightPanel}
+            minGoogleRating={filters.minGoogleRating}
+            onChangeMinRating={(r) => setFilters(prev => ({ ...prev, minGoogleRating: r }))}
           />
         </div>
 
