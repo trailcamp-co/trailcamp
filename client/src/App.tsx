@@ -309,6 +309,7 @@ export default function App() {
             homeLat={homeLat}
             homeLon={homeLon}
             forceCloseLayerPanel={forceCloseLayerPanel}
+            hideOnDesktop={showRightPanel}
           />
         </div>
 

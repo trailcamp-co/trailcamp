@@ -39,6 +39,7 @@ interface MapContainerProps {
   homeLat?: number | null;
   homeLon?: number | null;
   forceCloseLayerPanel?: number;
+  hideOnDesktop?: boolean;
 }
 
 export default function MapContainer({
@@ -62,6 +63,7 @@ export default function MapContainer({
   homeLat,
   homeLon,
   forceCloseLayerPanel,
+  hideOnDesktop,
 }: MapContainerProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
@@ -408,6 +410,7 @@ export default function MapContainer({
     <div className="relative w-full h-full">
       <div ref={mapContainerRef} className="w-full h-full" />
       <LayerPanel
+        hideOnDesktop={hideOnDesktop}
         isOpen={layerPanelOpen}
         onToggle={() => setLayerPanelOpen(!layerPanelOpen)}
         darkMode={darkMode}

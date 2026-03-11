@@ -22,6 +22,7 @@ interface LayerPanelProps {
   onToggleCampsiteSubType?: (subType: CampsiteSubType) => void;
   mapStyle: MapStyle;
   onChangeMapStyle: (style: MapStyle) => void;
+  hideOnDesktop?: boolean;
 }
 
 function Toggle({ on }: { on: boolean }) {
@@ -75,12 +76,13 @@ export default function LayerPanel({
   visibleLands, onToggleLand,
   campsiteSubTypes, onToggleCampsiteSubType,
   mapStyle, onChangeMapStyle,
+  hideOnDesktop,
 }: LayerPanelProps) {
   if (!isOpen) {
     return (
       <button
         onClick={onToggle}
-        className="absolute top-14 lg:top-3 right-3 z-50 flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg glass text-gray-200 hover:text-white transition-colors"
+        className={`absolute top-14 lg:top-3 right-3 z-50 flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg glass text-gray-200 hover:text-white transition-colors ${hideOnDesktop ? 'lg:hidden' : ''}`}
       >
         <Layers size={16} />
         <span className="text-sm font-medium">Layers</span>
@@ -95,7 +97,7 @@ export default function LayerPanel({
   const hasActiveLand = visibleLands.size > 0;
 
   return (
-    <div className="absolute top-14 lg:top-3 right-3 z-50 w-[200px] rounded-xl shadow-xl border border-dark-600/50 overflow-hidden glass">
+    <div className={`absolute top-14 lg:top-3 right-3 z-50 w-[200px] rounded-xl shadow-xl border border-dark-600/50 overflow-hidden glass ${hideOnDesktop ? "lg:hidden" : ""}`}>
       <button
         onClick={onToggle}
         className="w-full flex items-center justify-between px-2.5 py-2 border-b border-dark-600/30 hover:bg-dark-700/30 transition-colors"
