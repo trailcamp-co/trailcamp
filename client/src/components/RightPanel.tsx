@@ -694,6 +694,21 @@ export default function RightPanel({
           <PhotosSection locationId={location.id} showToast={showToast} />
         </div>
 
+        {/* Google Rating */}
+        {(location.google_rating != null) && (
+          <div className={`px-5 py-3 flex items-center gap-3 ${sectionDivider}`}>
+            <div className="flex items-center gap-1">
+              <span className="text-yellow-400 text-lg">★</span>
+              <span className="text-white font-bold text-lg">{location.google_rating.toFixed(1)}</span>
+            </div>
+            {location.google_review_count != null && (
+              <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'} [.light_&]:text-gray-500`}>
+                ({location.google_review_count.toLocaleString()} Google reviews)
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Description */}
         {location.description && (
           <div className={`p-5 ${sectionDivider}`}>

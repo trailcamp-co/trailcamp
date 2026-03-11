@@ -257,6 +257,17 @@ export default function MobileLocationDetail({
         {location.best_season && <InfoPill>📅 {location.best_season}</InfoPill>}
       </div>
 
+      {/* Google Rating */}
+      {location.google_rating != null && (
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-yellow-400 text-base">★</span>
+          <span className="text-white font-bold">{location.google_rating.toFixed(1)}</span>
+          {location.google_review_count != null && (
+            <span className="text-xs text-gray-400">({location.google_review_count.toLocaleString()} Google reviews)</span>
+          )}
+        </div>
+      )}
+
       {/* Vehicles allowed */}
       {location.vehicles_allowed && (() => {
         try {

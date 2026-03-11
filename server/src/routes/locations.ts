@@ -164,6 +164,8 @@ router.get('/slim', optionalAuth, async (req: Request, res: Response) => {
       hasElectric: locations.hasElectric,
       hasFireRing: locations.hasFireRing,
       brandName: locations.brandName,
+      googleRating: locations.googleRating,
+      googleReviewCount: locations.googleReviewCount,
       groupId: locations.groupId,
       isGroupPrimary: locations.isGroupPrimary,
       externalLinks: locations.externalLinks,
@@ -225,6 +227,8 @@ router.get('/slim', optionalAuth, async (req: Request, res: Response) => {
       if (r.hasElectric != null) obj.has_electric = r.hasElectric;
       if (r.hasFireRing != null) obj.has_fire_ring = r.hasFireRing;
       if (r.brandName) obj.brand_name = r.brandName;
+      if (r.googleRating != null) obj.google_rating = r.googleRating;
+      if (r.googleReviewCount != null) obj.google_review_count = r.googleReviewCount;
       if (r.externalLinks) obj.external_links = r.externalLinks;
       if (r.source) obj.source = r.source;
       if (r.groupId) {
@@ -456,6 +460,83 @@ router.get('/search', optionalAuth, async (req: Request, res: Response) => {
   } catch (err) {
     console.error('Error searching locations:', err);
     res.status(500).json({ error: 'Failed to search locations', code: 'INTERNAL_ERROR' });
+  }
+});
+
+
+// ─── GET /api/locations/:id/google-rating ────────────────────────────────────
+// Lazy Google Places enrichment: fetch rating on first view, cache forever.
+
+router.get('/:id/google-rating', async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    if (!id) { res.status(400).json({ error: 'Invalid id' }); return; }
+
+    // Check if already enriched
+    const [loc] = await db.select({
+      googleRating: locations.googleRating,
+      googleReviewCount: locations.googleReviewCount,
+      googleEnrichedAt: locations.googleEnrichedAt,
+      name: locations.name,
+      city: locations.city,
+      state: locations.state,
+      latitude: locations.latitude,
+      longitude: locations.longitude,
+    }).from(locations).where(eq(locations.id, id)).limit(1);
+
+    if (!loc) { res.status(404).json({ error: 'Not found' }); return; }
+
+    // If already checked, return cached result
+    if (loc.googleEnrichedAt) {
+      res.json({ google_rating: loc.googleRating, google_review_count: loc.googleReviewCount });
+      return;
+    }
+
+    // Fetch from Google Places API
+    const GOOGLE_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
+    if (!GOOGLE_API_KEY) {
+      res.json({ google_rating: null, google_review_count: null });
+      return;
+    }
+
+    const query = `${loc.name} ${loc.city || ''} ${loc.state || ''}`.trim();
+    const body = JSON.stringify({
+      textQuery: query,
+      locationBias: { circle: { center: { latitude: loc.latitude, longitude: loc.longitude }, radius: 5000 } },
+      maxResultCount: 1,
+    });
+
+    const response = await fetch('https://places.googleapis.com/v1/places:searchText', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': GOOGLE_API_KEY,
+        'X-Goog-FieldMask': 'places.rating,places.userRatingCount,places.id,places.googleMapsUri',
+      },
+      body,
+    });
+
+    const data = await response.json() as { places?: Array<{ rating?: number; userRatingCount?: number; id?: string; googleMapsUri?: string }> };
+    const place = data.places?.[0];
+
+    if (place?.rating) {
+      await db.update(locations).set({
+        googleRating: place.rating,
+        googleReviewCount: place.userRatingCount ?? null,
+        googlePlaceId: place.id ?? null,
+        googleMapsUrl: place.googleMapsUri ?? null,
+        googleEnrichedAt: new Date(),
+      }).where(eq(locations.id, id));
+
+      res.json({ google_rating: place.rating, google_review_count: place.userRatingCount ?? null });
+    } else {
+      // Mark as checked (no result)
+      await db.update(locations).set({ googleEnrichedAt: new Date() }).where(eq(locations.id, id));
+      res.json({ google_rating: null, google_review_count: null });
+    }
+  } catch (err) {
+    console.error('Google rating fetch error:', err);
+    res.json({ google_rating: null, google_review_count: null });
   }
 });
 

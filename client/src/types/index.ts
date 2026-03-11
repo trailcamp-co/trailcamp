@@ -119,6 +119,9 @@ export interface Location {
   climbing_rock_type: string | null;
   water_body_type: string | null;
   rapid_grade: string | null;
+  google_rating: number | null;
+  google_review_count: number | null;
+  google_maps_url: string | null;
 }
 
 export type LocationCategory = 'campsite' | 'riding' | 'water' | 'dump' | 'gas' | 'grocery' | 'scenic' | 'laundromat' | 'hiking' | 'mtb' | 'fishing' | 'boating' | 'kayaking' | 'hunting' | 'horseback' | 'climbing' | 'swimming' | 'offroad';

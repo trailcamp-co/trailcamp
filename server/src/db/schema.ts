@@ -122,6 +122,13 @@ export const locations = pgTable(
     rapidGrade: text('rapid_grade'),
     osmTagsJson: text('osm_tags_json'),
     enrichedAt: timestamp('enriched_at', { withTimezone: true }),
+    // Google Places enrichment
+    googleRating: real('google_rating'),
+    googleReviewCount: integer('google_review_count'),
+    googlePlaceId: text('google_place_id'),
+    googleMapsUrl: text('google_maps_url'),
+    googleEnrichedAt: timestamp('google_enriched_at', { withTimezone: true }),
+
 
     // Geo enrichment
     city: text('city'),
