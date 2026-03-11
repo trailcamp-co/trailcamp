@@ -165,14 +165,12 @@ export default function MobileLocationDetail({
     return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
   })() : null;
 
-  // Nearby locations: campsites show nearby riding, riding shows nearby campsites
+  // Nearby locations: show all categories except the current one
   const nearbyLocations = useMemo(() => {
     if (!allLocations || allLocations.length === 0) return [];
-    const targetCategory = location.category === 'campsite' ? 'riding' : location.category === 'riding' ? 'campsite' : null;
-    if (!targetCategory) return [];
     const R = 3959;
     return allLocations
-      .filter(l => l.category === targetCategory)
+      .filter(l => l.category !== location.category && l.id !== location.id)
       .map(l => {
         const dLat = (l.latitude - location.latitude) * Math.PI / 180;
         const dLng = (l.longitude - location.longitude) * Math.PI / 180;
@@ -182,7 +180,7 @@ export default function MobileLocationDetail({
       })
       .filter(l => l._distance <= 20)
       .sort((a, b) => a._distance - b._distance)
-      .slice(0, 3);
+      .slice(0, 8);
   }, [allLocations, location.id, location.category, location.latitude, location.longitude]);
 
   const showExpanded = snapPoint === 'half' || snapPoint === 'full';
@@ -344,7 +342,7 @@ export default function MobileLocationDetail({
           {nearbyLocations.length > 0 && (
             <div className="mb-4">
               <span className="text-xs font-medium uppercase tracking-wider text-gray-500 block mb-2">
-                Nearby {location.category === 'campsite' ? 'Riding Areas' : 'Campsites'}
+                Nearby Activities & Services
               </span>
               <div className="space-y-1">
                 {nearbyLocations.map(loc => (

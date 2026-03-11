@@ -12,7 +12,7 @@ const HOBBIES = [
   { icon: '🐎', label: 'Horseback', count: '15K+' },
   { icon: '🚤', label: 'Boating', count: '9K+' },
   { icon: '🚵', label: 'Mountain Biking', count: '7K+' },
-  { icon: '🏹', label: 'Hunting', count: '4K+' },
+  { icon: '🏹', label: 'Hunting & Shooting', count: '4K+' },
   { icon: '🏊', label: 'Swimming', count: '3K+' },
   { icon: '🏍️', label: 'Dirt Bikes / OHV', count: '1.5K+' },
   { icon: '🧗', label: 'Rock Climbing', count: '1.3K+' },

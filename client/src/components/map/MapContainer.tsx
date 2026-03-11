@@ -203,15 +203,23 @@ export default function MapContainer({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-    const source = map.getSource('locations') as any;
-    if (source) source.setData(buildLocationsGeoJSON(locations));
+    try {
+      const source = map.getSource('locations') as any;
+      if (source) source.setData(buildLocationsGeoJSON(locations));
+    } catch (err) {
+      console.warn('Failed to update locations source:', err);
+    }
   }, [locations, mapReady]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-    const source = map.getSource('route') as any;
-    if (source) source.setData(buildRouteGeoJSON(routeGeoJSON));
+    try {
+      const source = map.getSource('route') as any;
+      if (source) source.setData(buildRouteGeoJSON(routeGeoJSON));
+    } catch (err) {
+      console.warn('Failed to update route source:', err);
+    }
   }, [routeGeoJSON, mapReady]);
 
   useEffect(() => {

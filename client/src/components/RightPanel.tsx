@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import type { Location } from '../types';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
-import { fetchNearbyRiding, fetchGroupMembers } from '../hooks/useApi';
+import { fetchNearby, fetchNearbyRiding, fetchGroupMembers } from '../hooks/useApi';
 import ReviewsSection from './ReviewsSection';
 import PhotosSection from './PhotosSection';
 import ConditionsSection from './ConditionsSection';
@@ -92,6 +92,7 @@ export default function RightPanel({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [copiedCoords, setCopiedCoords] = useState(false);
   const [addingToTrip, setAddingToTrip] = useState(false);
+  const [nearbyLocations, setNearbyLocations] = useState<(Location & { distance_from: number })[]>([]);
   const [nearbyRiding, setNearbyRiding] = useState<(Location & { distance_from: number })[]>([]);
   const [nearbyRadius, setNearbyRadius] = useState(20);
   const [loadingNearby, setLoadingNearby] = useState(false);
@@ -112,13 +113,12 @@ export default function RightPanel({
   const categoryColor = CATEGORY_COLORS[location.category] || '#6b7280';
 
   useEffect(() => {
-    if (!isCampsite) return;
     setLoadingNearby(true);
-    fetchNearbyRiding(location.latitude, location.longitude, nearbyRadius)
-      .then(setNearbyRiding)
-      .catch(() => setNearbyRiding([]))
+    fetchNearby(location.latitude, location.longitude, nearbyRadius, location.id, location.category)
+      .then(setNearbyLocations)
+      .catch(() => setNearbyLocations([]))
       .finally(() => setLoadingNearby(false));
-  }, [location.id, location.latitude, location.longitude, nearbyRadius, isCampsite]);
+  }, [location.id, location.latitude, location.longitude, nearbyRadius, location.category]);
 
   // Reset notes when location changes
   useEffect(() => {

@@ -233,6 +233,14 @@ export async function fetchNearbyRiding(lat: number, lng: number, radius: number
   return apiFetch<(Location & { distance_from: number })[]>(`/locations/nearby-riding?lat=${lat}&lng=${lng}&radius=${radius}`);
 }
 
+
+export async function fetchNearby(lat: number, lng: number, radius: number = 20, excludeId?: number, excludeCategory?: string) {
+  let url = `/locations/nearby?lat=${lat}&lng=${lng}&radius=${radius}`;
+  if (excludeId) url += `&exclude_id=${excludeId}`;
+  if (excludeCategory) url += `&exclude_category=${excludeCategory}`;
+  return apiFetch<(Location & { distance_from: number })[]>(url);
+}
+
 // Fetch group members
 export async function fetchGroupMembers(groupId: number) {
   return apiFetch<Location[]>(`/locations/group/${groupId}`);

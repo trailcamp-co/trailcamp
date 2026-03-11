@@ -194,7 +194,7 @@ export const CATEGORY_LABELS: Record<LocationCategory, string> = {
   fishing: 'Fishing Spots',
   boating: 'Boat Ramps & Marinas',
   kayaking: 'Kayaking / Canoeing',
-  hunting: 'Hunting Areas',
+  hunting: 'Hunting & Shooting',
   horseback: 'Horseback Riding',
   climbing: 'Rock Climbing',
   swimming: 'Swimming Areas',

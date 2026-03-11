@@ -490,6 +490,76 @@ router.get('/nearby-riding', async (req: Request, res: Response) => {
   }
 });
 
+
+// ─── GET /api/locations/nearby ───────────────────────────────────────────────
+// Returns nearby locations of ALL categories (excluding the same location).
+// Used for "Nearby Activities & Services" section on location detail.
+
+router.get('/nearby', async (req: Request, res: Response) => {
+  try {
+    const lat = Number(req.query.lat);
+    const lng = Number(req.query.lng);
+    const radius = Number(req.query.radius) || 20;
+    const excludeId = Number(req.query.exclude_id) || 0;
+    const excludeCategory = String(req.query.exclude_category || '');
+
+    if (!lat || !lng) {
+      res.status(400).json({ error: 'lat and lng are required', code: 'VALIDATION_ERROR' });
+      return;
+    }
+
+    const distanceExpr = sql`(3959 * acos(LEAST(1, GREATEST(-1,
+      cos(radians(${lat})) * cos(radians(${locations.latitude})) * cos(radians(${locations.longitude}) - radians(${lng})) +
+      sin(radians(${lat})) * sin(radians(${locations.latitude}))
+    ))))`;
+
+    const conditions = [
+      sql`${distanceExpr} <= ${radius}`,
+      or(eq(locations.visibility, 'public'), isNull(locations.visibility))!,
+    ];
+    
+    // Exclude same category (we don't need to show nearby campsites on a campsite)
+    if (excludeCategory) {
+      conditions.push(sql`${locations.category} != ${excludeCategory}`);
+    }
+    if (excludeId) {
+      conditions.push(sql`${locations.id} != ${excludeId}`);
+    }
+
+    const rows = await db
+      .select({
+        id: locations.id,
+        name: locations.name,
+        latitude: locations.latitude,
+        longitude: locations.longitude,
+        category: locations.category,
+        subType: locations.subType,
+        difficulty: locations.difficulty,
+        distanceMiles: locations.distanceMiles,
+        distanceFrom: distanceExpr.as('distance_from'),
+      })
+      .from(locations)
+      .where(and(...conditions))
+      .orderBy(sql`distance_from`)
+      .limit(50);
+
+    res.json(rows.map((r) => ({
+      id: r.id,
+      name: r.name,
+      latitude: r.latitude,
+      longitude: r.longitude,
+      category: r.category,
+      sub_type: r.subType,
+      difficulty: r.difficulty,
+      distance_miles: r.distanceMiles,
+      distance_from: r.distanceFrom,
+    })));
+  } catch (err) {
+    console.error('Error fetching nearby:', err);
+    res.status(500).json({ error: 'Failed to fetch nearby', code: 'INTERNAL_ERROR' });
+  }
+});
+
 // ─── GET /api/locations/seasonal ─────────────────────────────────────────────
 
 // Seasonal endpoint removed (loaded all 34K locations, never called by frontend)
