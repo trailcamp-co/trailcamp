@@ -145,6 +145,30 @@ export default function LayerPanel({
         </div>
       </div>
 
+      {/* Google Rating Filter */}
+      {onChangeMinRating && (
+        <div className="px-2.5 py-2 border-b border-dark-600/30">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] text-gray-400 font-medium">Min Rating</span>
+            <div className="flex items-center gap-0.5">
+              {[0, 3, 3.5, 4, 4.5].map(r => (
+                <button
+                  key={r}
+                  onClick={() => onChangeMinRating(r === minGoogleRating ? 0 : r)}
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                    r === minGoogleRating
+                      ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                      : 'text-gray-500 hover:text-gray-300'
+                  }`}
+                >
+                  {r === 0 ? 'All' : `${r}\u2605`}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="py-0.5">
         {(['campground', 'boondocking', 'parking'] as CampsiteSubType[]).map((st) => {
           const visible = visibleLayers.has('campsite') && (campsiteSubTypes?.has(st) ?? true);
