@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import type { Location } from '../types';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
-import { fetchNearby, fetchNearbyRiding, fetchGroupMembers } from '../hooks/useApi';
+import { fetchNearby, fetchGroupMembers } from '../hooks/useApi';
 import ReviewsSection from './ReviewsSection';
 import PhotosSection from './PhotosSection';
 import ConditionsSection from './ConditionsSection';
@@ -93,7 +93,6 @@ export default function RightPanel({
   const [copiedCoords, setCopiedCoords] = useState(false);
   const [addingToTrip, setAddingToTrip] = useState(false);
   const [nearbyLocations, setNearbyLocations] = useState<(Location & { distance_from: number })[]>([]);
-  const [nearbyRiding, setNearbyRiding] = useState<(Location & { distance_from: number })[]>([]);
   const [nearbyRadius, setNearbyRadius] = useState(20);
   const [loadingNearby, setLoadingNearby] = useState(false);
   const [heartKey, setHeartKey] = useState(0);
@@ -611,76 +610,32 @@ export default function RightPanel({
           </div>
         )}
 
-        {/* Nearby Riding (for campsites) */}
-        {isCampsite && (
+        {/* Nearby Activities & Services */}
+        {nearbyLocations.length > 0 && (
           <div className={`p-5 ${sectionDivider}`}>
-            <div className="flex items-center justify-between mb-3">
-              <div className={labelStyle}>
-                <Bike className="w-3.5 h-3.5 inline mr-1" />Nearby Riding ({nearbyRiding.length})
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="number" value={nearbyRadius}
-                  onChange={(e) => setNearbyRadius(Math.max(1, Number(e.target.value) || 20))}
-                  className={`w-12 text-xs text-center rounded px-1 py-0.5 ${darkMode ? 'bg-dark-800 border border-dark-700/50 text-gray-300' : 'bg-gray-50 border border-gray-200 text-gray-700'} [.light_&]:bg-gray-50 [.light_&]:border-gray-200 [.light_&]:text-gray-700`} />
-                <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`}>mi</span>
-              </div>
+            <div className={`${labelStyle} mb-3`}>
+              📍 Nearby ({nearbyLocations.length})
             </div>
             {loadingNearby ? (
               <div className="text-xs text-gray-500 text-center py-2">Loading...</div>
-            ) : nearbyRiding.length === 0 ? (
-              <div className="text-xs text-gray-500 text-center py-2">No riding areas within {nearbyRadius} mi</div>
             ) : (
-              <div className="space-y-1.5 max-h-48 overflow-y-auto scroll-smooth">
-                {nearbyRiding.slice(0, 15).map((r) => {
-                  const diffColor = DIFFICULTY_COLORS[r.difficulty ?? ''] ?? '#6b7280';
+              <div className="space-y-1.5 max-h-52 overflow-y-auto scroll-smooth">
+                {nearbyLocations.slice(0, 15).map((r) => {
+                  const icons: Record<string, string> = {campsite:'🏕️',riding:'🏍️',hiking:'🥾',mtb:'🚵',offroad:'🚙',fishing:'🎣',boating:'⛵',kayaking:'🛶',swimming:'🏊',climbing:'🧗',hunting:'🦌',horseback:'🐴',scenic:'📸',water:'💧',dump:'🚽'};
+                  const diffColor = DIFFICULTY_COLORS[r.difficulty ?? ''] ?? '';
                   return (
                     <button key={r.id} onClick={() => { onFlyTo?.(r.longitude, r.latitude); onLocationClick?.(r); }}
-                      className={`w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition-colors ${darkMode ? 'hover:bg-dark-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700'} [.light_&]:hover:bg-gray-100 [.light_&]:text-gray-700`}>
-                      <span className="text-xs">🏍️</span>
+                      className={`w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors ${darkMode ? 'hover:bg-dark-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700'}`}>
+                      <span className="text-sm flex-shrink-0">{icons[r.category] || '📍'}</span>
                       <span className="flex-1 truncate text-xs">{r.name}</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold" style={{ backgroundColor: diffColor + '22', color: diffColor }}>{r.difficulty || '?'}</span>
-                      <span className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-400'} [.light_&]:text-gray-400`}>{r.distance_from?.toFixed(1)} mi</span>
+                      {r.difficulty && <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold flex-shrink-0" style={{ backgroundColor: diffColor + '22', color: diffColor }}>{r.difficulty}</span>}
+                      {r.google_rating && <span className="text-[10px] text-yellow-400 flex-shrink-0">★{r.google_rating}</span>}
+                      <span className="text-[10px] text-gray-500 flex-shrink-0">{r.distance_from?.toFixed(1)} mi</span>
                     </button>
                   );
                 })}
               </div>
             )}
-          </div>
-        )}
-
-        {/* Nearby Campsites (for riding areas) */}
-        {location.category === 'riding' && (
-          <div className={`p-5 ${sectionDivider}`}>
-            <div className={`${labelStyle} mb-3`}>
-              🏕️ Nearby Camping ({nearbyRiding.filter(r => r.category === 'campsite').length > 0 ? 'loading' : '—'})
-            </div>
-            {(() => {
-              // Compute nearby campsites client-side from all locations
-              // This is a quick estimate using flat-earth approximation
-              const nearbyCamps = (window as any).__tcAllLocations?.filter((l: Location) => {
-                if (l.category !== 'campsite') return false;
-                const dLat = (l.latitude - location.latitude) * 69;
-                const dLng = (l.longitude - location.longitude) * 69 * Math.cos(location.latitude * Math.PI / 180);
-                return dLat * dLat + dLng * dLng < 625; // ~25mi radius
-              }).slice(0, 8) || [];
-
-              if (nearbyCamps.length === 0) return <div className="text-xs text-gray-500 text-center py-2">No campsites within 25 mi</div>;
-
-              return (
-                <div className="space-y-1.5 max-h-36 overflow-y-auto">
-                  {nearbyCamps.map((c: Location) => (
-                    <button key={c.id} onClick={() => { onFlyTo?.(c.longitude, c.latitude); onLocationClick?.(c); }}
-                      className={`w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs transition-colors ${darkMode ? 'hover:bg-dark-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700'}`}>
-                      <span className="text-xs">{c.sub_type === 'boondocking' ? '⛺' : '🏕️'}</span>
-                      <span className="flex-1 truncate">{c.name}</span>
-                      {c.cost_per_night != null && Number(c.cost_per_night) === 0 && (
-                        <span className="text-[9px] text-green-400 font-medium">Free</span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              );
-            })()}
           </div>
         )}
 

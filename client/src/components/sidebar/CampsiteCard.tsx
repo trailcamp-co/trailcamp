@@ -1,4 +1,4 @@
-import { Heart, Droplets, DollarSign } from 'lucide-react';
+import { Heart, Droplets, DollarSign, Star } from 'lucide-react';
 import type { Location } from '../../types';
 import { CAMPSITE_SUBTYPE_ICONS, CAMPSITE_SUBTYPE_COLORS, CAMPSITE_SUBTYPE_LABELS } from '../../types';
 
@@ -9,10 +9,11 @@ interface CampsiteCardProps {
   distanceFromHome?: number | null;
   onLocationClick?: (location: Location) => void;
   onToggleFavorite?: (id: number) => void;
+  isFavorited?: boolean;
   nearbyRidingCount?: number;
 }
 
-export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, distanceFromHome, onLocationClick, onToggleFavorite, nearbyRidingCount }: CampsiteCardProps) {
+export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, distanceFromHome, onLocationClick, onToggleFavorite, isFavorited, nearbyRidingCount }: CampsiteCardProps) {
   const subType = (loc.sub_type as keyof typeof CAMPSITE_SUBTYPE_ICONS) || 'other';
   const subColor = CAMPSITE_SUBTYPE_COLORS[subType] || '#6b7280';
   const isFree = loc.cost_per_night != null && Number(loc.cost_per_night) === 0;
@@ -57,7 +58,7 @@ export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, dis
                 onClick={(e) => { e.stopPropagation(); onToggleFavorite?.(loc.id); }}
                 className="p-0.5 hover:scale-125 transition-transform"
               >
-                <Heart size={12} className={loc.favorited ? 'text-red-400 fill-red-400' : 'text-gray-600 group-hover:text-gray-400'} />
+                <Heart size={12} className={isFavorited ? 'text-red-400 fill-red-400' : 'text-gray-600 group-hover:text-gray-400'} />
               </button>
             </div>
           </div>
@@ -85,6 +86,11 @@ export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, dis
             {nearbyRidingCount != null && nearbyRidingCount > 0 && (
               <span className="flex items-center gap-0.5 text-red-400/80 font-medium">
                 🏍️ {nearbyRidingCount}
+              </span>
+            )}
+            {loc.google_rating != null && (
+              <span className="flex items-center gap-0.5 text-yellow-400 font-medium ml-auto">
+                <Star size={9} className="fill-yellow-400" />{loc.google_rating}
               </span>
             )}
           </div>

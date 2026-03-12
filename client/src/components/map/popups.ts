@@ -33,6 +33,7 @@ export function setupHoverTooltip(map: any): any {
             <div style="font-size:10px;color:#64748b;text-transform:capitalize;margin-top:3px;display:flex;align-items:center;gap:6px;">
               <span>${p?.category || ''}</span>
               ${p?.distance_miles ? `<span>· ${Math.round(Number(p.distance_miles))} mi</span>` : ''}
+              ${p?.google_rating ? `<span style="color:#facc15;">★ ${p.google_rating}</span>` : ''}
               ${p?.best_season ? `<span>· ${p.best_season}</span>` : ''}
             </div>
           </div>

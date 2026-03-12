@@ -44,6 +44,7 @@ export function buildLocationsGeoJSON(locations: Location[]): GeoJSON.FeatureCol
           featured: loc.featured ?? 0,
           group_id: loc.group_id ?? 0,
           group_count: loc.group_count ?? 1,
+          google_rating: loc.google_rating ?? '',
         },
       };
     }),

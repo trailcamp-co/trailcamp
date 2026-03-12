@@ -138,6 +138,23 @@ export function useFilters(
     if (filters.difficulty && l.category === 'riding' && l.difficulty !== filters.difficulty) return false;
 
 
+    // Free camping filter
+    if (filters.freeCampingOnly && l.category === 'campsite') {
+      if (l.cost_per_night != null && Number(l.cost_per_night) > 0) return false;
+      if (l.fee_info && l.fee_info !== 'no' && l.fee_info !== 'free') return false;
+    }
+
+    // Dog-friendly filter
+    if (filters.dogFriendlyOnly && l.pet_friendly !== null && l.pet_friendly === 0) return false;
+
+    // Vehicle type filter
+    if (filters.vehicleTypes.size > 0 && l.vehicles_allowed) {
+      try {
+        const vehicles = typeof l.vehicles_allowed === 'string' ? JSON.parse(l.vehicles_allowed) : l.vehicles_allowed;
+        const hasMatch = [...filters.vehicleTypes].some(v => vehicles[v]);
+        if (!hasMatch) return false;
+      } catch {}
+    }
     // Google rating filter: hide locations with ratings below threshold, but keep unrated ones
     if (filters.minGoogleRating > 0) {
       if (l.google_rating != null && l.google_rating < filters.minGoogleRating) return false;

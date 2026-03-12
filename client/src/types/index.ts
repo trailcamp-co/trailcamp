@@ -271,6 +271,9 @@ export interface Filters {
   hideOutOfSeason: boolean;
   seasonMonth: number | null;
   minGoogleRating: number;  // 0 = off, 3-5 = filter threshold
+  freeCampingOnly: boolean;
+  dogFriendlyOnly: boolean;
+  vehicleTypes: Set<string>;  // motorcycle, atv, 4wd, horse, bicycle
 }
 
 export const DEFAULT_FILTERS: Filters = {
@@ -286,6 +289,9 @@ export const DEFAULT_FILTERS: Filters = {
   hideOutOfSeason: false,
   seasonMonth: null,
   minGoogleRating: 0,
+  freeCampingOnly: false,
+  dogFriendlyOnly: false,
+  vehicleTypes: new Set<string>(),
 };
 
 export const WEATHER_CODES: Record<number, { icon: string; label: string }> = {

@@ -1,4 +1,4 @@
-import { Star, Heart, Mountain, Route, MapPin } from 'lucide-react';
+import { Star as StarIcon, Heart, Mountain, Route, MapPin } from 'lucide-react';
 import type { Location } from '../../types';
 import { DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../../types';
 
@@ -9,9 +9,10 @@ interface RidingCardProps {
   distanceFromHome?: number | null;
   onLocationClick?: (location: Location) => void;
   onToggleFavorite?: (id: number) => void;
+  isFavorited?: boolean;
 }
 
-export default function RidingCard({ location: loc, onFlyTo, distanceFrom, distanceFromHome, onLocationClick, onToggleFavorite }: RidingCardProps) {
+export default function RidingCard({ location: loc, onFlyTo, distanceFrom, distanceFromHome, onLocationClick, onToggleFavorite, isFavorited }: RidingCardProps) {
   const diffColor = DIFFICULTY_COLORS[loc.difficulty ?? ''] ?? '#6b7280';
   const trailTypes = parseTrailTypes(loc.trail_types || '');
 
@@ -64,7 +65,7 @@ export default function RidingCard({ location: loc, onFlyTo, distanceFrom, dista
                 className="p-0.5 hover:scale-125 transition-transform"
                 title={loc.favorited ? 'Unfavorite' : 'Favorite'}
               >
-                <Heart size={12} className={loc.favorited ? 'text-red-400 fill-red-400' : 'text-gray-600 group-hover:text-gray-400 [.light_&]:text-gray-400'} />
+                <Heart size={12} className={isFavorited ? 'text-red-400 fill-red-400' : 'text-gray-600 group-hover:text-gray-400 [.light_&]:text-gray-400'} />
               </button>
             </div>
           </div>
@@ -92,6 +93,16 @@ export default function RidingCard({ location: loc, onFlyTo, distanceFrom, dista
               <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded ring-1 ${seasonInfo.ring}`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${seasonInfo.dot}`} />
                 <span className="text-gray-400">{seasonInfo.label}</span>
+              </span>
+            )}
+            {loc.distance_miles != null && (
+              <span className="text-gray-500" title="Estimated time">
+                ~{loc.distance_miles < 5 ? `${Math.round(loc.distance_miles * 12 + (loc.elevation_gain_ft || 0) / 600 * 60)} min` : `${((loc.distance_miles / (loc.category === 'hiking' ? 3 : loc.category === 'mtb' ? 8 : 15)) + (loc.elevation_gain_ft || 0) / 600).toFixed(1)} hrs`}
+              </span>
+            )}
+            {loc.google_rating != null && (
+              <span className="flex items-center gap-0.5 text-yellow-400 font-medium ml-auto">
+                <StarIcon size={9} className="fill-yellow-400" />{loc.google_rating}
               </span>
             )}
           </div>

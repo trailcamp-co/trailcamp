@@ -31,6 +31,7 @@ interface LeftSidebarProps {
   mapBounds: { north: number; south: number; east: number; west: number } | null;
   onLocationClick?: (location: Location) => void;
   onToggleFavorite?: (id: number) => void;
+  isFavorited?: (id: number) => boolean;
   filterMode: 'all' | 'visited' | 'highly_rated' | 'favorites';
   onFilterMode: (mode: 'all' | 'visited' | 'highly_rated' | 'favorites') => void;
   homeLat?: number | null;
@@ -61,7 +62,7 @@ export default function LeftSidebar({
   routeGeoJSON,
   mapBounds,
   onLocationClick,
-  onToggleFavorite,
+  onToggleFavorite, isFavorited,
   filterMode,
   onFilterMode,
   homeLat,
@@ -151,14 +152,14 @@ export default function LeftSidebar({
       {/* Riding Tab */}
       {currentTab === 'riding' && (
         <div className="flex-1 overflow-hidden animate-fade-in">
-          <RidingTab locations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} homeLat={homeLat} homeLon={homeLon} />
+          <RidingTab locations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} isFavorited={isFavorited} homeLat={homeLat} homeLon={homeLon} />
         </div>
       )}
 
       {/* Campsite Tab */}
       {currentTab === 'camp' && (
         <div className="flex-1 overflow-hidden animate-fade-in">
-          <CampsiteTab locations={locations} allLocations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} homeLat={homeLat} homeLon={homeLon} />
+          <CampsiteTab locations={locations} allLocations={locations} onFlyTo={onFlyTo} mapBounds={mapBounds} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} isFavorited={isFavorited} homeLat={homeLat} homeLon={homeLon} />
         </div>
       )}
 

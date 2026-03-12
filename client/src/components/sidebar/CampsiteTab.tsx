@@ -22,11 +22,12 @@ interface CampsiteTabProps {
   mapBounds: { north: number; south: number; east: number; west: number } | null;
   onLocationClick?: (location: Location) => void;
   onToggleFavorite?: (id: number) => void;
+  isFavorited?: (id: number) => boolean;
   homeLat?: number | null;
   homeLon?: number | null;
 }
 
-export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBounds, onLocationClick, onToggleFavorite, homeLat, homeLon }: CampsiteTabProps) {
+export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBounds, onLocationClick, onToggleFavorite, isFavorited, homeLat, homeLon }: CampsiteTabProps) {
   const [sortField, setSortField] = useState<CampsiteSortField>('name');
   const [sortAsc, setSortAsc] = useState(true);
   const [filterSubType, setFilterSubType] = useState<CampsiteSubType | 'all'>('all');
@@ -84,7 +85,7 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
 
     if (filterSubType !== 'all') filtered = filtered.filter(l => l.sub_type === filterSubType);
     if (freeOnly) filtered = filtered.filter(l => l.cost_per_night != null && Number(l.cost_per_night) === 0);
-    if (favoritesOnly) filtered = filtered.filter(l => l.favorited);
+    if (favoritesOnly) filtered = filtered.filter(l => isFavorited?.(l.id));
 
     if (distanceFromCoords) {
       filtered = filtered.map(l => ({
@@ -235,7 +236,7 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
           ? [...campsiteLocations].sort((a, b) => (sortAsc ? 1 : -1) * ((nearbyRidingCounts[b.id] ?? 0) - (nearbyRidingCounts[a.id] ?? 0)))
           : campsiteLocations
         ).slice(0, visibleCount).map(loc => (
-          <CampsiteCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} distanceFromHome={(loc as any)._distanceFromHome ?? null} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} nearbyRidingCount={nearbyRidingCounts[loc.id]} />
+          <CampsiteCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} distanceFromHome={(loc as any)._distanceFromHome ?? null} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} isFavorited={isFavorited?.(loc.id)} nearbyRidingCount={nearbyRidingCounts[loc.id]} />
         ))}
         {visibleCount < campsiteLocations.length && (
           <button

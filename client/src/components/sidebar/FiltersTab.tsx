@@ -104,6 +104,7 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
                 ...DEFAULT_FILTERS,
                 categories: new Set(DEFAULT_FILTERS.categories),
                 campsiteSubTypes: new Set(DEFAULT_FILTERS.campsiteSubTypes),
+            vehicleTypes: new Set(),
               });
               onFilterMode('all');
             }}
@@ -271,6 +272,82 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
         </div>
       </div>
 
+
+      {/* Quick Filters */}
+      <div>
+        <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+          <Filter size={12} className="text-orange-400" />
+          Quick Filters
+        </h4>
+        <div className="space-y-1.5">
+          {/* Free Camping */}
+          <div
+            className="flex items-center justify-between rounded-lg bg-dark-800 p-2.5 cursor-pointer hover:bg-dark-700 transition-colors"
+            onClick={() => setFilters(prev => ({ ...prev, freeCampingOnly: !prev.freeCampingOnly }))}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-sm">🆓</span>
+              <span className="text-sm text-gray-100">Free Camping Only</span>
+            </div>
+            <div className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${filters.freeCampingOnly ? 'bg-orange-500' : 'bg-dark-700'}`}>
+              <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${filters.freeCampingOnly ? 'translate-x-4' : ''}`} />
+            </div>
+          </div>
+
+          {/* Dog-Friendly */}
+          <div
+            className="flex items-center justify-between rounded-lg bg-dark-800 p-2.5 cursor-pointer hover:bg-dark-700 transition-colors"
+            onClick={() => setFilters(prev => ({ ...prev, dogFriendlyOnly: !prev.dogFriendlyOnly }))}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-sm">🐕</span>
+              <span className="text-sm text-gray-100">Dog-Friendly</span>
+            </div>
+            <div className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${filters.dogFriendlyOnly ? 'bg-orange-500' : 'bg-dark-700'}`}>
+              <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${filters.dogFriendlyOnly ? 'translate-x-4' : ''}`} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Vehicle Type Filter */}
+      <div>
+        <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+          🏍️ Vehicle Types
+        </h4>
+        <div className="flex flex-wrap gap-1.5">
+          {[
+            { key: 'motorcycle', label: '🏍️ Dirt Bike', color: '#ef4444' },
+            { key: 'atv', label: '🏁 ATV/Quad', color: '#f97316' },
+            { key: '4wd', label: '🚙 4WD/Jeep', color: '#22c55e' },
+            { key: 'horse', label: '🐴 Horse', color: '#a855f7' },
+            { key: 'bicycle', label: '🚲 Bicycle', color: '#3b82f6' },
+          ].map(({ key, label, color }) => {
+            const active = filters.vehicleTypes.has(key);
+            return (
+              <button
+                key={key}
+                onClick={() => setFilters(prev => {
+                  const next = new Set(prev.vehicleTypes);
+                  if (next.has(key)) next.delete(key);
+                  else next.add(key);
+                  return { ...prev, vehicleTypes: next };
+                })}
+                className={`text-[11px] font-medium px-2 py-1 rounded-lg border transition-all ${
+                  active
+                    ? 'border-transparent text-white'
+                    : 'border-dark-700/50 text-gray-500 hover:text-gray-300 hover:border-dark-600'
+                }`}
+                style={active ? { backgroundColor: color + '25', color, borderColor: color + '50' } : {}}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+
       {/* Divider */}
       <div className="border-t border-dark-700/50" />
 
@@ -416,6 +493,7 @@ export default function FiltersTab({ filters, setFilters, routeGeoJSON, filterMo
             ...DEFAULT_FILTERS,
             categories: new Set(DEFAULT_FILTERS.categories),
             campsiteSubTypes: new Set(DEFAULT_FILTERS.campsiteSubTypes),
+            vehicleTypes: new Set(),
           });
           onFilterMode('all');
         }}

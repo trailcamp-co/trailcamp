@@ -30,11 +30,12 @@ interface RidingTabProps {
   mapBounds: { north: number; south: number; east: number; west: number } | null;
   onLocationClick?: (location: Location) => void;
   onToggleFavorite?: (id: number) => void;
+  isFavorited?: (id: number) => boolean;
   homeLat?: number | null;
   homeLon?: number | null;
 }
 
-export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationClick, onToggleFavorite, homeLat, homeLon }: RidingTabProps) {
+export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationClick, onToggleFavorite, isFavorited, homeLat, homeLon }: RidingTabProps) {
   const [sortField, setSortField] = useState<RidingSortField>('name');
   const [visibleCount, setVisibleCount] = useState(50);
   const [sortAsc, setSortAsc] = useState(true);
@@ -238,7 +239,7 @@ export default function RidingTab({ locations, onFlyTo, mapBounds, onLocationCli
           />
         )}
         {ridingLocations.slice(0, visibleCount).map((loc) => (
-          <RidingCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} distanceFromHome={(loc as any)._distanceFromHome ?? null} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} />
+          <RidingCard key={loc.id} location={loc} onFlyTo={onFlyTo} distanceFrom={loc.distance_from} distanceFromHome={(loc as any)._distanceFromHome ?? null} onLocationClick={onLocationClick} onToggleFavorite={onToggleFavorite} isFavorited={isFavorited?.(loc.id)} />
         ))}
         {visibleCount < ridingLocations.length && (
           <button

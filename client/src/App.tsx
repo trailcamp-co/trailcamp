@@ -242,6 +242,7 @@ export default function App() {
         mapBounds={mapBounds}
         onLocationClick={(loc) => { handleLocationClickWrapped(loc); setMobileTab('map'); }}
         onToggleFavorite={toggleFavorite}
+        isFavorited={isFavorited}
         filterMode={filters.visitedStatus}
         onFilterMode={(mode: Filters['visitedStatus']) =>
           setFilters(prev => ({ ...prev, visitedStatus: mode }))
@@ -380,6 +381,7 @@ export default function App() {
                 mapBounds={mapBounds}
                 onLocationClick={(loc) => { handleLocationClickWrapped(loc); setMobileTab('map'); }}
                 onToggleFavorite={toggleFavorite}
+        isFavorited={isFavorited}
                 filterMode={filters.visitedStatus}
                 onFilterMode={(mode: Filters['visitedStatus']) =>
                   setFilters(prev => ({ ...prev, visitedStatus: mode }))
@@ -418,6 +420,7 @@ export default function App() {
                 mapBounds={mapBounds}
                 onLocationClick={(loc) => { handleLocationClickWrapped(loc); setMobileTab('map'); }}
                 onToggleFavorite={toggleFavorite}
+        isFavorited={isFavorited}
                 filterMode={filters.visitedStatus}
                 onFilterMode={(mode: Filters['visitedStatus']) =>
                   setFilters(prev => ({ ...prev, visitedStatus: mode }))
@@ -456,6 +459,7 @@ export default function App() {
                 mapBounds={mapBounds}
                 onLocationClick={(loc) => { handleLocationClickWrapped(loc); setMobileTab('map'); }}
                 onToggleFavorite={toggleFavorite}
+        isFavorited={isFavorited}
                 filterMode="favorites"
                 onFilterMode={(mode: Filters['visitedStatus']) =>
                   setFilters(prev => ({ ...prev, visitedStatus: mode }))
