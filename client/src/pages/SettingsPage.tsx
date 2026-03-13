@@ -300,6 +300,27 @@ export default function SettingsPage() {
           Save Settings
         </button>
 
+        {/* Preferences */}
+        <section className="mb-8">
+          <h2 className="text-lg font-semibold text-white mb-4">Preferences</h2>
+          <div className="bg-dark-900 border border-dark-700/50 rounded-xl p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-200">Activity Preferences</p>
+                <p className="text-xs text-gray-500 mt-1">Reset which hobbies and layers are shown on the map</p>
+              </div>
+              <button onClick={() => {
+                localStorage.removeItem('trailcamp-layers');
+                localStorage.removeItem('trailcamp-onboarded');
+                window.location.href = '/';
+              }}
+                className="px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 text-orange-400 rounded-lg transition text-sm">
+                Reset Hobbies
+              </button>
+            </div>
+          </div>
+        </section>
+
         {/* Danger Zone */}
         <section>
           <h2 className="text-lg font-semibold text-red-400 mb-4">Danger Zone</h2>

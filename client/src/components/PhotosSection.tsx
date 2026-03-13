@@ -1,3 +1,4 @@
+import { hapticSuccess } from '../utils/haptics';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Camera, X, Loader2, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
@@ -62,6 +63,25 @@ export default function PhotosSection({ locationId, showToast }: Props) {
 
   useEffect(() => { setLoading(true); fetchPhotos(); }, [fetchPhotos]);
 
+  // Resize image client-side before upload (max 1200px, 80% JPEG quality)
+  const resizeImage = (file: File, maxWidth = 1200, quality = 0.8): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = url;
+    });
+  };
+
   const handleUpload = async (file: File) => {
     if (file.size > 5 * 1024 * 1024) {
       showToast?.('Image too large (max 5MB)', 'error');
@@ -69,11 +89,7 @@ export default function PhotosSection({ locationId, showToast }: Props) {
     }
     setUploading(true);
     try {
-      const reader = new FileReader();
-      const b64 = await new Promise<string>((resolve) => {
-        reader.onload = () => resolve(reader.result as string);
-        reader.readAsDataURL(file);
-      });
+      const b64 = await resizeImage(file);
       const headers = await getAuthHeaders();
       const res = await fetch(`${API_BASE}/photos/${locationId}`, {
         method: 'POST',
@@ -81,7 +97,7 @@ export default function PhotosSection({ locationId, showToast }: Props) {
         body: JSON.stringify({ image: b64 }),
       });
       if (res.ok) {
-        showToast?.('Photo uploaded!', 'success');
+        hapticSuccess(); showToast?.('Photo uploaded!', 'success');
         fetchPhotos();
       } else {
         const err = await res.json();

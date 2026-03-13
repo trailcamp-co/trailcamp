@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect, useMemo } from 'react';
+import { useCallback, useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import {
   Navigation,
   Heart,
@@ -19,9 +19,9 @@ import {
 import type { Location } from '../types';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
 import type { SnapPoint } from './BottomSheet';
-import ReviewsSection from './ReviewsSection';
-import PhotosSection from './PhotosSection';
-import ConditionsSection from './ConditionsSection';
+const ReviewsSection = lazy(() => import('./ReviewsSection'));
+const PhotosSection = lazy(() => import('./PhotosSection'));
+const ConditionsSection = lazy(() => import('./ConditionsSection'));
 import type { UserLocationData } from '../hooks/useUserData';
 import { getExternalUrl } from '../utils/getExternalUrl';
 import { hapticLight, hapticMedium, hapticSuccess } from '../utils/haptics';
@@ -90,16 +90,18 @@ export default function MobileLocationDetail({
     setEditingNotes(false);
   }, [location.id, userData?.user_notes, location.user_notes]);
 
-  const handleNavigate = useCallback(() => {
+  const [showNavMenu, setShowNavMenu] = useState(false);
+
+  const handleNavigate = useCallback((app: 'google' | 'apple' | 'waze') => {
     hapticMedium();
-    // Try native map links on mobile
     const dest = `${location.latitude},${location.longitude}`;
-    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-    if (isIOS) {
-      window.open(`maps://maps.apple.com/?daddr=${dest}`, '_blank');
-    } else {
-      window.open(`https://www.google.com/maps/dir/?api=1&destination=${dest}`, '_blank');
-    }
+    const urls = {
+      google: `https://www.google.com/maps/dir/?api=1&destination=${dest}`,
+      apple: `maps://maps.apple.com/?daddr=${dest}`,
+      waze: `https://waze.com/ul?ll=${dest}&navigate=yes`,
+    };
+    window.open(urls[app], '_blank');
+    setShowNavMenu(false);
   }, [location.latitude, location.longitude]);
 
   const handleToggleFavorite = useCallback(async () => {
@@ -201,6 +203,15 @@ export default function MobileLocationDetail({
           {(location.city || location.state) && (
             <p className="text-[11px] text-gray-500 mt-0.5">{[location.city, location.state].filter(Boolean).join(', ')}</p>
           )}
+          {location.google_rating != null && (
+            <div className="flex items-center gap-1.5 mt-1">
+              <span className="text-yellow-400 text-sm">★</span>
+              <span className="text-white font-semibold text-sm">{location.google_rating.toFixed(1)}</span>
+              {location.google_review_count != null && (
+                <span className="text-[11px] text-gray-500">({location.google_review_count.toLocaleString()})</span>
+              )}
+            </div>
+          )}
           <div className="flex items-center gap-2 mt-1">
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium"
               style={{ backgroundColor: CATEGORY_COLORS[location.category] + '22', color: CATEGORY_COLORS[location.category] }}>
@@ -257,16 +268,7 @@ export default function MobileLocationDetail({
         {location.best_season && <InfoPill>📅 {location.best_season}</InfoPill>}
       </div>
 
-      {/* Google Rating */}
-      {location.google_rating != null && (
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-yellow-400 text-base">★</span>
-          <span className="text-white font-bold">{location.google_rating.toFixed(1)}</span>
-          {location.google_review_count != null && (
-            <span className="text-xs text-gray-400">({location.google_review_count.toLocaleString()} Google reviews)</span>
-          )}
-        </div>
-      )}
+
 
       {/* Vehicles allowed */}
       {location.vehicles_allowed && (() => {
@@ -288,10 +290,19 @@ export default function MobileLocationDetail({
         <>
           {/* Quick action buttons */}
           <div className="flex gap-2 mb-4">
-            <button onClick={handleNavigate}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-colors shadow-lg shadow-orange-500/20 press-scale">
-              <Navigation className="w-4 h-4" />Navigate
-            </button>
+            <div className="flex-1 relative">
+              <button onClick={(e) => { e.stopPropagation(); setShowNavMenu(!showNavMenu); }}
+                className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-colors shadow-lg shadow-orange-500/20 press-scale">
+                <Navigation className="w-4 h-4" />Navigate
+              </button>
+              {showNavMenu && (
+                <div className="absolute left-0 right-0 top-full mt-1 bg-dark-800 border border-dark-700 rounded-lg shadow-xl z-50 overflow-hidden">
+                  <button onClick={() => handleNavigate('google')} className="w-full text-left px-3 py-2.5 text-sm text-gray-200 hover:bg-dark-700 transition">📍 Google Maps</button>
+                  <button onClick={() => handleNavigate('apple')} className="w-full text-left px-3 py-2.5 text-sm text-gray-200 hover:bg-dark-700 transition">🗺️ Apple Maps</button>
+                  <button onClick={() => handleNavigate('waze')} className="w-full text-left px-3 py-2.5 text-sm text-gray-200 hover:bg-dark-700 transition">🚗 Waze</button>
+                </div>
+              )}
+            </div>
             {hasActiveTrip && (
               <button onClick={handleAddToTrip} disabled={addingToTrip}
                 className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-dark-800 hover:bg-dark-700 text-gray-200 font-medium text-sm border border-dark-700/50 transition-colors press-scale disabled:opacity-50">
@@ -335,10 +346,10 @@ export default function MobileLocationDetail({
           })()}
 
           {/* Condition reports — urgent info shown first */}
-          <ConditionsSection locationId={location.id} category={location.category} showToast={showToast} />
+          <Suspense fallback={<div className="text-xs text-gray-500 py-2">Loading...</div>}><ConditionsSection locationId={location.id} category={location.category} showToast={showToast} /></Suspense>
 
           {/* Photos */}
-          <PhotosSection locationId={location.id} showToast={showToast} />
+          <Suspense fallback={<div className="text-xs text-gray-500 py-2">Loading...</div>}><PhotosSection locationId={location.id} showToast={showToast} /></Suspense>
 
           {/* Description (truncated at HALF, full at FULL) */}
           {location.description && (
@@ -434,7 +445,7 @@ export default function MobileLocationDetail({
           {/* Reviews summary */}
           {showFull && (
             <div className="border-t border-dark-700/50 pt-4 mb-4">
-              <ReviewsSection locationId={location.id} darkMode showToast={showToast} />
+              <Suspense fallback={<div className="text-xs text-gray-500 py-2">Loading...</div>}><ReviewsSection locationId={location.id} darkMode showToast={showToast} /></Suspense>
             </div>
           )}
         </>

@@ -1,4 +1,32 @@
 import { Heart, Droplets, DollarSign, Star } from 'lucide-react';
+
+function getSeasonalStatus(bestSeason: string | null | undefined): 'great' | 'shoulder' | 'bad' | null {
+  if (!bestSeason) return null;
+  const bs = bestSeason.toLowerCase();
+  if (bs.includes('year-round') || bs.includes('all year') || bs.includes('all season')) return 'great';
+  const month = new Date().getMonth(); // 0-indexed
+  const monthNames = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  if (bs.includes(monthNames[month])) return 'great';
+  const seasons: Record<string, number[]> = { spring:[2,3,4], summer:[5,6,7], fall:[8,9,10], autumn:[8,9,10], winter:[11,0,1] };
+  const shoulder: Record<string, number[]> = { spring:[1,5], summer:[4,8], fall:[7,11], autumn:[7,11], winter:[10,2] };
+  for (const [s, ms] of Object.entries(seasons)) {
+    if (bs.includes(s)) {
+      if (ms.includes(month)) return 'great';
+      if (shoulder[s]?.includes(month)) return 'shoulder';
+      return 'bad';
+    }
+  }
+  const rm = bs.match(/(\w{3})\s*[-–to]+\s*(\w{3})/);
+  if (rm) {
+    const si = monthNames.indexOf(rm[1].toLowerCase().slice(0,3));
+    const ei = monthNames.indexOf(rm[2].toLowerCase().slice(0,3));
+    if (si >= 0 && ei >= 0) {
+      const inRange = si <= ei ? month >= si && month <= ei : month >= si || month <= ei;
+      return inRange ? 'great' : 'bad';
+    }
+  }
+  return null;
+}
 import type { Location } from '../../types';
 import { CAMPSITE_SUBTYPE_ICONS, CAMPSITE_SUBTYPE_COLORS, CAMPSITE_SUBTYPE_LABELS } from '../../types';
 
@@ -95,15 +123,27 @@ export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, dis
             )}
           </div>
 
-          {/* Row 3: Season + scenery */}
+          {/* Row 3: Amenities */}
+          <div className="flex items-center gap-1 text-[10px] mb-0.5">
+            {loc.has_toilets === 1 && <span title="Restrooms">🚻</span>}
+            {loc.has_showers === 1 && <span title="Showers">🚿</span>}
+            {loc.has_electric === 1 && <span title="Electric">🔌</span>}
+            {loc.has_fire_ring === 1 && <span title="Fire ring">🔥</span>}
+            {loc.has_wifi === 1 && <span title="WiFi">📶</span>}
+            {loc.pet_friendly === 1 && <span title="Pet friendly">🐕</span>}
+            {loc.is_reservable === 1 && <span title="Reservable">📋</span>}
+            {loc.operator_name && <span className="text-gray-600 ml-auto truncate max-w-[80px]">{loc.operator_name}</span>}
+          </div>
+
+          {/* Row 4: Season + scenery */}
           <div className="flex items-center gap-2 text-[10px]">
-            {loc.seasonal_status && (
+            {getSeasonalStatus(loc.best_season) && (
               <span className={`px-1 py-0.5 rounded ring-1 ring-inset ${
-                loc.seasonal_status === 'great' ? 'bg-green-500/10 text-green-400 ring-green-400/20' :
-                loc.seasonal_status === 'shoulder' ? 'bg-yellow-500/10 text-yellow-400 ring-yellow-400/20' :
+                getSeasonalStatus(loc.best_season) === 'great' ? 'bg-green-500/10 text-green-400 ring-green-400/20' :
+                getSeasonalStatus(loc.best_season) === 'shoulder' ? 'bg-yellow-500/10 text-yellow-400 ring-yellow-400/20' :
                 'bg-red-500/10 text-red-400 ring-red-400/20'
               }`}>
-                {loc.seasonal_status === 'great' ? '● In Season' : loc.seasonal_status === 'shoulder' ? '● Shoulder' : '● Off Season'}
+                {getSeasonalStatus(loc.best_season) === 'great' ? '● In Season' : getSeasonalStatus(loc.best_season) === 'shoulder' ? '● Shoulder' : '● Off Season'}
               </span>
             )}
 

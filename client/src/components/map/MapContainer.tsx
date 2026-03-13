@@ -74,7 +74,7 @@ export default function MapContainer({
   const stopMarkersRef = useRef<any[]>([]);
   const homeMarkerRef = useRef<any>(null);
   // Emoji markers removed — native Mapbox circle layers handle all location rendering
-  const [layerPanelOpen, setLayerPanelOpen] = useState(true);
+  const [layerPanelOpen, setLayerPanelOpen] = useState(window.innerWidth >= 1024);
   const [visibleLands, setVisibleLands] = useState<Set<string>>(new Set());
   const locationsRef = useRef<Location[]>(locations);
   const routeRef = useRef<GeoJSON.GeoJsonObject | null>(routeGeoJSON);

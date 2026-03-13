@@ -24,9 +24,10 @@ import {
 import type { Location } from '../types';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS, DIFFICULTY_COLORS, TRAIL_TYPE_COLORS, parseTrailTypes } from '../types';
 import { fetchNearby, fetchGroupMembers } from '../hooks/useApi';
-import ReviewsSection from './ReviewsSection';
-import PhotosSection from './PhotosSection';
-import ConditionsSection from './ConditionsSection';
+import { lazy, Suspense } from 'react';
+const ReviewsSection = lazy(() => import('./ReviewsSection'));
+const PhotosSection = lazy(() => import('./PhotosSection'));
+const ConditionsSection = lazy(() => import('./ConditionsSection'));
 import type { UserLocationData } from '../hooks/useUserData';
 import { getExternalUrl } from '../utils/getExternalUrl';
 import ErrorState from './ErrorState';
@@ -431,6 +432,15 @@ export default function RightPanel({
                 {(location.city || location.state) && (
                   <p className="text-xs text-gray-500 mt-0.5">{[location.city, location.state].filter(Boolean).join(', ')}</p>
                 )}
+                {location.google_rating != null && (
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className="text-yellow-400">★</span>
+                    <span className="text-white font-semibold">{location.google_rating.toFixed(1)}</span>
+                    {location.google_review_count != null && (
+                      <span className="text-xs text-gray-500">({location.google_review_count.toLocaleString()} reviews)</span>
+                    )}
+                  </div>
+                )}
               </div>
               {weather && (
                 <div className="flex-shrink-0 text-right" title={weather.desc}>
@@ -641,28 +651,15 @@ export default function RightPanel({
 
         {/* Conditions */}
         <div className={`p-5 ${sectionDivider}`}>
-          <ConditionsSection locationId={location.id} category={location.category} showToast={showToast} />
+          <Suspense fallback={<div className="text-xs text-gray-500 text-center py-2">Loading...</div>}><ConditionsSection locationId={location.id} category={location.category} showToast={showToast} /></Suspense>
         </div>
 
         {/* Photos */}
         <div className={`p-5 ${sectionDivider}`}>
-          <PhotosSection locationId={location.id} showToast={showToast} />
+          <Suspense fallback={<div className="text-xs text-gray-500 text-center py-2">Loading...</div>}><PhotosSection locationId={location.id} showToast={showToast} /></Suspense>
         </div>
 
-        {/* Google Rating */}
-        {(location.google_rating != null) && (
-          <div className={`px-5 py-3 flex items-center gap-3 ${sectionDivider}`}>
-            <div className="flex items-center gap-1">
-              <span className="text-yellow-400 text-lg">★</span>
-              <span className="text-white font-bold text-lg">{location.google_rating.toFixed(1)}</span>
-            </div>
-            {location.google_review_count != null && (
-              <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'} [.light_&]:text-gray-500`}>
-                ({location.google_review_count.toLocaleString()} Google reviews)
-              </span>
-            )}
-          </div>
-        )}
+
 
         {/* Description */}
         {location.description && (
@@ -744,7 +741,7 @@ export default function RightPanel({
 
         {/* Public Reviews */}
         <div className={`p-5 ${sectionDivider}`}>
-          <ReviewsSection locationId={location.id} darkMode={darkMode} showToast={showToast} />
+          <Suspense fallback={<div className="text-xs text-gray-500 text-center py-2">Loading...</div>}><ReviewsSection locationId={location.id} darkMode={darkMode} showToast={showToast} /></Suspense>
         </div>
 
         {/* GPS Coordinates */}

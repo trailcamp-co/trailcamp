@@ -1,3 +1,4 @@
+import { hapticSuccess } from '../utils/haptics';
 import { useState, useEffect, useCallback } from 'react';
 import { AlertTriangle, X, Loader2, Send, Trash2, ChevronDown } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
@@ -132,7 +133,7 @@ export default function ConditionsSection({ locationId, category, showToast }: P
         }),
       });
       if (res.ok) {
-        showToast?.('Report submitted', 'success');
+        hapticSuccess(); showToast?.('Report submitted', 'success');
         setShowForm(false);
         setSelectedType('');
         setSelectedSeverity('info');

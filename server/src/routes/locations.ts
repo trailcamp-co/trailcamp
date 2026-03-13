@@ -466,8 +466,17 @@ router.get('/search', optionalAuth, async (req: Request, res: Response) => {
 
 // ─── GET /api/locations/:id/google-rating ────────────────────────────────────
 // Lazy Google Places enrichment: fetch rating on first view, cache forever.
+const googleRateCalls = new Map<string, number[]>();
 
 router.get('/:id/google-rating', async (req: Request, res: Response) => {
+  // Rate limit: max 10 API-calling requests per IP per minute
+  const ip = req.ip || 'unknown';
+  const now = Date.now();
+  const calls = (googleRateCalls.get(ip) || []).filter(t => now - t < 60000);
+  if (calls.length >= 10) {
+    res.status(429).json({ error: 'Too many requests' });
+    return;
+  }
   try {
     const id = Number(req.params.id);
     if (!id) { res.status(400).json({ error: 'Invalid id' }); return; }
@@ -499,6 +508,7 @@ router.get('/:id/google-rating', async (req: Request, res: Response) => {
       return;
     }
 
+    calls.push(now); googleRateCalls.set(ip, calls);
     const query = `${loc.name} ${loc.city || ''} ${loc.state || ''}`.trim();
     const body = JSON.stringify({
       textQuery: query,
