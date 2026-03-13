@@ -92,6 +92,9 @@ export default function MobileLocationDetail({
 
   const [showNavMenu, setShowNavMenu] = useState(false);
 
+  // Close nav menu when location changes or user scrolls
+  useEffect(() => { setShowNavMenu(false); }, [location.id]);
+
   const handleNavigate = useCallback((app: 'google' | 'apple' | 'waze') => {
     hapticMedium();
     const dest = `${location.latitude},${location.longitude}`;

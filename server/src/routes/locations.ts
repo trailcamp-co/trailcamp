@@ -467,6 +467,15 @@ router.get('/search', optionalAuth, async (req: Request, res: Response) => {
 // ─── GET /api/locations/:id/google-rating ────────────────────────────────────
 // Lazy Google Places enrichment: fetch rating on first view, cache forever.
 const googleRateCalls = new Map<string, number[]>();
+// Cleanup stale rate-limit entries every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, calls] of googleRateCalls) {
+    const recent = calls.filter(t => now - t < 60000);
+    if (recent.length === 0) googleRateCalls.delete(ip);
+    else googleRateCalls.set(ip, recent);
+  }
+}, 300000);
 
 router.get('/:id/google-rating', async (req: Request, res: Response) => {
   // Rate limit: max 10 API-calling requests per IP per minute

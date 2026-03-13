@@ -135,19 +135,14 @@ export default function CampsiteCard({ location: loc, onFlyTo, distanceFrom, dis
             {loc.operator_name && <span className="text-gray-600 ml-auto truncate max-w-[80px]">{loc.operator_name}</span>}
           </div>
 
-          {/* Row 4: Season + scenery */}
-          <div className="flex items-center gap-2 text-[10px]">
-            {getSeasonalStatus(loc.best_season) && (
-              <span className={`px-1 py-0.5 rounded ring-1 ring-inset ${
-                getSeasonalStatus(loc.best_season) === 'great' ? 'bg-green-500/10 text-green-400 ring-green-400/20' :
-                getSeasonalStatus(loc.best_season) === 'shoulder' ? 'bg-yellow-500/10 text-yellow-400 ring-yellow-400/20' :
-                'bg-red-500/10 text-red-400 ring-red-400/20'
-              }`}>
-                {getSeasonalStatus(loc.best_season) === 'great' ? '● In Season' : getSeasonalStatus(loc.best_season) === 'shoulder' ? '● Shoulder' : '● Off Season'}
-              </span>
-            )}
-
-          </div>
+          {/* Row 4: Season */}
+          {(() => {
+            const ss = getSeasonalStatus(loc.best_season);
+            if (!ss) return null;
+            const styles = { great: 'bg-green-500/10 text-green-400 ring-green-400/20', shoulder: 'bg-yellow-500/10 text-yellow-400 ring-yellow-400/20', bad: 'bg-red-500/10 text-red-400 ring-red-400/20' };
+            const labels = { great: '● In Season', shoulder: '● Shoulder', bad: '● Off Season' };
+            return <div className="flex items-center gap-2 text-[10px]"><span className={`px-1 py-0.5 rounded ring-1 ring-inset ${styles[ss]}`}>{labels[ss]}</span></div>;
+          })()}
         </div>
       </div>
     </button>

@@ -5,7 +5,7 @@ import { CAMPSITE_SUBTYPE_ICONS, CAMPSITE_SUBTYPE_LABELS } from '../../types';
 import CampsiteCard from './CampsiteCard';
 import EmptyState from '../EmptyState';
 
-type CampsiteSortField = 'name' | 'cost' | 'distance_from' | 'riding_nearby' | 'distance_from_home';
+type CampsiteSortField = 'name' | 'cost' | 'distance_from' | 'riding_nearby' | 'distance_from_home' | 'rating';
 
 function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 3959;
@@ -109,6 +109,7 @@ export default function CampsiteTab({ locations, allLocations, onFlyTo, mapBound
         case 'cost': return dir * ((a.cost_per_night ?? 999) - (b.cost_per_night ?? 999));
         case 'distance_from': return dir * ((a.distance_from ?? 999999) - (b.distance_from ?? 999999));
         case 'distance_from_home': return dir * (((a as any)._distanceFromHome ?? 999999) - ((b as any)._distanceFromHome ?? 999999));
+        case 'rating': return dir * ((b.google_rating ?? 0) - (a.google_rating ?? 0));
         default: return 0;
       }
     });

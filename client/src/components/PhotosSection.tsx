@@ -64,20 +64,27 @@ export default function PhotosSection({ locationId, showToast }: Props) {
   useEffect(() => { setLoading(true); fetchPhotos(); }, [fetchPhotos]);
 
   // Resize image client-side before upload (max 1200px, 80% JPEG quality)
-  const resizeImage = (file: File, maxWidth = 1200, quality = 0.8): Promise<string> => {
-    return new Promise((resolve) => {
+  const resizeImage = (file: File, maxDim = 1200, quality = 0.8): Promise<string> => {
+    return new Promise((resolve, reject) => {
       const img = new Image();
       const url = URL.createObjectURL(file);
       img.onload = () => {
         URL.revokeObjectURL(url);
         const canvas = document.createElement('canvas');
         let w = img.width, h = img.height;
-        if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+        // Scale down if either dimension exceeds max
+        if (w > maxDim || h > maxDim) {
+          const scale = maxDim / Math.max(w, h);
+          w = Math.round(w * scale);
+          h = Math.round(h * scale);
+        }
         canvas.width = w; canvas.height = h;
-        const ctx = canvas.getContext('2d')!;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { reject(new Error('Canvas not supported')); return; }
         ctx.drawImage(img, 0, 0, w, h);
         resolve(canvas.toDataURL('image/jpeg', quality));
       };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load image')); };
       img.src = url;
     });
   };

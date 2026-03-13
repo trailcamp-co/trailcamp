@@ -95,11 +95,13 @@ export default function RidingCard({ location: loc, onFlyTo, distanceFrom, dista
                 <span className="text-gray-400">{seasonInfo.label}</span>
               </span>
             )}
-            {loc.distance_miles != null && (
-              <span className="text-gray-500" title="Estimated time">
-                ~{loc.distance_miles < 5 ? `${Math.round(loc.distance_miles * 12 + (loc.elevation_gain_ft || 0) / 600 * 60)} min` : `${((loc.distance_miles / (loc.category === 'hiking' ? 3 : loc.category === 'mtb' ? 8 : 15)) + (loc.elevation_gain_ft || 0) / 600).toFixed(1)} hrs`}
-              </span>
-            )}
+            {loc.distance_miles != null && (() => {
+              const speed = loc.category === 'hiking' ? 3 : loc.category === 'mtb' ? 8 : 15;
+              const elPenalty = loc.category === 'hiking' ? 0.5 : loc.category === 'mtb' ? 0.25 : 0.17; // hrs per 1000ft
+              const hrs = loc.distance_miles / speed + (loc.elevation_gain_ft || 0) / 1000 * elPenalty;
+              const display = hrs < 1 ? `${Math.round(hrs * 60)} min` : `${hrs.toFixed(1)} hrs`;
+              return <span className="text-gray-500" title="Estimated time">~{display}</span>;
+            })()}
             {loc.google_rating != null && (
               <span className="flex items-center gap-0.5 text-yellow-400 font-medium ml-auto">
                 <StarIcon size={9} className="fill-yellow-400" />{loc.google_rating}
